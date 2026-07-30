@@ -4,9 +4,11 @@ import { Section } from "@/components/ui/Section";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { ButtonLink } from "@/components/ui/Button";
 import { Hero } from "@/components/sections/Hero";
+import { SmileSection } from "@/components/sections/SmileSection";
 import { WorkflowCards } from "@/components/sections/WorkflowCards";
 import { GuideWorkflow } from "@/components/sections/GuideWorkflow";
 import { CasePortalBand } from "@/components/sections/CasePortalBand";
+import { IconList } from "@/components/ui/IconList";
 import { cta } from "@/content/cta-routes";
 import { home } from "@/content/pages/home";
 import { img } from "@/content/images";
@@ -23,29 +25,7 @@ export default function HomePage() {
       <Hero />
 
       {/* 2 — Patient outcome */}
-      <Section aria-labelledby="smile-h">
-        <div className="grid gap-10 lg:grid-cols-2">
-          <div>
-            <Eyebrow>Start with the smile</Eyebrow>
-            <h2 id="smile-h">{home.smile.h2}</h2>
-            <p className="mt-4 max-w-xl text-ink">{home.smile.body}</p>
-          </div>
-          <ol className="flex flex-col justify-center gap-3">
-            {home.smile.designOrder.map((label, i) => (
-              <li
-                key={label}
-                className="flex items-center gap-4 rounded-[var(--radius-card)] border border-line bg-white px-4 py-3 shadow-[var(--shadow-sm)]"
-                style={{ marginLeft: `${i * 1.5}rem` }}
-              >
-                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[var(--radius-sm)] bg-brand text-sm font-bold text-white">
-                  {i + 1}
-                </span>
-                <span className="font-semibold text-heading">{label}</span>
-              </li>
-            ))}
-          </ol>
-        </div>
-      </Section>
+      <SmileSection />
 
       {/* 3 — Case recognition */}
       <Section tone="tint" aria-labelledby="wf-h">
@@ -256,17 +236,12 @@ export default function HomePage() {
               </ButtonLink>
             </div>
           </div>
-          <ul className="grid content-start gap-2">
-            {home.requirements.checklist.map((item) => (
-              <li
-                key={item}
-                className="flex items-start gap-3 rounded-[var(--radius-card)] border border-line bg-white px-4 py-3 text-sm text-ink shadow-[var(--shadow-sm)]"
-              >
-                <span aria-hidden className="mt-0.5 font-bold text-brand">▪</span>
-                {item}
-              </li>
-            ))}
-          </ul>
+          <div className="rounded-[var(--radius-card)] border border-line bg-white p-6 shadow-[var(--shadow-sm)]">
+            <p className="mb-4 text-xs font-bold uppercase tracking-wider text-muted">
+              Records reviewed before planning
+            </p>
+            <IconList items={[...home.requirements.checklist]} variant="check" />
+          </div>
         </div>
       </Section>
 
