@@ -9,6 +9,7 @@ import { WorkflowCards } from "@/components/sections/WorkflowCards";
 import { GuideWorkflow } from "@/components/sections/GuideWorkflow";
 import { CasePortalBand } from "@/components/sections/CasePortalBand";
 import { IconList } from "@/components/ui/IconList";
+import { FeatureGrid } from "@/components/ui/FeatureGrid";
 import { cta } from "@/content/cta-routes";
 import { home } from "@/content/pages/home";
 import { img } from "@/content/images";
@@ -77,22 +78,17 @@ export default function HomePage() {
       {/* 6 — Support modes */}
       <Section tone="tint" aria-labelledby="support-h">
         <h2 id="support-h">{home.support.h2}</h2>
-        <div className="mt-8 grid gap-5 md:grid-cols-3">
-          {home.support.modes.map((mode) => (
-            <div
-              key={mode.href}
-              className="flex flex-col rounded-[var(--radius-card)] border border-line bg-white p-6 shadow-[var(--shadow-sm)]"
-            >
-              <h3 className="text-lg">{mode.title}</h3>
-              <p className="mt-2 flex-1 text-sm text-ink">{mode.body}</p>
-              <p className="mt-4">
-                <ButtonLink href={mode.href} variant="utility">
-                  {mode.linkLabel} →
-                </ButtonLink>
-              </p>
-            </div>
-          ))}
-        </div>
+        <FeatureGrid
+          className="mt-8"
+          columns={3}
+          accent
+          items={home.support.modes.map((mode) => ({
+            title: mode.title,
+            body: mode.body,
+            href: mode.href,
+            linkLabel: mode.linkLabel,
+          }))}
+        />
         <p className="mt-6">
           <ButtonLink href={home.support.sectionHref} variant="secondary">
             {home.support.sectionLink}
@@ -107,17 +103,7 @@ export default function HomePage() {
           <h2 id="global-h">{home.global.h2}</h2>
           <p className="mt-4 text-ink">{home.global.body}</p>
         </div>
-        <div className="mt-8 grid gap-5 md:grid-cols-3">
-          {home.global.points.map((point) => (
-            <div
-              key={point.title}
-              className="rounded-[var(--radius-card)] border border-line p-6 shadow-[var(--shadow-sm)]"
-            >
-              <h3 className="text-base">{point.title}</h3>
-              <p className="mt-2 text-sm text-ink">{point.body}</p>
-            </div>
-          ))}
-        </div>
+        <FeatureGrid className="mt-8" columns={3} items={home.global.points} />
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
           <ButtonLink href={home.global.primaryLink.href} variant="secondary">
             {home.global.primaryLink.label}
@@ -203,17 +189,7 @@ export default function HomePage() {
           <h2 id="trust-h">{home.trust.h2}</h2>
           <p className="mt-4 text-ink">{home.trust.body}</p>
         </div>
-        <div className="mt-8 grid gap-5 md:grid-cols-3">
-          {home.trust.points.map((point) => (
-            <div
-              key={point.title}
-              className="rounded-[var(--radius-card)] border border-line bg-white p-6 shadow-[var(--shadow-sm)]"
-            >
-              <h3 className="text-base">{point.title}</h3>
-              <p className="mt-2 text-sm text-ink">{point.body}</p>
-            </div>
-          ))}
-        </div>
+        <FeatureGrid className="mt-8" columns={3} items={home.trust.points} />
         <p className="mt-8">
           <ButtonLink href="/about/" variant="secondary">
             About Image3DConversion

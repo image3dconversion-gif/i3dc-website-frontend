@@ -4,6 +4,7 @@ import { ButtonLink } from "@/components/ui/Button";
 import { PageHero } from "@/components/sections/PageHero";
 import { PlanningPanel } from "@/components/ui/PlanningPanel";
 import { RoleTrust } from "@/components/sections/RoleTrust";
+import { FeatureGrid } from "@/components/ui/FeatureGrid";
 import { cta } from "@/content/cta-routes";
 import { img } from "@/content/images";
 import { positioning } from "@/content/site";
@@ -95,28 +96,23 @@ export default function AboutPage() {
 
       <Section aria-labelledby="supports-h">
         <h2 id="supports-h">What the company supports</h2>
-        <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {supports.map((s) => (
-            <li key={s.t} className="rounded-[var(--radius-card)] border border-line bg-white p-5 shadow-[var(--shadow-sm)]">
-              <h3 className="text-base">{s.t}</h3>
-              <p className="mt-2 text-sm text-ink">{s.d}</p>
-            </li>
-          ))}
-        </ul>
+        <FeatureGrid
+          className="mt-8"
+          columns={4}
+          items={supports.map((s) => ({ title: s.t, body: s.d }))}
+        />
       </Section>
 
       <RoleTrust tone="tint" />
 
       <Section aria-labelledby="principles-h">
         <h2 id="principles-h">How Image3DConversion thinks</h2>
-        <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {principles.map((p) => (
-            <li key={p.t} className="rounded-[var(--radius-card)] border border-line bg-white p-5 shadow-[var(--shadow-sm)]">
-              <h3 className="text-base">{p.t}</h3>
-              <p className="mt-2 text-sm text-ink">{p.d}</p>
-            </li>
-          ))}
-        </ul>
+        <FeatureGrid
+          className="mt-8"
+          columns={3}
+          accent
+          items={principles.map((p) => ({ title: p.t, body: p.d }))}
+        />
       </Section>
 
       <Section aria-labelledby="about-cta-h" width="narrow" className="text-center">

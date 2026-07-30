@@ -1,5 +1,6 @@
 import { Section } from "@/components/ui/Section";
 import { Eyebrow } from "@/components/ui/Eyebrow";
+import { FeatureGrid } from "@/components/ui/FeatureGrid";
 
 /**
  * Role/function-based credibility block. Shows that Image3DConversion is an
@@ -29,14 +30,11 @@ export function RoleTrust({ tone = "tint" }: { tone?: "white" | "tint" }) {
           clinical authority.
         </p>
       </div>
-      <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {roles.map((r) => (
-          <li key={r.t} className="rounded-[var(--radius-card)] border border-line bg-white p-6 shadow-[var(--shadow-sm)]">
-            <h3 className="text-base">{r.t}</h3>
-            <p className="mt-2 text-sm text-ink">{r.d}</p>
-          </li>
-        ))}
-      </ul>
+      <FeatureGrid
+        className="mt-8"
+        columns={3}
+        items={roles.map((r) => ({ title: r.t, body: r.d }))}
+      />
     </Section>
   );
 }
