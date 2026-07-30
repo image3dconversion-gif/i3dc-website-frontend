@@ -3,6 +3,7 @@ import { Section } from "@/components/ui/Section";
 import { ButtonLink } from "@/components/ui/Button";
 import { PageHero } from "@/components/sections/PageHero";
 import { RouteCards } from "@/components/sections/RouteCards";
+import { IconList } from "@/components/ui/IconList";
 import { cta } from "@/content/cta-routes";
 import { img } from "@/content/images";
 
@@ -61,8 +62,13 @@ export default function HowItWorksPage() {
           prosthetic reference, planning objective, review rhythm and approval path.
         </p>
         <ol className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
-          {stages.map((s) => (
-            <li key={s.n} className="flex flex-col rounded-[var(--radius-card)] border border-line bg-white p-5 shadow-[var(--shadow-sm)]">
+          {stages.map((s, i) => (
+            <li
+              key={s.n}
+              className="reveal-up flex flex-col rounded-[var(--radius-card)] border border-line bg-white p-5 shadow-[var(--shadow-sm)] transition-shadow duration-200 hover:shadow-[var(--shadow-float)]"
+              style={{ animationDelay: `${i * 70}ms` }}
+            >
+              <span aria-hidden className="mb-3 block h-1 w-8 rounded-full bg-brand/70" />
               <span className="font-display text-3xl font-semibold text-brand">{s.n}</span>
               <h3 className="mt-2 text-base">{s.title}</h3>
               <p className="mt-1 flex-1 text-sm text-ink">{s.body}</p>
@@ -88,13 +94,12 @@ export default function HowItWorksPage() {
             </p>
             <div className="mt-6"><ButtonLink href="/case-data-preparation/" variant="secondary">Case Data &amp; Diagnostic Preparation</ButtonLink></div>
           </div>
-          <ul className="grid content-start gap-2">
-            {prepare.map((p) => (
-              <li key={p} className="flex items-start gap-3 rounded-[var(--radius-card)] border border-line bg-white px-4 py-3 text-sm text-ink shadow-[var(--shadow-sm)]">
-                <span aria-hidden className="mt-0.5 font-bold text-brand">▪</span>{p}
-              </li>
-            ))}
-          </ul>
+          <div className="rounded-[var(--radius-card)] border border-line bg-white p-6 shadow-[var(--shadow-sm)]">
+            <p className="mb-4 text-xs font-bold uppercase tracking-wider text-muted">
+              Prepare before submission
+            </p>
+            <IconList items={[...prepare]} variant="check" />
+          </div>
         </div>
       </Section>
 

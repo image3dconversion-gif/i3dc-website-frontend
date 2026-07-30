@@ -104,8 +104,12 @@ export function WorkflowPage({ c }: { c: WorkflowContent }) {
         <Section aria-labelledby="wp-detail" id="details" className="scroll-mt-28">
           <h2 id="wp-detail" className="sr-only">Workflow detail</h2>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {c.lists.map((l) => (
-              <div key={l.title} className="rounded-[var(--radius-card)] border border-line bg-white p-6 shadow-[var(--shadow-sm)]">
+            {c.lists.map((l, i) => (
+              <div
+                key={l.title}
+                className="reveal-up rounded-[var(--radius-card)] border border-line bg-white p-6 shadow-[var(--shadow-sm)] transition-[transform,box-shadow] duration-200 hover:-translate-y-0.5 hover:shadow-[var(--shadow-float)]"
+                style={{ animationDelay: `${i * 60}ms` }}
+              >
                 <h3 className="text-base">{l.title}</h3>
                 <IconList className="mt-3" items={l.items} variant="check" />
               </div>
