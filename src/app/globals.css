@@ -1,0 +1,195 @@
+@import "tailwindcss";
+@import "../styles/tokens.css";
+
+/* -----------------------------------------------------------------------------
+   Bind design tokens to Tailwind v4 utilities via @theme inline, so classes
+   like `bg-brand`, `text-ink`, `font-display`, `rounded-card` resolve to the
+   single source of truth in tokens.css.
+   ---------------------------------------------------------------------------- */
+@theme inline {
+  --color-white: var(--white);
+  --color-brand: var(--brand);
+  --color-brand-hover: var(--brand-hover);
+  --color-brand-contrast: var(--brand-contrast);
+
+  --color-blue-50: var(--blue-50);
+  --color-blue-100: var(--blue-100);
+  --color-blue-200: var(--blue-200);
+  --color-blue-300: var(--blue-300);
+  --color-blue-400: var(--blue-400);
+  --color-blue-500: var(--blue-500);
+  --color-blue-600: var(--blue-600);
+  --color-blue-700: var(--blue-700);
+  --color-blue-800: var(--blue-800);
+  --color-blue-900: var(--blue-900);
+
+  --color-bg: var(--bg);
+  --color-bg-tint: var(--bg-tint);
+  --color-bg-invert: var(--bg-invert);
+  --color-ink: var(--text);
+  --color-heading: var(--text-heading);
+  --color-muted: var(--text-muted);
+  --color-line: var(--border);
+  --color-line-strong: var(--border-strong);
+
+  --color-status-success: var(--status-success);
+  --color-status-caution: var(--status-caution);
+  --color-status-error: var(--status-error);
+
+  --font-display: var(--font-display);
+  --font-body: var(--font-body);
+
+  --radius-sm: var(--radius-sm);
+  --radius-card: var(--radius);
+  --radius-pill: var(--radius-pill);
+
+  --spacing-section: var(--section-y);
+  --container-content: var(--content-max);
+}
+
+/* ---- Base element styles --------------------------------------------------- */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    color: var(--text-heading);
+    line-height: var(--lh-tight);
+    text-wrap: balance;
+  }
+
+  h1 { font-size: var(--fs-h1); letter-spacing: -0.015em; }
+  h2 { font-size: var(--fs-h2); letter-spacing: -0.01em; }
+  h3 { font-size: var(--fs-h3); }
+
+  a { color: var(--brand); text-underline-offset: 0.15em; }
+  a:hover { color: var(--brand-hover); }
+
+  p { text-wrap: pretty; }
+
+  /* Visible keyboard focus everywhere (WCAG). */
+  :focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+  }
+
+  ::selection {
+    background: var(--blue-100);
+    color: var(--blue-900);
+  }
+}
+
+@layer base {
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* ---- Small composable utilities not worth a component --------------------- */
+@utility container-page {
+  width: 100%;
+  max-width: var(--content-max);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+/* Subtle technical dot-grid — a "planning surface" backdrop, blue on white. */
+@utility grid-surface {
+  background-color: var(--white);
+  background-image: radial-gradient(
+    rgba(47, 70, 120, 0.09) 1px,
+    transparent 1px
+  );
+  background-size: 22px 22px;
+}
+
+/* Fine blueprint grid — technical planning-surface feel, blue lines on white. */
+@utility blueprint {
+  background-color: var(--white);
+  background-image:
+    linear-gradient(rgba(47, 70, 120, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(47, 70, 120, 0.06) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+/* Brand-blue cohesion overlay for (often dark) 3D viewports: a subtle navy
+   wash at top + seat at bottom so real renders read as one blue-white system,
+   not random dark blocks. Place as an absolutely-positioned sibling over an
+   image; never so strong it hides clinical detail. */
+@utility panel-cohere {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(to top, rgba(32, 47, 79, 0.42) 0%, transparent 34%),
+    linear-gradient(to bottom, rgba(47, 70, 120, 0.16) 0%, transparent 26%);
+  mix-blend-mode: multiply;
+}
+
+/* Tinted separator surface: pale-blue field + a very faint blueprint grid so
+   the light separators feel technical rather than flatly white. */
+@utility surface-tint {
+  background-color: var(--bg-tint);
+  background-image:
+    linear-gradient(rgba(47, 70, 120, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(47, 70, 120, 0.04) 1px, transparent 1px);
+  background-size: 30px 30px;
+}
+
+/* Short brand-blue accent rule placed above/left of a heading. */
+@utility tech-rule {
+  display: inline-block;
+  width: 40px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--brand);
+}
+
+/* Soft blue-white wash used behind hero / feature visuals. */
+@utility wash-blue {
+  background:
+    radial-gradient(120% 90% at 85% 10%, rgba(47, 70, 120, 0.10), transparent 60%),
+    radial-gradient(90% 80% at 10% 90%, rgba(47, 70, 120, 0.06), transparent 55%),
+    var(--white);
+}
+
+/* Framed media surface: rounded, hairline ring, soft float shadow, clipped. */
+@utility media-frame {
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  box-shadow: var(--shadow-float), var(--ring-hairline);
+  background: var(--white);
+}
+
+/* Accessible visually-hidden helper for skip links / labels. */
+@utility sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

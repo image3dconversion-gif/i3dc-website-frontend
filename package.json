@@ -1,0 +1,28 @@
+{
+  "name": "i3dc-website-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Image3DConversion public marketing website. Explains the guided-implant digital workflow and links to the authenticated Case Portal. Does NOT implement clinical upload, patient data, or portal operations.",
+  "scripts": {
+    "dev": "next dev -p 3001",
+    "build": "next build",
+    "start": "next start -p 3001",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "next": "^15.5.22",
+    "react": "19.1.1",
+    "react-dom": "19.1.1",
+    "sharp": "^0.35.3"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.11",
+    "@types/node": "^22.15.0",
+    "@types/react": "^19.1.9",
+    "@types/react-dom": "^19.1.7",
+    "puppeteer-core": "^25.4.0",
+    "tailwindcss": "^4.1.11",
+    "typescript": "^5.8.3"
+  }
+}

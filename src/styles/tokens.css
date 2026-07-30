@@ -1,0 +1,92 @@
+/* =============================================================================
+   Image3DConversion — Design Tokens (single source of truth)
+   -----------------------------------------------------------------------------
+   Founder-approved two-colour system: ONE master blue + white. White leads.
+   Every blue value below is DERIVED from the single master blue — there is no
+   decorative third accent (no lime, cyan, gold, purple).
+
+   Master blue = #2F4678, sampled from the approved master logo
+   (assets-source/08-logos-certificates/logo 1.png). This REPLACES the
+   provisional #2E74B5 in the source docs. Confirm against the original vector
+   asset before final UI sign-off. See docs/handoff/IMAGE_ASSET_AUDIT.md §7.
+   ============================================================================= */
+
+:root {
+  /* ---- Master blue + derived tint/shade scale ---------------------------- */
+  --blue-50: #eef1f7;   /* palest field — section separation, quiet fills   */
+  --blue-100: #dbe2ef;  /* evidence cards, hairline fills                    */
+  --blue-200: #b7c5df;  /* borders on tinted surfaces                        */
+  --blue-300: #8ea3c9;  /* muted iconography, disabled-on-tint               */
+  --blue-400: #6480ae;  /* secondary linework                                */
+  --blue-500: #43608f;  /* hover on brand text                               */
+  --blue-600: #2f4678;  /* ★ MASTER BRAND BLUE — CTAs, links, active state  */
+  --blue-700: #283c66;  /* button hover / pressed                            */
+  --blue-800: #202f4f;  /* headings on white                                 */
+  --blue-900: #16213a;  /* deep ink — body text (AA/AAA on white)            */
+
+  --white: #ffffff;
+
+  /* ---- Semantic surface + text tokens ------------------------------------ */
+  --brand: var(--blue-600);
+  --brand-hover: var(--blue-700);
+  --brand-contrast: var(--white);       /* text on brand-blue fills          */
+
+  --bg: var(--white);                   /* dominant page background          */
+  --bg-tint: var(--blue-50);            /* very light section separation     */
+  --bg-invert: var(--blue-800);         /* the single controlled blue band   */
+
+  --text: var(--blue-900);              /* body copy                         */
+  --text-heading: var(--blue-800);      /* display / headings                */
+  --text-muted: #4b5772;                /* captions, meta (derived slate)    */
+  --text-on-invert: #e8edf6;            /* body on the blue band             */
+  --text-on-invert-muted: #aebbd6;
+
+  --border: #e3e8f1;                    /* default hairline on white         */
+  --border-strong: var(--blue-200);
+  --focus-ring: var(--blue-500);
+
+  /* ---- Functional status colours — CASE PORTAL SEMANTICS ONLY ------------
+     These MUST NOT be used decoratively on the public website. They exist as
+     tokens only so the portal shares one system. Green/amber/red communicate
+     success, caution and error — never campaign or brand colour. ---------- */
+  --status-success: #1f8a4c;
+  --status-caution: #b26a00;
+  --status-error: #c0392b;
+
+  /* ---- Radius — compact, radius ≤ 8px, no nested cards -------------------- */
+  --radius-sm: 4px;
+  --radius: 8px;    /* maximum — cards, buttons, inputs                       */
+  --radius-pill: 999px;
+
+  /* ---- Typography families ------------------------------------------------
+     Display: Bricolage Grotesque 600 · Body/UI: Lato 400/700
+     (Homepage Content & Design Psychology v1.2 §6). The --font-* variables
+     are injected by next/font in layout.tsx; fallbacks kept for no-network. */
+  --font-display: var(--font-bricolage), "Bricolage Grotesque", Georgia, serif;
+  --font-body: var(--font-lato), "Lato", system-ui, -apple-system, "Segoe UI",
+    Roboto, Helvetica, Arial, sans-serif;
+
+  /* ---- Type scale (desktop / mobile handled in components) --------------- */
+  --fs-h1: clamp(2.375rem, 1.6rem + 3.2vw, 4rem);   /* 38 → 64px             */
+  --fs-h2: clamp(1.75rem, 1.3rem + 1.9vw, 2.5rem);  /* 28 → 40px             */
+  --fs-h3: clamp(1.25rem, 1.05rem + 0.8vw, 1.5rem); /* 20 → 24px             */
+  --fs-body: 1.125rem;                              /* 18px desktop          */
+  --lh-tight: 1.15;
+  --lh-body: 1.6;
+
+  /* ---- Layout rhythm ----------------------------------------------------- */
+  --content-max: 1280px;
+  --content-narrow: 760px;
+  --gutter: 1.25rem;
+  --section-y: clamp(3.5rem, 2rem + 6vw, 7rem);     /* 56 → 112px            */
+
+  /* ---- Elevation — soft, blue-tinted; clinical depth, not glossy --------- */
+  --shadow-sm: 0 1px 2px rgba(22, 33, 58, 0.06);
+  --shadow: 0 6px 24px -12px rgba(22, 33, 58, 0.18);
+  /* Floating panels / cards — layered depth for the "planning surface" look. */
+  --shadow-float: 0 2px 6px rgba(22, 33, 58, 0.06),
+    0 18px 40px -20px rgba(47, 70, 120, 0.28);
+  --shadow-lift: 0 4px 10px rgba(22, 33, 58, 0.08),
+    0 30px 60px -24px rgba(47, 70, 120, 0.32);
+  --ring-hairline: inset 0 0 0 1px rgba(47, 70, 120, 0.08);
+}
