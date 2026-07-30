@@ -49,8 +49,13 @@ export default function HomePage() {
           {home.steps.items.map((step, i) => (
             <li
               key={step.title}
-              className="rounded-[var(--radius-card)] border border-line bg-white p-5 shadow-[var(--shadow-sm)]"
+              className="reveal-up rounded-[var(--radius-card)] border border-line bg-white p-5 shadow-[var(--shadow-sm)] transition-shadow duration-200 hover:shadow-[var(--shadow-float)]"
+              style={{ animationDelay: `${i * 70}ms` }}
             >
+              <span
+                aria-hidden
+                className="mb-3 block h-1 w-8 rounded-full bg-brand/70"
+              />
               <span className="font-display text-3xl font-semibold text-brand">
                 {String(i + 1).padStart(2, "0")}
               </span>

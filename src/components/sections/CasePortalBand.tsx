@@ -1,6 +1,7 @@
 import { Section } from "@/components/ui/Section";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { ButtonLink } from "@/components/ui/Button";
+import { DeviceFrame } from "@/components/ui/DeviceFrame";
 import { cta } from "@/content/cta-routes";
 import { home } from "@/content/pages/home";
 
@@ -30,41 +31,45 @@ export function CasePortalBand() {
             </div>
           </div>
 
-          {/* Right: the "separate system" surface */}
-          <div className="grid-surface border-t border-line p-8 sm:p-10 lg:border-l lg:border-t-0">
-            <p className="text-xs font-bold uppercase tracking-wider text-muted">
-              Case Portal
-            </p>
-            <ul className="mt-4 space-y-2">
-              {p.threeQuestions.map((q) => (
-                <li
-                  key={q}
-                  className="flex items-center gap-3 rounded-[var(--radius-card)] border border-line bg-white px-4 py-3 text-sm font-semibold text-heading shadow-[var(--shadow-sm)]"
-                >
-                  <span aria-hidden className="text-brand">▸</span>
-                  {q}
-                </li>
-              ))}
-            </ul>
+          {/* Right: the "separate system" surface, framed as the portal window */}
+          <div className="flex items-center border-t border-line bg-blue-50/50 p-6 sm:p-8 lg:border-l lg:border-t-0">
+            <DeviceFrame label="Case Portal · illustrative" badge="Sample data" className="w-full">
+              <div className="grid-surface p-5 sm:p-6">
+                <p className="text-xs font-semibold uppercase tracking-wider text-muted">
+                  What you always know
+                </p>
+                <ul className="mt-3 space-y-2">
+                  {p.threeQuestions.map((q) => (
+                    <li
+                      key={q}
+                      className="flex items-center gap-3 rounded-[var(--radius-card)] border border-line bg-white px-4 py-3 text-sm font-semibold text-heading shadow-[var(--shadow-sm)]"
+                    >
+                      <span aria-hidden className="text-brand">▸</span>
+                      {q}
+                    </li>
+                  ))}
+                </ul>
 
-            <p className="mt-6 text-xs font-semibold uppercase tracking-wider text-muted">
-              Case status track
-            </p>
-            <div className="mt-3 flex flex-wrap gap-2">
-              {p.statuses.map((s, i) => (
-                <span
-                  key={s}
-                  className={
-                    "rounded-pill border px-3 py-1 text-xs font-semibold " +
-                    (i === 3
-                      ? "border-brand bg-brand text-white"
-                      : "border-line bg-white text-muted")
-                  }
-                >
-                  {s}
-                </span>
-              ))}
-            </div>
+                <p className="mt-6 text-xs font-semibold uppercase tracking-wider text-muted">
+                  Case status track
+                </p>
+                <ol className="mt-3 flex flex-wrap gap-2">
+                  {p.statuses.map((s, i) => (
+                    <li
+                      key={s}
+                      className={
+                        "rounded-pill border px-3 py-1 text-xs font-semibold " +
+                        (i === 3
+                          ? "border-brand bg-brand text-white"
+                          : "border-line bg-white text-muted")
+                      }
+                    >
+                      {s}
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            </DeviceFrame>
           </div>
         </div>
       </div>
