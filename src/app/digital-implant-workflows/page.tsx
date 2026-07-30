@@ -3,7 +3,8 @@ import { Section } from "@/components/ui/Section";
 import { ButtonLink } from "@/components/ui/Button";
 import { PageHero } from "@/components/sections/PageHero";
 import { WorkflowCards } from "@/components/sections/WorkflowCards";
-import { RouteCards } from "@/components/sections/RouteCards";
+import { ServiceGrid } from "@/components/sections/ServiceGrid";
+import { ImageOrSlot } from "@/components/ui/ImageOrSlot";
 import { home } from "@/content/pages/home";
 import { cta } from "@/content/cta-routes";
 import { img } from "@/content/images";
@@ -16,11 +17,11 @@ export const metadata: Metadata = {
   alternates: { canonical: "/digital-implant-workflows/" },
 };
 
-const waysToWork = [
-  { title: "Case Data & Diagnostic Preparation", body: "DICOM-to-STL, CBCT segmentation and scan alignment before planning begins.", linkLabel: "Prepare case data", href: "/case-data-preparation/" },
-  { title: "Design-Only Workflow", body: "Reviewed, ready-to-print files for your own validated production workflow.", linkLabel: "Review design-only", href: "/design-only-workflow/" },
-  { title: "Design-to-Delivery Workflow", body: "One coordinated path from case data to surgery-ready delivery.", linkLabel: "Review design-to-delivery", href: "/design-to-delivery/" },
-  { title: "White-Label Workflow Partnership", body: "Planning and design capacity behind your lab, DSO or practice network.", linkLabel: "Explore partnership", href: "/white-label-workflow-partner/" },
+const waysToWorkSlugs = [
+  "case-data-preparation",
+  "design-only-workflow",
+  "design-to-delivery",
+  "white-label-workflow-partner",
 ];
 
 export default function ServicesPage() {
@@ -52,16 +53,25 @@ export default function ServicesPage() {
       </Section>
 
       <Section tone="tint" aria-labelledby="ways-h">
-        <div className="max-w-2xl">
-          <h2 id="ways-h">Ways to work with us</h2>
-          <p className="mt-4 text-ink">
-            Choose how much support your practice needs — from data preparation to files you
-            produce locally, coordinated delivery, or workflow capacity behind your brand.
-          </p>
+        <div className="grid gap-10 lg:grid-cols-[3fr_2fr] lg:items-center">
+          <div className="max-w-2xl">
+            <h2 id="ways-h">Ways to work with us</h2>
+            <p className="mt-4 text-ink">
+              Choose how much support your practice needs — from data preparation to files you
+              produce locally, coordinated delivery, or workflow capacity behind your brand. Each
+              badge shows the engagement models a service supports.
+            </p>
+          </div>
+          <ImageOrSlot
+            image={null}
+            alt="De-identified digital dentistry production environment — 3D printer, quality-assurance bench and packaged surgical guides."
+            slot="P1-4 · de-identified lab & production (printer, QA bench, packaging)"
+            label="Production & delivery"
+            ratio="16/10"
+            sizes="(max-width: 1024px) 100vw, 460px"
+          />
         </div>
-        <div className="mt-8">
-          <RouteCards cards={waysToWork} columns={4} />
-        </div>
+        <ServiceGrid className="mt-10" slugs={waysToWorkSlugs} columns={4} />
       </Section>
 
       <Section aria-labelledby="svc-cta-h" width="narrow" className="text-center">
