@@ -33,12 +33,14 @@ Each becomes one CMS collection later; each already maps to a `src/content` modu
 
 ---
 
-## 3. What this pass adds (code, additive & non-breaking)
-1. **`src/content/services.ts`** — a normalised **service data model** (`Service` type: slug, name, summary, audience, engagement, primary CTA, hero image key, related workflow slugs). Derives from existing `workflows.ts`/`home.ts` content; does not replace them yet. Gives a CMS a single `service` collection to target.
-2. **`src/content/image-meta.ts`** — the **governance metadata layer** over `images.ts` keys, expressing the `NEXT_PHASE_IMAGE_BRIEF.md §4` schema + the publish-gate state machine as a typed record. `images.ts` (the render contract) stays unchanged; `image-meta.ts` annotates it.
-3. **Section-model convention (documented here)** — page content is authored as an array of typed section objects (`{ type, ... }`) so a CMS can render a page from a section list. `home.ts` is refactored toward this shape incrementally, keeping the existing object API working.
+## 3. What this pass adds (code, additive & non-breaking) — DELIVERED
+1. **`src/content/services.ts`** ✅ — a normalised **service data model** (`Service`: slug, name, summary, audience, engagement, primary CTA, image key, related slugs). Now also drives the Services page "ways to work" grid (`sections/ServiceGrid`).
+2. **`src/content/image-meta.ts`** ✅ — the **governance metadata layer** over `images.ts` keys: the `NEXT_PHASE_IMAGE_BRIEF.md §4` schema + a publish-gate state machine (`publishBlockers`/`canPublish`). `images.ts` (the render contract) is unchanged.
+3. **`src/content/sections.ts`** ✅ — the **section model**: the typed `SectionType` vocabulary + a `sectionRegistry` (label, usesImages, component) a CMS `section` collection maps to.
+4. **`src/content/pages.ts`** ✅ — the **page registry**: each composed page's route, SEO metadata and ordered `sections[]`; the 10 workflow/support pages share `workflowTemplateSections` (generated via the `WorkflowPage` template).
+5. **`src/content/disclaimers.ts`** ✅ — the **caption/disclaimer system**: standard governance disclaimers, image captions and `placeholderRules` in one typed, reviewable place.
 
-All three are **additive**: existing imports keep working; nothing is forced to migrate in one step.
+All are **additive**: existing imports keep working; nothing is forced to migrate in one step. Components can adopt `sections.ts`/`pages.ts`/`disclaimers.ts` incrementally.
 
 ---
 
