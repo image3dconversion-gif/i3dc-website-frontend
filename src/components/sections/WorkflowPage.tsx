@@ -1,5 +1,7 @@
 import { Section } from "@/components/ui/Section";
 import { ButtonLink } from "@/components/ui/Button";
+import { IconList } from "@/components/ui/IconList";
+import { StickySubnav, type SubnavItem } from "@/components/ui/StickySubnav";
 import { PageHero } from "@/components/sections/PageHero";
 import { Accordion, type QA } from "@/components/ui/Accordion";
 import { cta } from "@/content/cta-routes";
@@ -48,6 +50,16 @@ export function WorkflowPage({ c }: { c: WorkflowContent }) {
     ? { label: cta.startCase.label, href: cta.startCase.href, external: true }
     : { label: cta.discussCase.label, href: cta.discussCase.href };
 
+  // In-page section nav — only the sections this page actually renders.
+  const subnav: SubnavItem[] = [
+    c.intro && { id: "overview", label: "Overview" },
+    c.sequence && { id: "sequence", label: "Sequence" },
+    c.lists && c.lists.length > 0 && { id: "details", label: "Details" },
+    c.commonErrors && c.commonErrors.length > 0 && { id: "watch-outs", label: "Watch-outs" },
+    c.faq && c.faq.length > 0 && { id: "faq", label: "FAQ" },
+    c.discussFirst && { id: "discuss", label: "Discuss first" },
+  ].filter((x): x is SubnavItem => Boolean(x));
+
   return (
     <>
       <PageHero
@@ -61,8 +73,10 @@ export function WorkflowPage({ c }: { c: WorkflowContent }) {
         imageLabel={c.imageLabel}
       />
 
+      <StickySubnav items={subnav} />
+
       {c.intro && (
-        <Section aria-labelledby="wp-intro">
+        <Section aria-labelledby="wp-intro" id="overview" className="scroll-mt-28">
           <span aria-hidden className="tech-rule mb-4 block" />
           <div className="max-w-3xl">
             <h2 id="wp-intro">{c.intro.h2}</h2>
@@ -72,7 +86,7 @@ export function WorkflowPage({ c }: { c: WorkflowContent }) {
       )}
 
       {c.sequence && (
-        <Section tone="tint" aria-labelledby="wp-seq">
+        <Section tone="tint" aria-labelledby="wp-seq" id="sequence" className="scroll-mt-28">
           <h2 id="wp-seq">{c.sequence.h2}</h2>
           {c.sequence.body && <p className="mt-4 max-w-2xl text-ink">{c.sequence.body}</p>}
           <ol className="mt-8 flex flex-wrap gap-3">
@@ -87,20 +101,13 @@ export function WorkflowPage({ c }: { c: WorkflowContent }) {
       )}
 
       {c.lists && c.lists.length > 0 && (
-        <Section aria-labelledby="wp-detail">
+        <Section aria-labelledby="wp-detail" id="details" className="scroll-mt-28">
           <h2 id="wp-detail" className="sr-only">Workflow detail</h2>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {c.lists.map((l) => (
               <div key={l.title} className="rounded-[var(--radius-card)] border border-line bg-white p-6 shadow-[var(--shadow-sm)]">
                 <h3 className="text-base">{l.title}</h3>
-                <ul className="mt-3 space-y-2">
-                  {l.items.map((it) => (
-                    <li key={it} className="flex items-start gap-2 text-sm text-ink">
-                      <span aria-hidden className="mt-0.5 font-bold text-brand">▪</span>
-                      {it}
-                    </li>
-                  ))}
-                </ul>
+                <IconList className="mt-3" items={l.items} variant="check" />
               </div>
             ))}
           </div>
@@ -108,7 +115,7 @@ export function WorkflowPage({ c }: { c: WorkflowContent }) {
       )}
 
       {c.commonErrors && c.commonErrors.length > 0 && (
-        <Section tone="tint" aria-labelledby="wp-errors">
+        <Section tone="tint" aria-labelledby="wp-errors" id="watch-outs" className="scroll-mt-28">
           <div className="max-w-2xl">
             <span aria-hidden className="tech-rule mb-4 block" />
             <h2 id="wp-errors">Where cases commonly stall</h2>
@@ -117,14 +124,13 @@ export function WorkflowPage({ c }: { c: WorkflowContent }) {
               or come back for avoidable rework.
             </p>
           </div>
-          <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {c.commonErrors.map((e) => (
-              <li key={e} className="flex items-start gap-3 rounded-[var(--radius-card)] border border-line bg-white px-4 py-3 text-sm text-ink shadow-[var(--shadow-sm)]">
-                <span aria-hidden className="mt-0.5 font-bold text-brand">!</span>
-                {e}
-              </li>
-            ))}
-          </ul>
+          <IconList
+            className="mt-8"
+            items={c.commonErrors}
+            variant="alert"
+            as="cards"
+            columns={3}
+          />
         </Section>
       )}
 
@@ -142,7 +148,7 @@ export function WorkflowPage({ c }: { c: WorkflowContent }) {
       )}
 
       {c.faq && c.faq.length > 0 && (
-        <Section aria-labelledby="wp-faq" width="narrow">
+        <Section aria-labelledby="wp-faq" width="narrow" id="faq" className="scroll-mt-28">
           <h2 id="wp-faq">Common questions</h2>
           <div className="mt-6">
             <Accordion items={c.faq} />
@@ -151,7 +157,7 @@ export function WorkflowPage({ c }: { c: WorkflowContent }) {
       )}
 
       {c.discussFirst && (
-        <Section aria-labelledby="wp-discuss" width="narrow">
+        <Section aria-labelledby="wp-discuss" width="narrow" id="discuss" className="scroll-mt-28">
           <div className="rounded-[var(--radius-card)] border border-line border-l-4 border-l-brand bg-white p-6 shadow-[var(--shadow-sm)]">
             <h2 id="wp-discuss" className="text-lg">Discuss the case first if…</h2>
             <p className="mt-2 text-sm text-ink">{c.discussFirst}</p>
