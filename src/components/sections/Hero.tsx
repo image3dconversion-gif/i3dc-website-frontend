@@ -20,7 +20,9 @@ export function Hero() {
       <Container className="grid items-center gap-12 py-16 md:py-24 lg:grid-cols-[43fr_57fr]">
         <div>
           <Eyebrow>{hero.eyebrow}</Eyebrow>
-          <h1>{hero.h1}</h1>
+          <h1 className="text-[length:var(--fs-hero)] font-bold leading-[1.03] tracking-[-0.02em]">
+            {hero.h1}
+          </h1>
           <p className="mt-5 max-w-xl text-lg text-ink">{hero.body}</p>
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">

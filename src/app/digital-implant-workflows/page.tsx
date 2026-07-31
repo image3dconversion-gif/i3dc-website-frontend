@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { Section } from "@/components/ui/Section";
-import { ButtonLink } from "@/components/ui/Button";
 import { PageHero } from "@/components/sections/PageHero";
 import { WorkflowCards } from "@/components/sections/WorkflowCards";
 import { ServiceGrid } from "@/components/sections/ServiceGrid";
+import { CtaBand } from "@/components/sections/CtaBand";
 import { ImageOrSlot } from "@/components/ui/ImageOrSlot";
 import { home } from "@/content/pages/home";
 import { cta } from "@/content/cta-routes";
@@ -74,17 +74,12 @@ export default function ServicesPage() {
         <ServiceGrid className="mt-10" slugs={waysToWorkSlugs} columns={4} />
       </Section>
 
-      <Section aria-labelledby="svc-cta-h" width="narrow" className="text-center">
-        <h2 id="svc-cta-h">Not sure which workflow fits?</h2>
-        <p className="mx-auto mt-4 max-w-xl text-ink">
-          Share your case type, production need and region. We’ll help you choose the right path
-          before clinical records are submitted.
-        </p>
-        <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-          <ButtonLink href={cta.discussCase.href}>{cta.discussCase.label}</ButtonLink>
-          <ButtonLink href="/how-it-works/" variant="secondary">See how it works</ButtonLink>
-        </div>
-      </Section>
+      <CtaBand
+        heading="Not sure which workflow fits?"
+        body="Share your case type, production need and region. We’ll help you choose the right path before clinical records are submitted."
+        primary={{ label: cta.discussCase.label, href: cta.discussCase.href }}
+        secondary={{ label: "See how it works", href: "/how-it-works/" }}
+      />
     </>
   );
 }

@@ -1,8 +1,8 @@
 import { Section } from "@/components/ui/Section";
-import { ButtonLink } from "@/components/ui/Button";
 import { IconList } from "@/components/ui/IconList";
 import { StickySubnav, type SubnavItem } from "@/components/ui/StickySubnav";
 import { PageHero } from "@/components/sections/PageHero";
+import { CtaBand } from "@/components/sections/CtaBand";
 import { Accordion, type QA } from "@/components/ui/Accordion";
 import { cta } from "@/content/cta-routes";
 import type { Img } from "@/content/images";
@@ -169,22 +169,16 @@ export function WorkflowPage({ c }: { c: WorkflowContent }) {
         </Section>
       )}
 
-      <Section aria-labelledby="wp-cta" width="narrow" className="text-center">
-        <h2 id="wp-cta">{c.ctaHeading ?? "Ready to move this case forward?"}</h2>
-        <p className="mx-auto mt-4 max-w-xl text-ink">
-          {c.ctaBody ??
-            "Start the case when your records and scope are clear, or discuss the workflow first if it is still being defined."}
-        </p>
-        <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-          <ButtonLink href={c.primary.href} external={c.primary.external}>{c.primary.label}</ButtonLink>
-          <ButtonLink href={secondary.href} variant="secondary" external={secondary.external}>{secondary.label}</ButtonLink>
-        </div>
-        <p className="mt-5 text-sm">
-          <a href={cta.openPortal.href} target="_blank" rel="noopener noreferrer" className="font-semibold">
-            {cta.openPortal.label}
-          </a>
-        </p>
-      </Section>
+      <CtaBand
+        heading={c.ctaHeading ?? "Ready to move this case forward?"}
+        body={
+          c.ctaBody ??
+          "Start the case when your records and scope are clear, or discuss the workflow first if it is still being defined."
+        }
+        primary={{ label: c.primary.label, href: c.primary.href, external: c.primary.external }}
+        secondary={{ label: secondary.label, href: secondary.href, external: secondary.external }}
+        showPortalLink
+      />
     </>
   );
 }

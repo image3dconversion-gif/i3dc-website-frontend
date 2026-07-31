@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 
-type Variant = "primary" | "secondary" | "utility";
+type Variant = "primary" | "secondary" | "utility" | "inverse" | "inverseOutline";
 
 interface ButtonLinkProps {
   href: string;
@@ -30,6 +30,10 @@ const variants: Record<Variant, string> = {
     "border border-line-strong text-brand bg-white hover:border-brand hover:text-brand-hover",
   utility:
     "min-h-0 px-0 font-normal text-brand underline underline-offset-4 hover:text-brand-hover",
+  // For use on the navy band: solid white fill / navy text, and a light outline.
+  inverse: "bg-white text-brand hover:bg-blue-50",
+  inverseOutline:
+    "border border-white/50 bg-transparent text-white hover:border-white hover:bg-white/10",
 };
 
 export function ButtonLink({

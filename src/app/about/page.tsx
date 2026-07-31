@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { Section } from "@/components/ui/Section";
-import { ButtonLink } from "@/components/ui/Button";
 import { PageHero } from "@/components/sections/PageHero";
 import { PlanningPanel } from "@/components/ui/PlanningPanel";
 import { RoleTrust } from "@/components/sections/RoleTrust";
 import { FeatureGrid } from "@/components/ui/FeatureGrid";
+import { CtaBand } from "@/components/sections/CtaBand";
 import { cta } from "@/content/cta-routes";
 import { img } from "@/content/images";
 import { positioning } from "@/content/site";
@@ -115,18 +115,12 @@ export default function AboutPage() {
         />
       </Section>
 
-      <Section aria-labelledby="about-cta-h" width="narrow" className="text-center">
-        <h2 id="about-cta-h">Work with a team built around guided implant workflow clarity.</h2>
-        <p className="mx-auto mt-4 max-w-xl text-ink">
-          Whether you are a dental practice, global partner, lab, implant company or training
-          ecosystem, we can help you define the right digital implant workflow route before case
-          execution begins.
-        </p>
-        <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-          <ButtonLink href="/discuss-a-case/">Work With Us</ButtonLink>
-          <ButtonLink href="/global-practices/" variant="secondary">Explore Global Practice Workflows</ButtonLink>
-        </div>
-      </Section>
+      <CtaBand
+        heading="Work with a team built around guided implant workflow clarity."
+        body="Whether you are a dental practice, global partner, lab, implant company or training ecosystem, we can help you define the right digital implant workflow route before case execution begins."
+        primary={{ label: "Work With Us", href: "/discuss-a-case/" }}
+        secondary={{ label: "Explore Global Practice Workflows", href: "/global-practices/" }}
+      />
     </>
   );
 }

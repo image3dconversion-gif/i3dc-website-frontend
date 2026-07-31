@@ -8,6 +8,7 @@ import { SmileSection } from "@/components/sections/SmileSection";
 import { WorkflowCards } from "@/components/sections/WorkflowCards";
 import { GuideWorkflow } from "@/components/sections/GuideWorkflow";
 import { CasePortalBand } from "@/components/sections/CasePortalBand";
+import { CtaBand } from "@/components/sections/CtaBand";
 import { IconList } from "@/components/ui/IconList";
 import { FeatureGrid } from "@/components/ui/FeatureGrid";
 import { cta } from "@/content/cta-routes";
@@ -43,7 +44,7 @@ export default function HomePage() {
       <GuideWorkflow />
 
       {/* 5 — Five visible steps */}
-      <Section aria-labelledby="steps-h">
+      <Section tone="tint" aria-labelledby="steps-h">
         <span aria-hidden className="tech-rule mb-4 block" />
         <h2 id="steps-h">{home.steps.h2}</h2>
         <ol className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
@@ -76,7 +77,7 @@ export default function HomePage() {
       </Section>
 
       {/* 6 — Support modes */}
-      <Section tone="tint" aria-labelledby="support-h">
+      <Section aria-labelledby="support-h">
         <h2 id="support-h">{home.support.h2}</h2>
         <FeatureGrid
           className="mt-8"
@@ -97,7 +98,7 @@ export default function HomePage() {
       </Section>
 
       {/* 7 — Global practice fit */}
-      <Section aria-labelledby="global-h">
+      <Section tone="tint" aria-labelledby="global-h">
         <div className="max-w-2xl">
           <span aria-hidden className="tech-rule mb-4 block" />
           <h2 id="global-h">{home.global.h2}</h2>
@@ -189,7 +190,7 @@ export default function HomePage() {
           <h2 id="trust-h">{home.trust.h2}</h2>
           <p className="mt-4 text-ink">{home.trust.body}</p>
         </div>
-        <FeatureGrid className="mt-8" columns={3} items={home.trust.points} />
+        <FeatureGrid className="mt-8" columns={3} accent items={home.trust.points} />
         <p className="mt-8">
           <ButtonLink href="/about/" variant="secondary">
             About Image3DConversion
@@ -201,7 +202,7 @@ export default function HomePage() {
       <CasePortalBand />
 
       {/* 11 — Preparation (Section 9 evidence is gated; omitted in Release 1) */}
-      <Section tone="tint" aria-labelledby="req-h">
+      <Section aria-labelledby="req-h">
         <div className="grid items-start gap-10 lg:grid-cols-2">
           <div>
             <h2 id="req-h">{home.requirements.h2}</h2>
@@ -226,24 +227,14 @@ export default function HomePage() {
         </div>
       </Section>
 
-      {/* 12 — Final action */}
-      <Section aria-labelledby="final-h" width="narrow" className="text-center">
-        <h2 id="final-h">{home.finalAction.h2}</h2>
-        <p className="mx-auto mt-4 max-w-xl text-ink">{home.finalAction.body}</p>
-        <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-          <ButtonLink href={cta.startCase.href} external={cta.startCase.external}>
-            {cta.startCase.label}
-          </ButtonLink>
-          <ButtonLink href={cta.discussCase.href} variant="secondary">
-            {cta.discussCase.label}
-          </ButtonLink>
-        </div>
-        <p className="mt-5 text-sm">
-          <a href={cta.openPortal.href} target="_blank" rel="noopener noreferrer" className="font-semibold">
-            {cta.openPortal.label}
-          </a>
-        </p>
-      </Section>
+      {/* 12 — Final action (navy CTA band) */}
+      <CtaBand
+        heading={home.finalAction.h2}
+        body={home.finalAction.body}
+        primary={{ label: cta.startCase.label, href: cta.startCase.href, external: cta.startCase.external }}
+        secondary={{ label: cta.discussCase.label, href: cta.discussCase.href }}
+        showPortalLink
+      />
     </>
   );
 }

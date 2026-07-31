@@ -13,7 +13,7 @@ import { home } from "@/content/pages/home";
 export function CasePortalBand() {
   const p = home.casePortal;
   return (
-    <Section aria-labelledby="portal-h">
+    <Section tone="tint" aria-labelledby="portal-h">
       <div className="overflow-hidden rounded-[var(--radius-card)] border border-line-strong bg-white shadow-[var(--shadow-float)]">
         <div className="grid gap-0 lg:grid-cols-2">
           {/* Left: explanation */}

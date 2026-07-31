@@ -165,12 +165,16 @@
   background: var(--brand);
 }
 
-/* Soft blue-white wash used behind hero / feature visuals. */
+/* Brand-blue wash behind hero / feature visuals. Navy is a present atmosphere
+   here (not just a hint), while white stays the breathing space. A faint
+   blueprint grid adds clinical-tech texture; kept low-contrast so copy stays AA. */
 @utility wash-blue {
   background:
-    radial-gradient(120% 90% at 85% 10%, rgba(47, 70, 120, 0.10), transparent 60%),
-    radial-gradient(90% 80% at 10% 90%, rgba(47, 70, 120, 0.06), transparent 55%),
-    var(--white);
+    linear-gradient(rgba(47, 70, 120, 0.035) 1px, transparent 1px) 0 0 / 30px 30px,
+    linear-gradient(90deg, rgba(47, 70, 120, 0.035) 1px, transparent 1px) 0 0 / 30px 30px,
+    radial-gradient(120% 90% at 88% 6%, rgba(47, 70, 120, 0.16), transparent 58%),
+    radial-gradient(95% 85% at 6% 96%, rgba(47, 70, 120, 0.10), transparent 55%),
+    var(--bg-tint);
 }
 
 /* Framed media surface: rounded, hairline ring, soft float shadow, clipped. */

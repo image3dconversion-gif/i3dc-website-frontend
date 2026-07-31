@@ -3,6 +3,7 @@ import { Section } from "@/components/ui/Section";
 import { ButtonLink } from "@/components/ui/Button";
 import { PageHero } from "@/components/sections/PageHero";
 import { RouteCards } from "@/components/sections/RouteCards";
+import { CtaBand } from "@/components/sections/CtaBand";
 import { IconList } from "@/components/ui/IconList";
 import { cta } from "@/content/cta-routes";
 import { img } from "@/content/images";
@@ -119,17 +120,12 @@ export default function HowItWorksPage() {
         </div>
       </Section>
 
-      <Section aria-labelledby="hiw-cta-h" width="narrow" className="text-center">
-        <h2 id="hiw-cta-h">Know the workflow before the case begins.</h2>
-        <p className="mx-auto mt-4 max-w-xl text-ink">
-          Share your case type, practice context and the workflow you are considering. We can help
-          you choose the right path before clinical records are submitted.
-        </p>
-        <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-          <ButtonLink href={cta.discussCase.href}>{cta.discussCase.label}</ButtonLink>
-          <ButtonLink href={cta.openPortal.href} variant="secondary" external>{cta.openPortal.label}</ButtonLink>
-        </div>
-      </Section>
+      <CtaBand
+        heading="Know the workflow before the case begins."
+        body="Share your case type, practice context and the workflow you are considering. We can help you choose the right path before clinical records are submitted."
+        primary={{ label: cta.discussCase.label, href: cta.discussCase.href }}
+        secondary={{ label: cta.openPortal.label, href: cta.openPortal.href, external: true }}
+      />
     </>
   );
 }

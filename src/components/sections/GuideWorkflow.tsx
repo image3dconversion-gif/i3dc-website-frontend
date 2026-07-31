@@ -19,7 +19,7 @@ export function GuideWorkflow() {
   ];
 
   return (
-    <Section tone="tint" aria-labelledby="diff-h">
+    <Section aria-labelledby="diff-h">
       <div className="grid items-center gap-14 lg:grid-cols-2">
         <div>
           <h2 id="diff-h">{d.h2}</h2>

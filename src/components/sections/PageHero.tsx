@@ -47,7 +47,9 @@ export function PageHero({
       >
         <div>
           <Eyebrow>{eyebrow}</Eyebrow>
-          <h1>{h1}</h1>
+          <h1 className="text-[length:var(--fs-hero)] font-bold leading-[1.04] tracking-[-0.02em]">
+            {h1}
+          </h1>
           <p className="mt-5 max-w-xl text-lg text-ink">{body}</p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <ButtonLink href={primary.href} external={primary.external}>
