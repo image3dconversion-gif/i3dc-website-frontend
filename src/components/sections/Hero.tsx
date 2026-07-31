@@ -16,20 +16,25 @@ import { img } from "@/content/images";
 export function Hero() {
   const { hero } = home;
   return (
-    <section className="wash-blue border-b border-line">
-      <Container className="grid items-center gap-12 py-16 md:py-24 lg:grid-cols-[43fr_57fr]">
+    <section className="relative overflow-hidden border-b border-white/10 bg-bg-invert text-[var(--text-on-invert)]">
+      {/* light blueprint texture over the navy band, fading from the top-right */}
+      <div
+        aria-hidden
+        className="blueprint-invert pointer-events-none absolute inset-0 [mask-image:radial-gradient(130%_100%_at_82%_-5%,black,transparent_72%)]"
+      />
+      <Container className="relative grid items-center gap-12 py-16 md:py-24 lg:grid-cols-[43fr_57fr]">
         <div>
-          <Eyebrow>{hero.eyebrow}</Eyebrow>
-          <h1 className="text-[length:var(--fs-hero)] font-bold leading-[1.03] tracking-[-0.02em]">
+          <Eyebrow tone="invert">{hero.eyebrow}</Eyebrow>
+          <h1 className="text-[length:var(--fs-hero)] font-bold leading-[1.03] tracking-[-0.02em] text-white">
             {hero.h1}
           </h1>
-          <p className="mt-5 max-w-xl text-lg text-ink">{hero.body}</p>
+          <p className="mt-5 max-w-xl text-lg text-[var(--text-on-invert)]">{hero.body}</p>
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <ButtonLink href={cta.startCase.href} external={cta.startCase.external}>
+            <ButtonLink href={cta.startCase.href} external={cta.startCase.external} variant="inverse">
               {cta.startCase.label}
             </ButtonLink>
-            <ButtonLink href={cta.discussCase.href} variant="secondary">
+            <ButtonLink href={cta.discussCase.href} variant="inverseOutline">
               {cta.discussCase.label}
             </ButtonLink>
           </div>
@@ -39,29 +44,29 @@ export function Hero() {
               href={cta.openPortal.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="font-semibold"
+              className="font-semibold text-white underline underline-offset-4"
             >
               {hero.utility}
             </a>
           </p>
-          <p className="mt-6 text-xs text-muted">{hero.professionalNote}</p>
+          <p className="mt-6 text-xs text-[var(--text-on-invert-muted)]">{hero.professionalNote}</p>
         </div>
 
         {/* Layered visual on a blueprint planning-workspace surface */}
         <div className="relative">
-          {/* blueprint grid backdrop for a technical planning-surface feel */}
+          {/* light blueprint grid backdrop for a technical planning-surface feel */}
           <div
             aria-hidden
-            className="blueprint pointer-events-none absolute -inset-5 -z-10 rounded-[var(--radius-card)] border border-line [mask-image:radial-gradient(85%_85%_at_60%_45%,black,transparent)]"
+            className="blueprint-invert pointer-events-none absolute -inset-5 -z-10 rounded-[var(--radius-card)] border border-white/15 [mask-image:radial-gradient(85%_85%_at_60%_45%,black,transparent)]"
           />
-          {/* brand-blue technical corner brackets */}
+          {/* light technical corner brackets */}
           <span
             aria-hidden
-            className="absolute -left-2 -top-2 z-10 h-7 w-7 rounded-tl-[var(--radius-sm)] border-l-2 border-t-2 border-brand/50"
+            className="absolute -left-2 -top-2 z-10 h-7 w-7 rounded-tl-[var(--radius-sm)] border-l-2 border-t-2 border-white/40"
           />
           <span
             aria-hidden
-            className="absolute -bottom-2 -right-2 z-10 h-7 w-7 rounded-br-[var(--radius-sm)] border-b-2 border-r-2 border-brand/50"
+            className="absolute -bottom-2 -right-2 z-10 h-7 w-7 rounded-br-[var(--radius-sm)] border-b-2 border-r-2 border-white/40"
           />
           <PlanningPanel
             image={img.planRestorative}

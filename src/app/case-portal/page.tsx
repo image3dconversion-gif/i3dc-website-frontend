@@ -47,28 +47,34 @@ const routes = [
 export default function CasePortalPage() {
   return (
     <>
-      {/* Hero with the abstract portal illustration (not a real screenshot) */}
-      <section className="wash-blue border-b border-line">
-        <Container className="grid items-center gap-12 py-14 md:py-20 lg:grid-cols-[46fr_54fr]">
+      {/* Navy hero with the abstract portal illustration (not a real screenshot) */}
+      <section className="relative overflow-hidden border-b border-white/10 bg-bg-invert text-[var(--text-on-invert)]">
+        <div
+          aria-hidden
+          className="blueprint-invert pointer-events-none absolute inset-0 [mask-image:radial-gradient(130%_100%_at_82%_-5%,black,transparent_72%)]"
+        />
+        <Container className="relative grid items-center gap-12 py-14 md:py-20 lg:grid-cols-[46fr_54fr]">
           <div>
-            <Eyebrow>Image3DConversion Case Portal</Eyebrow>
-            <h1>Start, review and track your guided implant cases in one place.</h1>
-            <p className="mt-5 max-w-xl text-lg text-ink">
+            <Eyebrow tone="invert">Image3DConversion Case Portal</Eyebrow>
+            <h1 className="text-[length:var(--fs-hero)] font-bold leading-[1.04] tracking-[-0.02em] text-white">
+              Start, review and track your guided implant cases in one place.
+            </h1>
+            <p className="mt-5 max-w-xl text-lg text-[var(--text-on-invert)]">
               The Case Portal gives dental practices and authorised workflow partners a structured
               place to submit case requirements, follow progress, review planning outputs, request
               changes, approve the agreed route and access final deliverables.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <ButtonLink href={cta.openPortal.href} external>{cta.openPortal.label}</ButtonLink>
-              <ButtonLink href="/discuss-a-case/" variant="secondary">New practice? Discuss case setup</ButtonLink>
+              <ButtonLink href={cta.openPortal.href} external variant="inverse">{cta.openPortal.label}</ButtonLink>
+              <ButtonLink href="/discuss-a-case/" variant="inverseOutline">New practice? Discuss case setup</ButtonLink>
             </div>
-            <p className="mt-6 max-w-xl text-xs leading-relaxed text-muted">
+            <p className="mt-6 max-w-xl text-xs leading-relaxed text-[var(--text-on-invert-muted)]">
               Clinical diagnosis, treatment indication, patient consent, surgical execution and
               final approval remain with the treating clinician or responsible professional team.
             </p>
           </div>
           <div className="relative">
-            <div aria-hidden className="blueprint pointer-events-none absolute -inset-5 -z-10 rounded-[var(--radius-card)] border border-line [mask-image:radial-gradient(85%_85%_at_55%_45%,black,transparent)]" />
+            <div aria-hidden className="blueprint-invert pointer-events-none absolute -inset-5 -z-10 rounded-[var(--radius-card)] border border-white/15 [mask-image:radial-gradient(85%_85%_at_55%_45%,black,transparent)]" />
             <PortalMock />
           </div>
         </Container>

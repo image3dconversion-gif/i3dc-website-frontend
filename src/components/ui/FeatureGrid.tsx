@@ -39,7 +39,7 @@ export function FeatureGrid({
       {items.map((item, i) => (
         <li
           key={item.title}
-          className="reveal-up flex flex-col rounded-[var(--radius-card)] border border-line bg-white p-6 shadow-[var(--shadow-sm)] transition-[transform,box-shadow] duration-200 hover:-translate-y-0.5 hover:shadow-[var(--shadow-float)]"
+          className="reveal-up flex flex-col rounded-[var(--radius-card)] border border-line-strong bg-white p-6 shadow-[var(--shadow-sm)] transition-[transform,box-shadow] duration-200 hover:-translate-y-0.5 hover:border-brand hover:shadow-[var(--shadow-float)]"
           style={{ animationDelay: `${i * 60}ms` }}
         >
           {accent && (

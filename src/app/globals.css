@@ -132,6 +132,15 @@
   background-size: 28px 28px;
 }
 
+/* Blueprint grid for use ON the navy band — light lines on transparent, so the
+   navy hero/technology sections carry the same clinical-tech texture. */
+@utility blueprint-invert {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.055) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
 /* Brand-blue cohesion overlay for (often dark) 3D viewports: a subtle navy
    wash at top + seat at bottom so real renders read as one blue-white system,
    not random dark blocks. Place as an absolutely-positioned sibling over an
@@ -151,9 +160,10 @@
 @utility surface-tint {
   background-color: var(--bg-tint);
   background-image:
-    linear-gradient(rgba(47, 70, 120, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(47, 70, 120, 0.04) 1px, transparent 1px);
-  background-size: 30px 30px;
+    linear-gradient(rgba(47, 70, 120, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(47, 70, 120, 0.06) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(47, 70, 120, 0.035), rgba(47, 70, 120, 0.035));
+  background-size: 30px 30px, 30px 30px, 100% 100%;
 }
 
 /* Short brand-blue accent rule placed above/left of a heading. */

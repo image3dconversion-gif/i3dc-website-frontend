@@ -38,40 +38,46 @@ export function PageHero({
   imageLabel,
 }: PageHeroProps) {
   return (
-    <section className="wash-blue border-b border-line">
+    <section className="relative overflow-hidden border-b border-white/10 bg-bg-invert text-[var(--text-on-invert)]">
+      <div
+        aria-hidden
+        className="blueprint-invert pointer-events-none absolute inset-0 [mask-image:radial-gradient(130%_100%_at_82%_-5%,black,transparent_72%)]"
+      />
       <Container
         className={
-          "py-14 md:py-20 " +
+          "relative py-14 md:py-20 " +
           (image ? "grid items-center gap-12 lg:grid-cols-[46fr_54fr]" : "max-w-[var(--content-narrow)]")
         }
       >
         <div>
-          <Eyebrow>{eyebrow}</Eyebrow>
-          <h1 className="text-[length:var(--fs-hero)] font-bold leading-[1.04] tracking-[-0.02em]">
+          <Eyebrow tone="invert">{eyebrow}</Eyebrow>
+          <h1 className="text-[length:var(--fs-hero)] font-bold leading-[1.04] tracking-[-0.02em] text-white">
             {h1}
           </h1>
-          <p className="mt-5 max-w-xl text-lg text-ink">{body}</p>
+          <p className="mt-5 max-w-xl text-lg text-[var(--text-on-invert)]">{body}</p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <ButtonLink href={primary.href} external={primary.external}>
+            <ButtonLink href={primary.href} external={primary.external} variant="inverse">
               {primary.label}
             </ButtonLink>
             {secondary && (
-              <ButtonLink href={secondary.href} variant="secondary" external={secondary.external}>
+              <ButtonLink href={secondary.href} variant="inverseOutline" external={secondary.external}>
                 {secondary.label}
               </ButtonLink>
             )}
           </div>
-          {note && <p className="mt-6 max-w-xl text-xs leading-relaxed text-muted">{note}</p>}
+          {note && (
+            <p className="mt-6 max-w-xl text-xs leading-relaxed text-[var(--text-on-invert-muted)]">{note}</p>
+          )}
         </div>
 
         {image && (
           <div className="relative">
             <div
               aria-hidden
-              className="blueprint pointer-events-none absolute -inset-5 -z-10 rounded-[var(--radius-card)] border border-line [mask-image:radial-gradient(85%_85%_at_55%_45%,black,transparent)]"
+              className="blueprint-invert pointer-events-none absolute -inset-5 -z-10 rounded-[var(--radius-card)] border border-white/15 [mask-image:radial-gradient(85%_85%_at_55%_45%,black,transparent)]"
             />
-            <span aria-hidden className="absolute -left-2 -top-2 z-10 h-7 w-7 rounded-tl-[var(--radius-sm)] border-l-2 border-t-2 border-brand/50" />
-            <span aria-hidden className="absolute -bottom-2 -right-2 z-10 h-7 w-7 rounded-br-[var(--radius-sm)] border-b-2 border-r-2 border-brand/50" />
+            <span aria-hidden className="absolute -left-2 -top-2 z-10 h-7 w-7 rounded-tl-[var(--radius-sm)] border-l-2 border-t-2 border-white/40" />
+            <span aria-hidden className="absolute -bottom-2 -right-2 z-10 h-7 w-7 rounded-br-[var(--radius-sm)] border-b-2 border-r-2 border-white/40" />
             <PlanningPanel image={image} ratio="16/11" label={imageLabel} priority sizes="(max-width: 1024px) 100vw, 560px" />
           </div>
         )}

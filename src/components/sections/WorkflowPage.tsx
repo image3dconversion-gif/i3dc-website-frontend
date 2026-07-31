@@ -107,7 +107,7 @@ export function WorkflowPage({ c }: { c: WorkflowContent }) {
             {c.lists.map((l, i) => (
               <div
                 key={l.title}
-                className="reveal-up rounded-[var(--radius-card)] border border-line bg-white p-6 shadow-[var(--shadow-sm)] transition-[transform,box-shadow] duration-200 hover:-translate-y-0.5 hover:shadow-[var(--shadow-float)]"
+                className="reveal-up rounded-[var(--radius-card)] border border-line-strong bg-white p-6 shadow-[var(--shadow-sm)] transition-[transform,box-shadow] duration-200 hover:-translate-y-0.5 hover:border-brand hover:shadow-[var(--shadow-float)]"
                 style={{ animationDelay: `${i * 60}ms` }}
               >
                 <h3 className="text-base">{l.title}</h3>
