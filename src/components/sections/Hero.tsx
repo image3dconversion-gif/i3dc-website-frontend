@@ -16,7 +16,7 @@ import { img } from "@/content/images";
 export function Hero() {
   const { hero } = home;
   return (
-    <section className="relative overflow-hidden border-b border-white/10 bg-bg-invert text-[var(--text-on-invert)]">
+    <section className="relative overflow-hidden border-b border-white/10 band-navy text-[var(--text-on-invert)]">
       {/* light blueprint texture over the navy band, fading from the top-right */}
       <div
         aria-hidden

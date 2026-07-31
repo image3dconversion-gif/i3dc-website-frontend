@@ -175,6 +175,16 @@
   background: var(--brand);
 }
 
+/* Premium navy band: a controlled monochrome gradient + soft top-right glow so
+   the brand-navy surfaces read with depth (a lit technical surface), not a flat
+   colour block. Deliberately restrained — no flashy multi-hue gradients. Pair
+   with `blueprint-invert` for texture on heroes. */
+@utility band-navy {
+  background:
+    radial-gradient(80% 120% at 82% -12%, rgba(67, 96, 143, 0.40), transparent 55%),
+    linear-gradient(158deg, #26385d 0%, var(--bg-invert) 52%, #1a2840 100%);
+}
+
 /* Brand-blue wash behind hero / feature visuals. Navy is a present atmosphere
    here (not just a hint), while white stays the breathing space. A faint
    blueprint grid adds clinical-tech texture; kept low-contrast so copy stays AA. */

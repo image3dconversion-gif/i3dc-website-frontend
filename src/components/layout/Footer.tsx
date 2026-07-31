@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Container } from "@/components/ui/Container";
+import { Wordmark } from "@/components/ui/Wordmark";
 import { ContactChannels } from "@/components/sections/ContactChannels";
 import { footerNav, educationLink } from "@/content/navigation";
 import { site, positioning } from "@/content/site";
@@ -7,14 +8,15 @@ import { site, positioning } from "@/content/site";
 /** Global footer — "a quiet end, not a second homepage" (Homepage §5). */
 export function Footer() {
   return (
-    <footer className="border-t border-line bg-bg-tint">
+    <footer className="border-t-2 border-brand bg-bg-tint">
       <Container className="py-14">
         <div className="grid gap-10 md:grid-cols-[1.4fr_repeat(4,1fr)]">
           <div className="max-w-xs">
-            <p className="font-display text-base font-semibold text-heading">
+            <Wordmark className="text-xl" />
+            <p className="mt-3 text-sm font-semibold text-heading">
               {site.descriptor}
             </p>
-            <p className="mt-3 text-sm text-muted">{site.footerLine}</p>
+            <p className="mt-2 text-sm text-muted">{site.footerLine}</p>
             <p className="mt-4 text-sm font-semibold text-heading">{positioning.base}</p>
             <p className="mt-1 text-sm text-muted">{positioning.reach}</p>
           </div>

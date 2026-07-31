@@ -14,7 +14,7 @@ interface SectionProps {
 const tones = {
   white: "bg-white text-ink",
   tint: "surface-tint text-ink",
-  invert: "bg-bg-invert text-[var(--text-on-invert)]",
+  invert: "band-navy text-[var(--text-on-invert)]",
 } as const;
 
 /**

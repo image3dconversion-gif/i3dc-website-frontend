@@ -95,10 +95,17 @@ export function canPublish(meta: ImageMeta, alt: string): boolean {
  * Keyed by the manifest key in `images.ts`.
  */
 export const imageMeta = {
+  // ⚠ Founder review (2026-07-31): the shipped WebP appears to carry a WHITE
+  // background, not true alpha. Until a verified transparent PNG/SVG + inverse
+  // (white) variant are approved, use this raster logo ONLY on light surfaces
+  // (Header). On navy/dark surfaces use ui/Wordmark. See
+  // docs/handoff/DIGITAL_DENTISTRY_ASSET_REQUIREMENTS.md §Logo.
   logo: {
     key: "logo",
     title: "Image3DConversion master logo",
     category: "logo",
+    // Marked transparent in the manifest, but treat as opaque/white-boxed until
+    // re-verified (see warning above). Do not place on dark backgrounds.
     backgroundType: "transparent",
     focalPoint: { x: 0.5, y: 0.5 },
     source: "08-logos-certificates/logo 1.png",

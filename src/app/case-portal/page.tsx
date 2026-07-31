@@ -48,7 +48,7 @@ export default function CasePortalPage() {
   return (
     <>
       {/* Navy hero with the abstract portal illustration (not a real screenshot) */}
-      <section className="relative overflow-hidden border-b border-white/10 bg-bg-invert text-[var(--text-on-invert)]">
+      <section className="relative overflow-hidden border-b border-white/10 band-navy text-[var(--text-on-invert)]">
         <div
           aria-hidden
           className="blueprint-invert pointer-events-none absolute inset-0 [mask-image:radial-gradient(130%_100%_at_82%_-5%,black,transparent_72%)]"
