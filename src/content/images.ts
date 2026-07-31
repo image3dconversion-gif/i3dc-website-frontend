@@ -83,4 +83,113 @@ export const img = {
     height: 739,
     alt: "CAD mesh of a surgical guide design ready for production.",
   },
+
+  // ── Wave 13 premium cut-outs (transparent, from assets-source/premium-images) ──
+  // Approved-safe per IMAGE3DCONVERSION_PREMIUM_ASSET_DIRECTION.md §3–7. Every
+  // one is a de-identified render or produced-output cut-out: no patient face,
+  // no third-party UI, no clinic branding, no watermark, no burned-in text.
+  // Dimensions are the real trimmed output sizes. Show these with `contain` on a
+  // brand ground (CutoutFrame) — never `cover` (would crop the subject).
+  pHeroImplantPlan: {
+    src: "/images/premium/hero-implant-planning.webp",
+    width: 798,
+    height: 667,
+    alt: "Translucent jaw anatomy with planned implant positions and a prosthetic teeth reference.",
+  },
+  pGuideCadMesh: {
+    src: "/images/premium/workflow-guide-cad-mesh.webp",
+    width: 537,
+    height: 362,
+    alt: "CAD mesh of a full-arch surgical guide design in a shaded model view.",
+  },
+  pGuideFullArch: {
+    src: "/images/premium/surgical-guide-full-arch.webp",
+    width: 808,
+    height: 518,
+    alt: "Metal full-arch surgical guide with guided sleeves and fixation positions.",
+  },
+  pGuideMetalArch: {
+    src: "/images/premium/surgical-guide-metal-arch.webp",
+    width: 429,
+    height: 363,
+    alt: "Metal-reinforced full-arch surgical guide with stabilisation pins.",
+  },
+  pGuideSingleScan: {
+    src: "/images/premium/surgical-guide-single-scan.webp",
+    width: 594,
+    height: 404,
+    alt: "Single-implant surgical guide over a colour-mapped intraoral scan model.",
+  },
+  pGuideInHand: {
+    src: "/images/premium/surgical-guide-in-hand.webp",
+    width: 896,
+    height: 629,
+    alt: "3D-printed surgical guide held in a gloved hand.",
+  },
+  pGuidePartInHand: {
+    src: "/images/premium/surgical-guide-part-in-hand.webp",
+    width: 821,
+    height: 526,
+    alt: "Printed surgical guide component inspected in gloved hands.",
+  },
+  pStackableGrey: {
+    src: "/images/premium/fullarch-stackable-grey.webp",
+    width: 420,
+    height: 386,
+    alt: "Exploded view of a full-arch stackable guide system in neutral grey.",
+  },
+  pStackableMetalModel: {
+    src: "/images/premium/fullarch-stackable-metal-model.webp",
+    width: 611,
+    height: 478,
+    alt: "Full-arch stackable guide and metal framework seated on an anatomical model.",
+  },
+  pProsthesisInHand: {
+    src: "/images/premium/fullarch-prosthesis-in-hand.webp",
+    width: 608,
+    height: 640,
+    alt: "Full-arch implant prosthesis on a bar framework, held in a gloved hand.",
+  },
+  pProsthesisOcclusion: {
+    src: "/images/premium/fullarch-prosthesis-occlusion.webp",
+    width: 516,
+    height: 464,
+    alt: "Full-arch implant prosthesis in occlusion on an articulated model.",
+  },
+  pImplantAbutment: {
+    src: "/images/premium/services-implant-abutment.webp",
+    width: 1042,
+    height: 403,
+    alt: "Dental implant and multi-unit abutment shown as clean product views.",
+  },
+  pTemporaryProsthesis: {
+    src: "/images/premium/services-temporary-prosthesis.webp",
+    width: 519,
+    height: 773,
+    alt: "Printed temporary full-arch prosthesis held in a gloved hand.",
+  },
+  pImplantTitanium: {
+    src: "/images/premium/implant-titanium.webp",
+    width: 196,
+    height: 601,
+    alt: "Titanium dental implant, product view.",
+  },
+  pImplantTitaniumGold: {
+    src: "/images/premium/implant-titanium-gold.webp",
+    width: 135,
+    height: 602,
+    alt: "Titanium dental implant with a gold internal connection, product view.",
+  },
+  pPrintedBoneModels: {
+    src: "/images/premium/production-printed-bone-models.webp",
+    width: 708,
+    height: 347,
+    alt: "3D-printed anatomical bone models produced alongside a zygomatic guide.",
+  },
+  pPrintedZygomaGuides: {
+    src: "/images/premium/production-printed-zygoma-guides.webp",
+    width: 943,
+    height: 792,
+    alt: "3D-printed zygomatic anatomy model with surgical guides, held in gloved hands.",
+  },
 } as const satisfies Record<string, Img>;

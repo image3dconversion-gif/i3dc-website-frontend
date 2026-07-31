@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import { Section } from "@/components/ui/Section";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { ButtonLink } from "@/components/ui/Button";
@@ -11,6 +10,7 @@ import { CasePortalBand } from "@/components/sections/CasePortalBand";
 import { CtaBand } from "@/components/sections/CtaBand";
 import { IconList } from "@/components/ui/IconList";
 import { FeatureGrid } from "@/components/ui/FeatureGrid";
+import { CutoutFrame } from "@/components/ui/CutoutFrame";
 import { cta } from "@/content/cta-routes";
 import { home } from "@/content/pages/home";
 import { img } from "@/content/images";
@@ -160,26 +160,14 @@ export default function HomePage() {
           </div>
 
           {/* Real full-arch guide visual inside the band */}
-          <figure className="media-frame">
-            <div className="flex items-center gap-1.5 border-b border-line bg-white px-4 py-2.5">
-              <span aria-hidden className="h-2.5 w-2.5 rounded-full bg-blue-200" />
-              <span aria-hidden className="h-2.5 w-2.5 rounded-full bg-blue-200" />
-              <span aria-hidden className="h-2.5 w-2.5 rounded-full bg-blue-200" />
-              <span className="ml-1 text-xs font-semibold text-muted">
-                Full-arch stackable sequence
-              </span>
-            </div>
-            <div className="relative aspect-[16/10] w-full bg-blue-900">
-              <Image
-                src={img.stackable.src}
-                alt={img.stackable.alt}
-                fill
-                sizes="(max-width: 1024px) 100vw, 560px"
-                className="object-cover"
-              />
-              <span aria-hidden className="panel-cohere" />
-            </div>
-          </figure>
+          <CutoutFrame
+            image={img.pStackableGrey}
+            ground="light"
+            ratio="16/10"
+            label="Full-arch stackable sequence"
+            caption="Stackable guide layers: reduction, placement and prosthetic reference in one sequence."
+            sizes="(max-width: 1024px) 100vw, 560px"
+          />
         </div>
       </Section>
 

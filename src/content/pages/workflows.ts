@@ -44,6 +44,15 @@ export const workflows: Record<string, WorkflowEntry> = {
       { title: "What the dentist reviews", items: ["Proposed implant position", "Guide concept", "Case-specific notes before approval"] },
       { title: "What the dentist receives", items: ["Planning files", "Guide design files", "Printed guide or associated components — by selected scope"] },
     ],
+    gallery: {
+      h2: "From plan to produced guide",
+      body: "The restoration-led plan carried through to a produced, seated surgical guide.",
+      items: [
+        { image: img.pGuideSingleScan, caption: "Single-implant guide referenced to the scan model." },
+        { image: img.pGuideFullArch, caption: "Full-arch guide with guided sleeves and fixation." },
+        { image: img.pGuideInHand, caption: "Produced guide, checked in hand before dispatch." },
+      ],
+    },
     commonErrors: [
       "CBCT field of view too small to show the planned sites and adjacent anatomy",
       "Intraoral scan and CBCT that do not align",
@@ -86,6 +95,15 @@ export const workflows: Record<string, WorkflowEntry> = {
       { title: "Approval gates", items: ["Bone reduction plan", "Implant positions", "MUA plan", "Provisional design"] },
       { title: "What the dentist receives", items: ["Coordinated guide sequence", "Planning and design files", "Provisional / delivery reference — by selected scope"] },
     ],
+    gallery: {
+      h2: "The produced full-arch sequence",
+      body: "One prosthetic objective, carried across the guide stack and into the delivered prosthesis.",
+      items: [
+        { image: img.pStackableGrey, caption: "Stackable guide system, shown layer by layer." },
+        { image: img.pStackableMetalModel, caption: "Guide and metal framework seated on the model." },
+        { image: img.pProsthesisOcclusion, caption: "Full-arch prosthesis verified in occlusion." },
+      ],
+    },
     commonErrors: [
       "Provisional or prosthetic objective not defined before the guide stack is built",
       "Records that do not capture the full arch and opposing dentition",
@@ -129,6 +147,14 @@ export const workflows: Record<string, WorkflowEntry> = {
       { title: "Records that may be required", items: ["Extended field-of-view CBCT / DICOM", "Intraoral or model scans", "Prosthetic reference and smile setup", "Clinical context and professional leadership"] },
       { title: "What is coordinated", items: ["Anatomy and trajectory alignment", "Restorative intent against anatomy", "Guide concept where applicable", "Documented review and approval"] },
     ],
+    gallery: {
+      h2: "Produced models and guides",
+      body: "Physical verification models and guides produced alongside advanced-anchorage planning.",
+      items: [
+        { image: img.pPrintedZygomaGuides, caption: "Printed zygomatic model with surgical guides." },
+        { image: img.pPrintedBoneModels, caption: "Printed anatomical bone models for verification." },
+      ],
+    },
     commonErrors: [
       "Field of view that does not fully capture the zygomatic or pterygoid region",
       "Prosthetic intent not shared, so trajectory review lacks a target",
@@ -165,6 +191,15 @@ export const workflows: Record<string, WorkflowEntry> = {
       { title: "What must be approved first", items: ["Implant plan", "Guide concept", "Provisional reference — before guide and provisional production"] },
       { title: "What the dentist receives", items: ["Aligned plan and guide", "Provisional reference for the appointment", "Clear separation of preoperative and intraoperative stages"] },
     ],
+    gallery: {
+      h2: "Plan, guide and provisional as produced output",
+      body: "The aligned guide and provisional references that support the loading appointment.",
+      items: [
+        { image: img.pGuideMetalArch, caption: "Metal-reinforced guide for the placement stage." },
+        { image: img.pProsthesisOcclusion, caption: "Provisional verified in occlusion before delivery." },
+        { image: img.pTemporaryProsthesis, caption: "Printed temporary prosthesis for the appointment." },
+      ],
+    },
     commonErrors: [
       "Provisional reference missing, so alignment cannot be confirmed before surgery",
       "Vertical dimension and occlusion not captured with the records",
@@ -282,6 +317,15 @@ export const workflows: Record<string, WorkflowEntry> = {
       { title: "What is coordinated", items: ["Scope and quotation", "Planning and guide design", "Production and quality checks", "Dispatch and delivery support"] },
       { title: "What the dentist receives", items: ["One visible case status", "Documented approval points", "Surgery-ready deliverables — by confirmed scope"] },
     ],
+    gallery: {
+      h2: "What coordinated delivery produces",
+      body: "Representative surgery-ready output from a design-to-delivery case.",
+      items: [
+        { image: img.pStackableMetalModel, caption: "Guide and framework seated on the model." },
+        { image: img.pPrintedBoneModels, caption: "Printed verification model." },
+        { image: img.pProsthesisInHand, caption: "Finished full-arch prosthesis, ready for dispatch." },
+      ],
+    },
     commonErrors: [
       "Scope not confirmed before work begins, causing later rework",
       "Records incomplete at submission, pausing the whole chain",

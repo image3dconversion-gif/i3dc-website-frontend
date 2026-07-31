@@ -3,9 +3,20 @@ import { IconList } from "@/components/ui/IconList";
 import { StickySubnav, type SubnavItem } from "@/components/ui/StickySubnav";
 import { PageHero } from "@/components/sections/PageHero";
 import { CtaBand } from "@/components/sections/CtaBand";
+import { CutoutFrame } from "@/components/ui/CutoutFrame";
 import { Accordion, type QA } from "@/components/ui/Accordion";
 import { cta } from "@/content/cta-routes";
 import type { Img } from "@/content/images";
+
+export interface GalleryItem {
+  image: Img;
+  caption?: string;
+}
+
+const galleryCols: Record<2 | 3, string> = {
+  2: "sm:grid-cols-2",
+  3: "sm:grid-cols-2 lg:grid-cols-3",
+};
 
 export interface DetailList {
   title: string;
@@ -26,6 +37,9 @@ export interface WorkflowContent {
   sequence?: { h2: string; body?: string; steps: string[] };
   /** Titled bullet lists rendered as a responsive card grid. */
   lists?: DetailList[];
+  /** Optional produced-output cut-outs (real de-identified assets on a brand
+   *  ground). Shown as a "Produced output" strip. 2–3 items reads best. */
+  gallery?: { h2: string; body?: string; items: GalleryItem[] };
   /** "Where cases commonly stall" — issues caught before planning. */
   commonErrors?: string[];
   /** Optional responsibility / limitation callouts. */
@@ -55,6 +69,7 @@ export function WorkflowPage({ c }: { c: WorkflowContent }) {
     c.intro && { id: "overview", label: "Overview" },
     c.sequence && { id: "sequence", label: "Sequence" },
     c.lists && c.lists.length > 0 && { id: "details", label: "Details" },
+    c.gallery && c.gallery.items.length > 0 && { id: "output", label: "Produced output" },
     c.commonErrors && c.commonErrors.length > 0 && { id: "watch-outs", label: "Watch-outs" },
     c.faq && c.faq.length > 0 && { id: "faq", label: "FAQ" },
     c.discussFirst && { id: "discuss", label: "Discuss first" },
@@ -115,6 +130,35 @@ export function WorkflowPage({ c }: { c: WorkflowContent }) {
               </div>
             ))}
           </div>
+        </Section>
+      )}
+
+      {c.gallery && c.gallery.items.length > 0 && (
+        <Section aria-labelledby="wp-output" id="output" className="scroll-mt-28">
+          <div className="max-w-2xl">
+            <span aria-hidden className="tech-rule mb-4 block" />
+            <h2 id="wp-output">{c.gallery.h2}</h2>
+            {c.gallery.body && <p className="mt-4 text-ink">{c.gallery.body}</p>}
+          </div>
+          <ul
+            className={`mt-8 grid gap-6 ${galleryCols[(c.gallery.items.length >= 3 ? 3 : 2) as 2 | 3]}`}
+          >
+            {c.gallery.items.map((item, i) => (
+              <li key={item.image.src} className="reveal-up" style={{ animationDelay: `${i * 60}ms` }}>
+                <CutoutFrame
+                  image={item.image}
+                  ground="light"
+                  ratio="4/3"
+                  caption={item.caption}
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 380px"
+                />
+              </li>
+            ))}
+          </ul>
+          <p className="mt-6 max-w-3xl text-xs text-muted">
+            Representative produced output and planning renders. Every asset is de-identified; images
+            are illustrative of the workflow, not a specific patient case.
+          </p>
         </Section>
       )}
 

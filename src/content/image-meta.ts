@@ -282,6 +282,48 @@ export const imageMeta = {
     approvalStatus: "published",
     usageMap: ["design-only-workflow", "home:hero-chip"],
   },
+
+  // ── Wave 13 premium cut-outs. Transparent, de-identified renders / produced
+  // output. Screened per IMAGE3DCONVERSION_PREMIUM_ASSET_DIRECTION.md §4 (no
+  // face, no third-party UI, no clinic branding, no watermark, no burned-in
+  // text). Gloved hands only — no identifiable person, so consent not required.
+  // approvalStatus "approved" (approved-safe + integrated); founder sign-off
+  // moves them to "published". EXIF stripped at the processing step.
+  ...(() => {
+    const base = {
+      category: "guide" as ImageCategory,
+      backgroundType: "transparent" as BackgroundType,
+      focalPoint: { x: 0.5, y: 0.5 },
+      captureDate: null,
+      license: "owned" as LicenseStatus,
+      personVisible: false,
+      consentStatus: "not-required" as ConsentStatus,
+      consentRef: null,
+      piiSafe: true,
+      piiReviewer: "frontend-architect",
+      piiDate: "2026-07-31",
+      approvalStatus: "approved" as ApprovalStatus,
+    };
+    return {
+      pHeroImplantPlan: { ...base, key: "pHeroImplantPlan", title: "Translucent jaw anatomy with planned implants", category: "planning", source: "premium-images/03-implant-planning/3d implant planning .png", usageMap: ["available:home-hero-composition"] },
+      pGuideCadMesh: { ...base, key: "pGuideCadMesh", title: "Surgical guide CAD mesh", source: "premium-images/02-stl-models/MESH-DESIGN-SURGICAL-GUIDE.png", usageMap: ["available:cta-texture"] },
+      pGuideFullArch: { ...base, key: "pGuideFullArch", title: "Metal full-arch surgical guide with sleeves", source: "premium-images/05-surgical-guide/METAL-GUUIDE-IMPLANT-PLACEMENT.png", usageMap: ["guided-implant-workflow:gallery"] },
+      pGuideMetalArch: { ...base, key: "pGuideMetalArch", title: "Metal-reinforced full-arch guide with pins", source: "premium-images/05-surgical-guide/METALGUIDE.png", usageMap: ["immediate-loading-workflow:gallery"] },
+      pGuideSingleScan: { ...base, key: "pGuideSingleScan", title: "Single-implant guide on a scan model", source: "premium-images/05-surgical-guide/single implant guide.png", usageMap: ["guided-implant-workflow:gallery"] },
+      pGuideInHand: { ...base, key: "pGuideInHand", title: "Printed surgical guide in a gloved hand", source: "premium-images/05-surgical-guide/surgical-guide-hand.png", usageMap: ["guided-implant-workflow:gallery"] },
+      pGuidePartInHand: { ...base, key: "pGuidePartInHand", title: "Printed guide component in gloved hands", source: "premium-images/05-surgical-guide/surgical-guide-hand-2.png", usageMap: ["available"] },
+      pStackableGrey: { ...base, key: "pStackableGrey", title: "Stackable full-arch guide, exploded (grey)", source: "premium-images/06-full-arch-stackable/stackable system-black-white.png", usageMap: ["home:complex-band", "full-arch-stackable-workflow:gallery"] },
+      pStackableMetalModel: { ...base, key: "pStackableMetalModel", title: "Stackable guide and framework on model", source: "premium-images/06-full-arch-stackable/METAL-GUIDE-IMMEDIATE-LOADING-STACKABLE-WORKFLOW.png", usageMap: ["full-arch-stackable-workflow:gallery", "design-to-delivery:gallery"] },
+      pProsthesisInHand: { ...base, key: "pProsthesisInHand", title: "Full-arch prosthesis on bar, in a gloved hand", category: "implant", source: "premium-images/05-surgical-guide/METAL-GUIDE-STACKABLE+HAND.png", usageMap: ["design-to-delivery:gallery"] },
+      pProsthesisOcclusion: { ...base, key: "pProsthesisOcclusion", title: "Full-arch prosthesis in occlusion on model", category: "implant", source: "premium-images/04-prosthetic-abutment/METAL-GUIDE-STACKABLE-WORKFLOW+PROSTHESIS+OCCLUSION.png", usageMap: ["full-arch-stackable-workflow:gallery", "immediate-loading-workflow:gallery"] },
+      pImplantAbutment: { ...base, key: "pImplantAbutment", title: "Dental implant and multi-unit abutment", category: "implant", source: "premium-images/04-prosthetic-abutment/GUIDE_TEETH_IMPLANT.png", usageMap: ["available"] },
+      pTemporaryProsthesis: { ...base, key: "pTemporaryProsthesis", title: "Printed temporary full-arch prosthesis", category: "implant", source: "premium-images/04-prosthetic-abutment/STRONG-TEMPORARY-PROSTHESIS.png", usageMap: ["immediate-loading-workflow:gallery"] },
+      pImplantTitanium: { ...base, key: "pImplantTitanium", title: "Titanium dental implant (product view)", category: "implant", source: "premium-images/03-implant-planning/titanium implant-dental.png", usageMap: ["available"] },
+      pImplantTitaniumGold: { ...base, key: "pImplantTitaniumGold", title: "Titanium implant with gold connection", category: "implant", source: "premium-images/99-review-unsorted/Untitled design.png", usageMap: ["available"], caption: "Passed a full-resolution + corner PII screen; distinct from the excluded 'Untitled design (3)' file." },
+      pPrintedBoneModels: { ...base, key: "pPrintedBoneModels", title: "3D-printed anatomical bone models", category: "lab", source: "premium-images/02-stl-models/PRINTED-BONE-MODEL+ZYGOMA+GUIDE.png", usageMap: ["zygoma-pterygoid-planning:gallery", "design-to-delivery:gallery"] },
+      pPrintedZygomaGuides: { ...base, key: "pPrintedZygomaGuides", title: "Printed zygomatic model with surgical guides", category: "lab", source: "premium-images/05-surgical-guide/ZYGOMAUIDE+STABILISATION+PIN+VERIFICATION+ACCURACY+ON+HAND.png", usageMap: ["digital-implant-workflows:production", "zygoma-pterygoid-planning:gallery"] },
+    };
+  })(),
 } as const satisfies Record<keyof typeof img, ImageMeta>;
 
 export type ImageMetaKey = keyof typeof imageMeta;

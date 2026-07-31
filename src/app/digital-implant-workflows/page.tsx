@@ -4,7 +4,7 @@ import { PageHero } from "@/components/sections/PageHero";
 import { WorkflowCards } from "@/components/sections/WorkflowCards";
 import { ServiceGrid } from "@/components/sections/ServiceGrid";
 import { CtaBand } from "@/components/sections/CtaBand";
-import { ImageOrSlot } from "@/components/ui/ImageOrSlot";
+import { CutoutFrame } from "@/components/ui/CutoutFrame";
 import { home } from "@/content/pages/home";
 import { cta } from "@/content/cta-routes";
 import { img } from "@/content/images";
@@ -62,12 +62,13 @@ export default function ServicesPage() {
               badge shows the engagement models a service supports.
             </p>
           </div>
-          <ImageOrSlot
-            image={null}
-            alt="De-identified digital dentistry production environment — 3D printer, quality-assurance bench and packaged surgical guides."
-            slot="P1-4 · de-identified lab & production (printer, QA bench, packaging)"
+          <CutoutFrame
+            image={img.pPrintedZygomaGuides}
+            ground="light"
             label="Production & delivery"
             ratio="16/10"
+            pad="p-5"
+            caption="Produced output: a printed anatomical model and surgical guides from a planned case."
             sizes="(max-width: 1024px) 100vw, 460px"
           />
         </div>
