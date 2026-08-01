@@ -25,8 +25,11 @@ export const INQUIRY_LABELS: Record<InquiryType, string> = {
   "existing-customer": "Existing Customer / Case Portal",
 };
 
-/** Fixed governance tags applied server-side (never trusted from the client). */
-export const LEAD_SOURCE = "I3DC Website" as const;
+/** Fixed governance tags applied server-side (never trusted from the client).
+ *  LEAD_SOURCE must exactly match the Zoho `Lead_Source` picklist value the admin
+ *  adds ("Website - Image 3D Conversion"); until that value exists in Zoho, live
+ *  submission would be rejected — which is fine while we remain dry-run. */
+export const LEAD_SOURCE = "Website - Image 3D Conversion" as const;
 export const BUSINESS_TAG = "Image3DConversion" as const;
 
 export interface Utm {

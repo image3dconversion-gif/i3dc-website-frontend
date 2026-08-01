@@ -36,6 +36,8 @@ interface ZohoEnv {
   clientSecret: string;
   refreshToken: string;
   module: string;
+  /** Optional: target layout id for "Image3DConversion Website Leads". */
+  layoutId?: string;
 }
 
 function readEnv(): ZohoEnv | null {
@@ -47,6 +49,7 @@ function readEnv(): ZohoEnv | null {
     ZOHO_CLIENT_SECRET,
     ZOHO_REFRESH_TOKEN,
     ZOHO_MODULE,
+    ZOHO_LAYOUT_ID,
   } = process.env;
 
   if (ZOHO_SUBMIT_ENABLED !== "true") return null;
@@ -66,6 +69,7 @@ function readEnv(): ZohoEnv | null {
     clientSecret: ZOHO_CLIENT_SECRET,
     refreshToken: ZOHO_REFRESH_TOKEN,
     module: ZOHO_MODULE || "Leads",
+    layoutId: ZOHO_LAYOUT_ID || undefined,
   };
 }
 
@@ -108,6 +112,8 @@ export async function submitLead(record: ZohoLeadRecord): Promise<SubmitResult> 
 
   try {
     const token = await getAccessToken(env);
+    // Target the Website-Leads layout when its id is configured (no hardcoded id).
+    const payload = env.layoutId ? { ...record, Layout: { id: env.layoutId } } : record;
     const res = await fetch(`${env.apiDomain}/crm/v6/${env.module}`, {
       method: "POST",
       cache: "no-store",
@@ -115,7 +121,7 @@ export async function submitLead(record: ZohoLeadRecord): Promise<SubmitResult> 
         Authorization: `Zoho-oauthtoken ${token}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ data: [record], trigger: ["workflow"] }),
+      body: JSON.stringify({ data: [payload], trigger: ["workflow"] }),
     });
     const json = (await res.json()) as {
       data?: Array<{ code?: string; details?: { id?: string } }>;

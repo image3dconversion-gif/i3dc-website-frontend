@@ -26,18 +26,29 @@ export const PIPELINE_ROUTING: Record<
   "existing-customer": { pipeline: "Portal Redirect", tags: ["Website", "Existing Customer"] },
 };
 
-/** A Zoho Leads-shaped record. Custom_* keys map to fields to be created in CRM. */
+/**
+ * A Zoho Leads record for the `Image3DConversion Website Leads` layout.
+ * Field API names match the approved mapping. Standard fields (First/Last_Name,
+ * Email, Mobile, City, State, Country, Designation, Lead_Source, Description) are
+ * live today; the custom fields below (Business_Unit, Inquiry_Type,
+ * Service_Interest, Workflow_Interest, Case_Urgency, Preferred_Callback,
+ * Existing_Customer, Page_Submitted_From, Consent) + the `Lead_Source` value +
+ * the layout must be created by the Zoho admin before live submission succeeds.
+ * `Clinic_Practice_Name` is used for organization (NOT `Company`, which is
+ * inactive on this module). `Layout` is attached at the submission layer from
+ * the ZOHO_LAYOUT_ID env var, so no layout id is hardcoded.
+ */
 export interface ZohoLeadRecord {
   Last_Name: string;
   First_Name?: string;
   Email: string;
-  Phone?: string;
-  Company: string;
+  Mobile?: string;
+  Clinic_Practice_Name?: string;
   City?: string;
   Designation?: string;
   Lead_Source: string;
   Description: string;
-  // Suggested custom fields (create in Zoho, then confirm API names):
+  // Custom fields (admin-created in the new layout; API names confirmed on re-audit):
   Business_Unit?: string;
   Inquiry_Type?: string;
   Service_Interest?: string;
@@ -46,10 +57,13 @@ export interface ZohoLeadRecord {
   Preferred_Callback?: string;
   Existing_Customer?: boolean;
   Page_Submitted_From?: string;
+  Consent?: boolean;
   UTM_Source?: string;
   UTM_Medium?: string;
   UTM_Campaign?: string;
   UTM_Content?: string;
+  /** Attached from ZOHO_LAYOUT_ID at submission time; omitted when unset. */
+  Layout?: { id: string };
 }
 
 function splitName(full: string): { first?: string; last: string } {
@@ -70,6 +84,7 @@ function buildDescription(e: NormalisedEnquiry): string {
     e.urgency && `Urgency: ${e.urgency}`,
     e.preferredCallback && `Preferred callback: ${e.preferredCallback}`,
     `Existing customer: ${e.existingCustomer ? "Yes" : "No"}`,
+    `Consent given: ${e.consent ? "Yes" : "No"}`,
     e.pageSource && `Submitted from: ${e.pageSource}`,
     "",
     "Summary:",
@@ -84,9 +99,9 @@ export function toZohoLead(e: NormalisedEnquiry): ZohoLeadRecord {
     Last_Name: last,
     First_Name: first,
     Email: e.email,
-    Phone: e.phone,
-    // Zoho Leads requires a Company; individuals get a safe placeholder.
-    Company: e.organization || "Individual (not provided)",
+    Mobile: e.phone,
+    // Organization → Clinic_Practice_Name (Company is inactive on this layout).
+    Clinic_Practice_Name: e.organization,
     City: e.city,
     Designation: e.role,
     Lead_Source: e.leadSource,
@@ -99,6 +114,7 @@ export function toZohoLead(e: NormalisedEnquiry): ZohoLeadRecord {
     Preferred_Callback: e.preferredCallback,
     Existing_Customer: e.existingCustomer,
     Page_Submitted_From: e.pageSource,
+    Consent: e.consent,
     UTM_Source: e.utm?.source,
     UTM_Medium: e.utm?.medium,
     UTM_Campaign: e.utm?.campaign,
