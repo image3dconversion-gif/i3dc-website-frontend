@@ -85,7 +85,7 @@ export const home = {
         body: "Advanced planning support where anatomy, implant trajectory and prosthetic intent must be reviewed together.",
         linkLabel: "Review Zygoma & Pterygoid Planning",
         href: "/zygoma-pterygoid-planning/",
-        image: img.segmentation,
+        image: img.pZygomaPlanning3d,
         panelLabel: "Anatomy & trajectory review",
       },
       {

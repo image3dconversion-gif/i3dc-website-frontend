@@ -48,7 +48,7 @@ export default function AboutPage() {
         note="Image3DConversion supports digital planning and workflow preparation. Diagnosis, treatment indication, patient consent, surgical execution and final clinical approval remain with the treating clinician or responsible professional team."
         primary={{ label: "Work With Us", href: "/discuss-a-case/" }}
         secondary={{ label: cta.openPortal.label, href: cta.openPortal.href, external: true }}
-        image={img.stackable}
+        image={img.pAboutImplantPlan}
         imageLabel="Connected digital workflow"
       />
 

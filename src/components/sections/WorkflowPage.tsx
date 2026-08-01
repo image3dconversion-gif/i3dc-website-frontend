@@ -11,6 +11,11 @@ import type { Img } from "@/content/images";
 export interface GalleryItem {
   image: Img;
   caption?: string;
+  /** Per-item frame aspect ratio (default "4/3"). Use a portrait ratio for a
+   *  tall cut-out so it fills the card instead of letterboxing small. */
+  ratio?: string;
+  /** Per-item inner padding around the subject (default CutoutFrame "p-6"). */
+  pad?: string;
 }
 
 const galleryCols: Record<2 | 3, string> = {
@@ -31,6 +36,9 @@ export interface WorkflowContent {
   primary: { label: string; href: string; external?: boolean };
   image?: Img;
   imageLabel?: string;
+  /** Render the hero image as a transparent cut-out on a bright panel instead of
+   *  the cover-cropped dark planning panel (for produced-output cut-outs). */
+  heroCutout?: boolean;
   /** Optional short intro above the detail grid. */
   intro?: { h2: string; body: string };
   /** Optional visual sequence (rendered as numbered chips on a tint band). */
@@ -86,6 +94,7 @@ export function WorkflowPage({ c }: { c: WorkflowContent }) {
         secondary={secondary}
         image={c.image}
         imageLabel={c.imageLabel}
+        imageCutout={c.heroCutout}
       />
 
       <StickySubnav items={subnav} />
@@ -141,14 +150,15 @@ export function WorkflowPage({ c }: { c: WorkflowContent }) {
             {c.gallery.body && <p className="mt-4 text-ink">{c.gallery.body}</p>}
           </div>
           <ul
-            className={`mt-8 grid gap-6 ${galleryCols[(c.gallery.items.length >= 3 ? 3 : 2) as 2 | 3]}`}
+            className={`mt-8 grid items-start gap-6 ${galleryCols[(c.gallery.items.length >= 3 ? 3 : 2) as 2 | 3]}`}
           >
             {c.gallery.items.map((item, i) => (
               <li key={item.image.src} className="reveal-up" style={{ animationDelay: `${i * 60}ms` }}>
                 <CutoutFrame
                   image={item.image}
                   ground="light"
-                  ratio="4/3"
+                  ratio={item.ratio ?? "4/3"}
+                  pad={item.pad}
                   caption={item.caption}
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 380px"
                 />

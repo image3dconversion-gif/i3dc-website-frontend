@@ -2,6 +2,7 @@ import { Container } from "@/components/ui/Container";
 import { ButtonLink } from "@/components/ui/Button";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { PlanningPanel } from "@/components/ui/PlanningPanel";
+import { CutoutFrame } from "@/components/ui/CutoutFrame";
 import type { Img } from "@/content/images";
 
 interface CtaSpec {
@@ -20,6 +21,10 @@ interface PageHeroProps {
   /** Optional planning-panel visual on the right (app-window framed). */
   image?: Img;
   imageLabel?: string;
+  /** Render the hero image as a transparent cut-out on a bright brand panel
+   *  (object-contain) instead of the cover-cropped dark planning panel. Use for
+   *  produced-output cut-outs where cropping/dark ground would look wrong. */
+  imageCutout?: boolean;
 }
 
 /**
@@ -36,6 +41,7 @@ export function PageHero({
   secondary,
   image,
   imageLabel,
+  imageCutout = false,
 }: PageHeroProps) {
   return (
     <section className="relative overflow-hidden border-b border-white/10 band-navy text-[var(--text-on-invert)]">
@@ -78,7 +84,18 @@ export function PageHero({
             />
             <span aria-hidden className="absolute -left-2 -top-2 z-10 h-7 w-7 rounded-tl-[var(--radius-sm)] border-l-2 border-t-2 border-white/40" />
             <span aria-hidden className="absolute -bottom-2 -right-2 z-10 h-7 w-7 rounded-br-[var(--radius-sm)] border-b-2 border-r-2 border-white/40" />
-            <PlanningPanel image={image} ratio="16/11" label={imageLabel} priority sizes="(max-width: 1024px) 100vw, 560px" />
+            {imageCutout ? (
+              <CutoutFrame
+                image={image}
+                ground="light"
+                ratio="16/11"
+                label={imageLabel}
+                priority
+                sizes="(max-width: 1024px) 100vw, 560px"
+              />
+            ) : (
+              <PlanningPanel image={image} ratio="16/11" label={imageLabel} priority sizes="(max-width: 1024px) 100vw, 560px" />
+            )}
           </div>
         )}
       </Container>

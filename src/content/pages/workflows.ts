@@ -79,8 +79,9 @@ export const workflows: Record<string, WorkflowEntry> = {
     heroBody:
       "A full-arch case is one sequence, not a collection of products. We coordinate the prosthetic objective, guide stack and approval gates so bone reduction, implant placement, MUA positioning and the provisional stay aligned.",
     primary: { label: "Discuss a Full-Arch Case", href: cta.discussCase.href },
-    image: img.stackable,
+    image: img.pStackableGuided,
     imageLabel: "Full-arch stackable sequence",
+    heroCutout: true,
     intro: {
       h2: "What this workflow protects",
       body: "In a full-arch case, small mismatches compound across stages. This workflow protects the continuity between them: the prosthetic objective is fixed first, and every guide in the stack references it, so reduction, implant position, MUA plan and provisional all point at the same result.",
@@ -133,7 +134,7 @@ export const workflows: Record<string, WorkflowEntry> = {
       "Planning and workflow support for qualified treating clinicians managing zygomatic and pterygoid cases, coordinated around anatomy, implant trajectory and the prosthetic plan.",
     note: "This is planning and workflow support for qualified treating clinicians. Digital planning does not remove the clinical risk of advanced surgery; diagnosis, indication, consent and execution remain with the treating team.",
     primary: { label: "Discuss an Advanced Case", href: cta.discussCase.href },
-    image: img.segmentation,
+    image: img.pZygomaImplantPlan,
     imageLabel: "Anatomy & trajectory review",
     intro: {
       h2: "What this workflow protects",
@@ -195,9 +196,9 @@ export const workflows: Record<string, WorkflowEntry> = {
       h2: "Plan, guide and provisional as produced output",
       body: "The aligned guide and provisional references that support the loading appointment.",
       items: [
-        { image: img.pGuideMetalArch, caption: "Metal-reinforced guide for the placement stage." },
-        { image: img.pProsthesisOcclusion, caption: "Provisional verified in occlusion before delivery." },
-        { image: img.pTemporaryProsthesis, caption: "Printed temporary prosthesis for the appointment." },
+        { image: img.pGuideMetalArch, caption: "Metal-reinforced guide for the placement stage.", ratio: "1/1" },
+        { image: img.pProsthesisOcclusion, caption: "Provisional verified in occlusion before delivery.", ratio: "1/1" },
+        { image: img.pTemporaryProsthesis, caption: "Printed temporary prosthesis for the appointment.", ratio: "1/1", pad: "p-3" },
       ],
     },
     commonErrors: [
@@ -264,8 +265,9 @@ export const workflows: Record<string, WorkflowEntry> = {
     heroBody:
       "Reviewed, ready-to-print planning and guide files for practices and labs that keep production under their own control.",
     primary: { label: "Start a Design-Only Case", ...startCase },
-    image: img.stlMesh,
+    image: img.pGuideCadMesh,
     imageLabel: "Guide design (CAD)",
+    heroCutout: true,
     intro: {
       h2: "What this workflow protects",
       body: "Design-only keeps you in control of production while removing the planning and design risk. It protects a clean handoff: you receive reviewed, ready-to-print files with a clear boundary on what remains a local production responsibility — so nothing is assumed on either side.",
@@ -355,8 +357,9 @@ export const workflows: Record<string, WorkflowEntry> = {
     heroBody:
       "Digital implant planning, guide design and production capacity behind your brand — for laboratories, DSOs, implant systems, distributors and overseas practice networks.",
     primary: { label: "Request a Workflow Review", href: cta.discussCase.href },
-    image: img.printedGuideSleeves,
+    image: img.pGuidePartInHand,
     imageLabel: "Guide production",
+    heroCutout: true,
     intro: {
       h2: "What a partnership protects",
       body: "The point of a white-label partnership is capacity without disruption. It protects your customer relationship and your brand: scope, turnaround bands, communication and escalation are defined before work begins, so your clients experience your service — with our workflow behind it.",

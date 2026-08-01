@@ -18,7 +18,16 @@ export interface Img {
 
 export const img = {
   logo: {
-    src: "/images/logos/i3dc-logo.webp",
+    src: "/images/logos/i3dc-logo-transparent.webp",
+    width: 1000,
+    height: 263,
+    alt: "Image3DConversion",
+  },
+
+  // White/inverse logo (extracted from "logo 2" white-on-blue → transparent
+  // white). For DARK surfaces only (navy CTA bands/heroes); invisible on light.
+  logoInverse: {
+    src: "/images/logos/i3dc-logo-white.webp",
     width: 1000,
     height: 250,
     alt: "Image3DConversion",
@@ -191,5 +200,42 @@ export const img = {
     width: 943,
     height: 792,
     alt: "3D-printed zygomatic anatomy model with surgical guides, held in gloved hands.",
+  },
+
+  // Opaque zygomatic planning render (dark ground baked in — shown via the
+  // cover PlanningPanel, not CutoutFrame). Neutral cool tones; not the held
+  // green/orange anatomy renders.
+  pZygomaImplantPlan: {
+    src: "/images/premium/zygomatic-implant-planning.webp",
+    width: 1600,
+    height: 900,
+    alt: "Zygomatic implant plan: four zygomatic implants engaging the zygomatic buttress with a full-arch prosthesis, shown over translucent skull anatomy.",
+  },
+
+  // Transparent exploded stackable render (founder-directed; §6 graded-colour
+  // asset — see image-meta note). Shown via CutoutFrame on a clean panel.
+  pStackableGuided: {
+    src: "/images/premium/fullarch-stackable-guided.webp",
+    width: 819,
+    height: 700,
+    alt: "Exploded view of a prosthetic-driven full-arch stackable guide system, showing the stacked guide layers, connectors and prosthetic set.",
+  },
+
+  // Opaque implant-planning render (dark ground baked in — shown via cover
+  // PlanningPanel). Neutral cool tones; About hero.
+  pAboutImplantPlan: {
+    src: "/images/premium/implant-planning-picture.webp",
+    width: 1600,
+    height: 900,
+    alt: "Digital implant plan: dental implants and gold abutments supporting a full-arch prosthesis over translucent jaw anatomy.",
+  },
+
+  // Opaque zygomatic planning render (dark ground baked in — cover treatment).
+  // Neutral cool tones; homepage Zygoma & Pterygoid workflow card.
+  pZygomaPlanning3d: {
+    src: "/images/premium/zygoma-planning-3d.webp",
+    width: 1400,
+    height: 788,
+    alt: "Zygomatic implant plan: four zygomatic implants and multi-unit abutments supporting a full-arch prosthesis over translucent skull anatomy.",
   },
 } as const satisfies Record<string, Img>;
