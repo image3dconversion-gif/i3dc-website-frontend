@@ -70,6 +70,8 @@ export interface ContactSettings {
   email: string | null;
   phone: string | null;
   whatsapp: string | null;
+  supportDirection: string;
+  portalAvailability: string;
 }
 
 export async function getContactSettings(): Promise<ContactSettings> {
@@ -83,6 +85,8 @@ export async function getContactSettings(): Promise<ContactSettings> {
     email: published && cms?.email ? cms.email : contact.email,
     phone: published && cms?.phone ? cms.phone : contact.phone,
     whatsapp: published && cms?.whatsapp ? cms.whatsapp : contact.whatsapp,
+    supportDirection: val(cms?.supportDirection, contact.supportDirection),
+    portalAvailability: val(cms?.portalAvailability, contact.portalAvailability),
   };
 }
 

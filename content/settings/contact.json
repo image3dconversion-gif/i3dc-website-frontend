@@ -1,9 +1,11 @@
 {
   "enquiriesLabel": "General & workflow enquiries",
   "discussHint": "Tell us your case type and workflow — no patient records on the public site.",
-  "portalHint": "For existing cases, use the Case Portal.",
-  "showDirect": false,
-  "email": "",
+  "portalHint": "For faster case support, please use the I3DC Case Portal once available.",
+  "showDirect": true,
+  "email": "info@image3dconversion.com",
   "phone": "",
-  "whatsapp": ""
+  "whatsapp": "+91 99106 30323",
+  "supportDirection": "For faster case support, please use the I3DC Case Portal once available.",
+  "portalAvailability": "Case Portal access will be available at portal.image3dconversion.com."
 }

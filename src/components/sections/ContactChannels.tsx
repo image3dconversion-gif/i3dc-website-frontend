@@ -37,19 +37,24 @@ export async function ContactChannels({ variant = "block" }: { variant?: "block"
           <p className="mt-1 flex flex-wrap gap-x-2">
             {contact.email && <a href={`mailto:${contact.email}`} className="text-brand no-underline">{contact.email}</a>}
             {contact.phone && <a href={`tel:${contact.phone.replace(/\s+/g, "")}`} className="text-ink no-underline">· {contact.phone}</a>}
-            {contact.whatsapp && <a href={waLink(contact.whatsapp)} target="_blank" rel="noopener noreferrer" className="text-ink no-underline">· WhatsApp</a>}
+            {contact.whatsapp && <a href={waLink(contact.whatsapp)} target="_blank" rel="noopener noreferrer" className="text-ink no-underline">· WhatsApp {contact.whatsapp}</a>}
           </p>
         ) : (
-          <p className="mt-1 text-xs">Direct email, phone and WhatsApp are shared on request.</p>
+          <p className="mt-1 text-xs">Direct email and WhatsApp are shared on request.</p>
         )}
+        {contact.whatsapp && <p className="mt-0.5 text-xs">WhatsApp only — no calls.</p>}
       </div>
     );
   }
 
-  const channels: { label: string; value: string | null; href?: string }[] = [
+  // WhatsApp is chat-only — never rendered with a tel: link. A phone row appears
+  // only if a real call line is provided.
+  const channels: { label: string; value: string | null; href?: string; note?: string }[] = [
     { label: "Email", value: contact.email, href: contact.email ? `mailto:${contact.email}` : undefined },
-    { label: "Phone", value: contact.phone, href: contact.phone ? `tel:${contact.phone.replace(/\s+/g, "")}` : undefined },
-    { label: "WhatsApp", value: contact.whatsapp, href: contact.whatsapp ? waLink(contact.whatsapp) : undefined },
+    ...(contact.phone
+      ? [{ label: "Phone", value: contact.phone, href: `tel:${contact.phone.replace(/\s+/g, "")}` }]
+      : []),
+    { label: "WhatsApp", value: contact.whatsapp, href: contact.whatsapp ? waLink(contact.whatsapp) : undefined, note: "WhatsApp only — no calls." },
   ];
 
   return (
@@ -63,22 +68,30 @@ export async function ContactChannels({ variant = "block" }: { variant?: "block"
           "shared on request" state so the layout is intentional either way. */}
       <ul className="mt-4 divide-y divide-line rounded-[var(--radius-card)] border border-line">
         {channels.map((ch) => (
-          <li key={ch.label} className="flex items-center justify-between gap-4 px-4 py-2.5 text-sm">
-            <span className="font-semibold text-heading">{ch.label}</span>
+          <li key={ch.label} className="flex items-start justify-between gap-4 px-4 py-2.5 text-sm">
+            <span className="min-w-0">
+              <span className="font-semibold text-heading">{ch.label}</span>
+              {ch.note && ch.value && <span className="mt-0.5 block text-xs text-muted">{ch.note}</span>}
+            </span>
             {ch.value && ch.href ? (
               <a
                 href={ch.href}
                 {...(ch.label === "WhatsApp" ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-                className="font-semibold text-brand no-underline hover:text-brand-hover"
+                className="shrink-0 text-right font-semibold text-brand no-underline hover:text-brand-hover"
               >
                 {ch.value}
               </a>
             ) : (
-              <span className="text-xs text-muted">Shared on request</span>
+              <span className="shrink-0 text-xs text-muted">Shared on request</span>
             )}
           </li>
         ))}
       </ul>
+
+      {/* Support direction + portal availability (portal not publicly live yet). */}
+      <p className="mt-4 rounded-[var(--radius-card)] border border-line bg-blue-50 px-4 py-3 text-xs text-ink">
+        {contact.supportDirection} {contact.portalAvailability}
+      </p>
 
       {/* India-based + globally reachable positioning (no city-level emphasis). */}
       <p className="mt-4 text-xs text-muted">

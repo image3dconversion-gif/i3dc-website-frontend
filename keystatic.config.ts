@@ -96,8 +96,13 @@ export default config({
           defaultValue: false,
         }),
         email: fields.text({ label: "Public email (leave blank until approved)" }),
-        phone: fields.text({ label: "Public phone (leave blank until approved)" }),
-        whatsapp: fields.text({ label: "WhatsApp (leave blank until approved)" }),
+        phone: fields.text({ label: "Public phone — CALL line only (leave blank if WhatsApp-only)" }),
+        whatsapp: fields.text({ label: "WhatsApp number (chat only — never shown as a call number)" }),
+        supportDirection: fields.text({ label: "Support direction line", multiline: true }),
+        portalAvailability: fields.text({
+          label: "Case Portal availability line (update when the portal goes live)",
+          multiline: true,
+        }),
       },
     }),
 

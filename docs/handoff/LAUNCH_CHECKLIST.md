@@ -17,10 +17,10 @@
 - [x] `/keystatic` + `/api/keystatic/*` return **404 in production** unless explicitly enabled with Basic Auth (verified via `next start`).
 - [x] CMS admin navigation grouped **Live** vs **Advanced (not yet wired)** for editor clarity.
 
-## B. Business / founder inputs — REQUIRED before launch ⚠️
-- [ ] **Contact values** — approve public email / phone / WhatsApp, then enter in CMS → *Live · Site & contact → Contact settings*, tick **Publish direct contact details**. Until then the site shows the professional "Shared on request" structure (safe).
+## B. Business / founder inputs ⚠️
+- [x] **Contact values** — DONE (founder-approved, published in CMS): email `info@image3dconversion.com`; WhatsApp `+91 99106 30323` (**chat only — presented as "WhatsApp only — no calls."**, never a call number); no public call line. Editable in CMS → *Live · Site & contact → Contact settings*.
 - [ ] **Privacy & Terms** — legal/privacy owner to supply final copy (both pages currently show an honest "being finalised" notice; no legal text is fabricated). Then replace the stub content.
-- [ ] **Case Portal URLs** — portal lead to confirm production login / start-case URLs (currently placeholder `/case-portal/`).
+- [x] **Case Portal wording** — DONE: safe wording applied ("For faster case support, please use the I3DC Case Portal once available." + "Case Portal access will be available at portal.image3dconversion.com."). Intended production URL is `portal.image3dconversion.com` but it is **not publicly live yet**, so users are informed, not linked there. **Founder action:** once the portal is deployed, update the availability line in CMS and (dev) point `portal.loginUrl`/`startCaseUrl` at the live subdomain.
 - [ ] **OG social image** — provide a dedicated **1200×630** PNG/JPG; set it as `defaultOgImage` (CMS → SEO) and/or `public/images/`. Currently OG points to the brand logo (no 404, but not an ideal social card).
 - [ ] **Proof / case evidence** — add real, consent-cleared testimonials and de-identified case evidence in the CMS (they stay hidden until `approved` + `consent`/`anonymised` flags are true). No claims invented.
 - [ ] **Claim gate** — approve any scale/turnaround/partner numbers with source before publishing (kept out of code today).
@@ -41,6 +41,10 @@ ZOHO_MODULE=Leads
 - [ ] Set env on the host, then submit **one test lead** and confirm it lands in the right pipeline before go-live.
 
 ## D. Hosting / deploy configuration — at deploy time 🚀
+- [ ] **Confirm hosting target (BLOCKS deploy)** — choose one:
+  - **GoDaddy only** — works for a *static export*; but this app needs a Node runtime for `/api/enquiry` (Zoho), Keystatic admin, and `middleware.ts`. GoDaddy shared hosting cannot run these. Not recommended unless moving to static-only (which would drop the server enquiry route).
+  - **Vercel/other Node host + GoDaddy DNS** *(recommended)* — deploy the Next.js app on Vercel (or similar), point GoDaddy DNS (A/CNAME) at it. Full support for API route, middleware `/keystatic` gate, and ISR. Simplest correct path.
+  - **VPS/server + GoDaddy DNS** — run `next build && next start` (or Docker/PM2) on a VPS, GoDaddy DNS → server IP. Full control; more ops.
 - [ ] Set `NEXT_PUBLIC`-free server env on the host.
 - [ ] **Keystatic admin:** either omit `/keystatic` from the deployed app, OR set `KEYSTATIC_ENABLED=true` + `KEYSTATIC_ADMIN_USER` + `KEYSTATIC_ADMIN_PASSWORD` (all three) to expose it behind Basic Auth. Missing any → stays 404 (fail-safe).
 - [ ] Consider a durable rate-limiter (KV/Upstash) for `/api/enquiry` on serverless (current limiter is per-instance, best-effort).

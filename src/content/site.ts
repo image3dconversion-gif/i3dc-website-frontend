@@ -45,11 +45,16 @@ export const positioning = {
 export const contact = {
   enquiriesLabel: "General & workflow enquiries",
   discussHint: "Tell us your case type and workflow — no patient records on the public site.",
-  portalHint: "For existing cases, use the Case Portal.",
-  // TODO(founder): provide approved public business values. Keep null until then.
-  email: null as string | null,
+  portalHint: "For faster case support, please use the I3DC Case Portal once available.",
+  // Founder-approved public business values (2026).
+  email: "info@image3dconversion.com" as string | null,
+  // No public call line — the number below is WhatsApp-only and must never be
+  // presented as a phone/call number.
   phone: null as string | null,
-  whatsapp: null as string | null,
+  whatsapp: "+91 99106 30323" as string | null,
+  supportDirection: "For faster case support, please use the I3DC Case Portal once available.",
+  // Portal is not publicly live yet — inform, do not link users to it.
+  portalAvailability: "Case Portal access will be available at portal.image3dconversion.com.",
 } as const;
 
 /**
