@@ -1,19 +1,23 @@
 import type { Metadata } from "next";
+import { resolveMetadata } from "@/lib/seo/metadata";
 import { Section } from "@/components/ui/Section";
 import { ButtonLink } from "@/components/ui/Button";
 import { PageHero } from "@/components/sections/PageHero";
 import { Accordion, type QA } from "@/components/ui/Accordion";
 import { FaqPageJsonLd, BreadcrumbJsonLd } from "@/lib/seo/jsonld";
+import { getFaqEntries } from "@/content/source";
 import { cta } from "@/content/cta-routes";
 
 // Copy source: FAQ / Practice Questions v1.0. Conversion FAQ — top-5 friction
 // questions visible; categories in accordions. Public boundary preserved.
-export const metadata: Metadata = {
-  title: { absolute: "Image3DConversion FAQ | Guided Implant Workflow Questions" },
-  description:
-    "Find answers about Image3DConversion case records, guided implant planning, design-only workflows, design-to-delivery, global practices and the Case Portal.",
-  alternates: { canonical: "/faq/" },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return resolveMetadata({
+    path: "/faq/",
+    title: "Image3DConversion FAQ | Guided Implant Workflow Questions",
+    description:
+      "Find answers about Image3DConversion case records, guided implant planning, design-only workflows, design-to-delivery, global practices and the Case Portal.",
+  });
+}
 
 const priority: QA[] = [
   { q: "What records do I need before submitting a case?", a: "Most cases need CBCT/DICOM data, intraoral or model scans, bite information, clinical photographs where relevant, implant-system direction and a clear workflow objective. Exact requirements depend on the case type — the Case Data & Diagnostic Preparation page guides you deeper." },
@@ -68,8 +72,20 @@ const groups: { title: string; items: QA[] }[] = [
   },
 ];
 
-export default function FaqPage() {
-  const allFaqs = [...priority, ...groups.flatMap((g) => g.items)];
+export default async function FaqPage() {
+  // Reviewed static FAQs are the baseline; FAQs added in the CMS are appended
+  // (grouped by their category) so the team can extend without losing content.
+  const cmsFaqs = await getFaqEntries();
+  const cmsByCategory = new Map<string, QA[]>();
+  for (const f of cmsFaqs) {
+    const cat = f.category?.trim() || "More practice questions";
+    const list = cmsByCategory.get(cat) ?? [];
+    list.push({ q: f.question, a: f.answer });
+    cmsByCategory.set(cat, list);
+  }
+  const cmsGroups = [...cmsByCategory.entries()].map(([title, items]) => ({ title, items }));
+  const allGroups = [...groups, ...cmsGroups];
+  const allFaqs = [...priority, ...allGroups.flatMap((g) => g.items)];
   return (
     <>
       <FaqPageJsonLd items={allFaqs} />
@@ -104,7 +120,7 @@ export default function FaqPage() {
       <Section tone="tint" aria-labelledby="cats-h">
         <h2 id="cats-h">Browse by topic</h2>
         <div className="mt-8 grid gap-8 lg:grid-cols-2">
-          {groups.map((g) => (
+          {allGroups.map((g) => (
             <div key={g.title}>
               <h3 className="mb-3 text-lg">{g.title}</h3>
               <Accordion items={g.items} />

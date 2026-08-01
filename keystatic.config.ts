@@ -41,7 +41,7 @@ export default config({
     brand: { name: "Image3DConversion CMS" },
     navigation: {
       "Site & SEO": ["siteSettings", "contactSettings", "footerSettings", "seoDefaults"],
-      "Marketing content": ["services", "workflowPages", "faqs", "testimonials", "caseEvidence"],
+      "Marketing content": ["homepage", "services", "workflowPages", "faqs", "testimonials", "caseEvidence"],
       "Structure": ["navigation", "ctas", "pages", "seoMeta"],
       "Media governance": ["imageAssets"],
     },
@@ -116,6 +116,101 @@ export default config({
         twitterHandle: fields.text({ label: "Twitter/X handle (optional)" }),
         enableOrganizationSchema: fields.checkbox({ label: "Emit Organization schema", defaultValue: true }),
         enableProfessionalServiceSchema: fields.checkbox({ label: "Emit ProfessionalService schema", defaultValue: true }),
+      },
+    }),
+
+    // Homepage business copy. Section HEADINGS / SUBCOPY / notes only — the card
+    // grids, step lists and visuals stay in code (layout, not editable copy).
+    // Blank fields fall back to the approved static copy, so nothing breaks.
+    homepage: singleton({
+      label: "Homepage copy",
+      path: "content/homepage/index",
+      format: { data: "json" },
+      schema: {
+        hero: fields.object(
+          {
+            eyebrow: fields.text({ label: "Eyebrow" }),
+            h1: fields.text({ label: "Headline (H1)", multiline: true }),
+            body: fields.text({ label: "Sub-copy", multiline: true }),
+            utility: fields.text({ label: "Utility link text" }),
+            professionalNote: fields.text({ label: "Professional note", multiline: true }),
+          },
+          { label: "Hero" },
+        ),
+        smile: fields.object(
+          {
+            h2: fields.text({ label: "Heading" }),
+            body: fields.text({ label: "Body", multiline: true }),
+          },
+          { label: "Smile section" },
+        ),
+        workflows: fields.object(
+          {
+            h2: fields.text({ label: "Heading" }),
+            intro: fields.text({ label: "Intro", multiline: true }),
+          },
+          { label: "Workflows section" },
+        ),
+        differentiation: fields.object(
+          {
+            h2: fields.text({ label: "Heading" }),
+            body: fields.text({ label: "Body", multiline: true }),
+            pullLine: fields.text({ label: "Pull line" }),
+          },
+          { label: "Differentiation section" },
+        ),
+        steps: fields.object(
+          {
+            h2: fields.text({ label: "Heading" }),
+            responsibilityNote: fields.text({ label: "Responsibility note", multiline: true }),
+          },
+          { label: "Five steps section" },
+        ),
+        support: fields.object(
+          {
+            h2: fields.text({ label: "Heading" }),
+          },
+          { label: "Support section" },
+        ),
+        global: fields.object(
+          {
+            h2: fields.text({ label: "Heading" }),
+            body: fields.text({ label: "Body", multiline: true }),
+          },
+          { label: "Global practice section" },
+        ),
+        complexCase: fields.object(
+          {
+            h2: fields.text({ label: "Heading" }),
+            lead: fields.text({ label: "Lead line", multiline: true }),
+            body: fields.text({ label: "Body", multiline: true }),
+            closingLine: fields.text({ label: "Closing line", multiline: true }),
+          },
+          { label: "Complex-case section" },
+        ),
+        requirements: fields.object(
+          {
+            h2: fields.text({ label: "Heading" }),
+            body: fields.text({ label: "Body", multiline: true }),
+            privacyNotice: fields.text({ label: "Privacy notice", multiline: true }),
+          },
+          { label: "Requirements section" },
+        ),
+        trust: fields.object(
+          {
+            eyebrow: fields.text({ label: "Eyebrow" }),
+            h2: fields.text({ label: "Heading" }),
+            body: fields.text({ label: "Body", multiline: true }),
+          },
+          { label: "Trust / who-we-are section" },
+        ),
+        finalAction: fields.object(
+          {
+            h2: fields.text({ label: "Heading" }),
+            body: fields.text({ label: "Body", multiline: true }),
+          },
+          { label: "Final call-to-action" },
+        ),
       },
     }),
   },

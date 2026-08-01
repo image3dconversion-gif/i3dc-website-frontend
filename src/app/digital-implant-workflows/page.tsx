@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { resolveMetadata } from "@/lib/seo/metadata";
 import { Section } from "@/components/ui/Section";
 import { PageHero } from "@/components/sections/PageHero";
 import { WorkflowCards } from "@/components/sections/WorkflowCards";
@@ -10,12 +11,14 @@ import { cta } from "@/content/cta-routes";
 import { img } from "@/content/images";
 
 // Copy source: Website Strategy Blueprint v1.2 §6 (Clinical Workflow Solutions).
-export const metadata: Metadata = {
-  title: { absolute: "Digital Implant Workflow Solutions | Image3DConversion" },
-  description:
-    "Choose the right digital implant workflow for guided placement, full-arch treatment, immediate loading, advanced anchorage or design support.",
-  alternates: { canonical: "/digital-implant-workflows/" },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return resolveMetadata({
+    path: "/digital-implant-workflows/",
+    title: "Digital Implant Workflow Solutions | Image3DConversion",
+    description:
+      "Choose the right digital implant workflow for guided placement, full-arch treatment, immediate loading, advanced anchorage or design support.",
+  });
+}
 
 const waysToWorkSlugs = [
   "case-data-preparation",

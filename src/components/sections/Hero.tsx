@@ -4,17 +4,26 @@ import { ButtonLink } from "@/components/ui/Button";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { PlanningPanel } from "@/components/ui/PlanningPanel";
 import { cta } from "@/content/cta-routes";
-import { home } from "@/content/pages/home";
 import { img } from "@/content/images";
+
+interface HeroCopy {
+  eyebrow: string;
+  h1: string;
+  body: string;
+  utility: string;
+  professionalNote: string;
+}
 
 /**
  * Homepage hero. Copy ~42% / layered planning visual ~58% on desktop; on mobile
  * the copy + primary CTA come first, the visual follows. The visual is a real
  * de-identified planning panel with a floating printed-guide card overlapping
  * it — planning → product, with clinical depth (Homepage §3).
+ *
+ * Hero copy is passed in from the homepage resolver (CMS-editable with static
+ * fallback); the layout and visuals stay in code.
  */
-export function Hero() {
-  const { hero } = home;
+export function Hero({ hero }: { hero: HeroCopy }) {
   return (
     <section className="relative overflow-hidden border-b border-white/10 band-navy text-[var(--text-on-invert)]">
       {/* light blueprint texture over the navy band, fading from the top-right */}

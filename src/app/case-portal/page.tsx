@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { resolveMetadata } from "@/lib/seo/metadata";
 import { Container } from "@/components/ui/Container";
 import { Section } from "@/components/ui/Section";
 import { Eyebrow } from "@/components/ui/Eyebrow";
@@ -9,12 +10,14 @@ import { cta } from "@/content/cta-routes";
 
 // Copy source: Case Portal Page v1.0. PUBLIC GATEWAY ONLY — explains the portal
 // and routes in. No clinical upload, no invented screenshots, no PII.
-export const metadata: Metadata = {
-  title: { absolute: "Image3DConversion Case Portal | Login & Start a Case" },
-  description:
-    "Access the Image3DConversion Case Portal to start, review, approve and track your digital implant workflow.",
-  alternates: { canonical: "/case-portal/" },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return resolveMetadata({
+    path: "/case-portal/",
+    title: "Image3DConversion Case Portal | Login & Start a Case",
+    description:
+      "Access the Image3DConversion Case Portal to start, review, approve and track your digital implant workflow.",
+  });
+}
 
 const actions = [
   { t: "Start a Case", d: "Create a new guided, full-arch, advanced, immediate-loading or design workflow request." },

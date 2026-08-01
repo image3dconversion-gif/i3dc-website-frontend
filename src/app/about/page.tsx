@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { resolveMetadata } from "@/lib/seo/metadata";
 import { Section } from "@/components/ui/Section";
 import { PageHero } from "@/components/sections/PageHero";
 import { PlanningPanel } from "@/components/ui/PlanningPanel";
@@ -11,12 +12,14 @@ import { positioning } from "@/content/site";
 
 // Copy source: About Page v1.0. Founder credibility without over-personalising;
 // no unsupported case-count / outcome / compliance claims.
-export const metadata: Metadata = {
-  title: { absolute: "About Image3DConversion | Digital Implant Workflow Company" },
-  description:
-    "Learn about Image3DConversion, a digital implant workflow company supporting guided implant planning, surgical guide design, prosthetic coordination and global practice collaboration.",
-  alternates: { canonical: "/about/" },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return resolveMetadata({
+    path: "/about/",
+    title: "About Image3DConversion | Digital Implant Workflow Company",
+    description:
+      "Learn about Image3DConversion, a digital implant workflow company supporting guided implant planning, surgical guide design, prosthetic coordination and global practice collaboration.",
+  });
+}
 
 const supports = [
   { t: "Guided implant workflows", d: "Planning and guide-design support for routine, multi-implant and restorative-led cases." },

@@ -16,6 +16,7 @@ import { createReader } from "@keystatic/core/reader";
 import keystaticConfig from "../../keystatic.config";
 import { site, positioning, contact } from "./site";
 import { educationLink } from "./navigation";
+import { home } from "./pages/home";
 
 // One reader over the repo root. Wrapped reads never throw to the caller.
 const reader = createReader(process.cwd(), keystaticConfig);
@@ -184,6 +185,49 @@ export async function getCaseEvidence(): Promise<CaseEvidenceItem[]> {
     }),
   );
   return items.filter((c): c is CaseEvidenceItem => c !== null).sort((a, b) => a.order - b.order);
+}
+
+/**
+ * Homepage copy. Returns the SAME shape `page.tsx`/`Hero` already consume: every
+ * card grid, step list, checklist and visual stays in code (structure/layout);
+ * only the editable section HEADINGS / SUBCOPY / notes can be overridden by the
+ * CMS `homepage` singleton, each falling back per-field to the approved copy.
+ */
+export type HomepageContent = typeof home;
+
+/** Merge CMS string overrides onto a base section; non-string fields untouched. */
+function mergeStrings(
+  base: Record<string, unknown>,
+  cmsObj: unknown,
+): Record<string, unknown> {
+  const o = (cmsObj ?? {}) as Record<string, unknown>;
+  const out: Record<string, unknown> = { ...base };
+  for (const key of Object.keys(base)) {
+    if (typeof base[key] === "string" && key in o) {
+      out[key] = val(o[key] as string | null | undefined, base[key] as string);
+    }
+  }
+  return out;
+}
+
+export async function getHomepage(): Promise<HomepageContent> {
+  const cms = await safeRead(() => reader.singletons.homepage.read());
+  if (!cms) return home;
+  const merged = {
+    ...home,
+    hero: mergeStrings(home.hero, cms.hero),
+    smile: mergeStrings(home.smile, cms.smile),
+    workflows: mergeStrings(home.workflows, cms.workflows),
+    differentiation: mergeStrings(home.differentiation, cms.differentiation),
+    steps: mergeStrings(home.steps, cms.steps),
+    support: mergeStrings(home.support, cms.support),
+    global: mergeStrings(home.global, cms.global),
+    complexCase: mergeStrings(home.complexCase, cms.complexCase),
+    requirements: mergeStrings(home.requirements, cms.requirements),
+    trust: mergeStrings(home.trust, cms.trust),
+    finalAction: mergeStrings(home.finalAction, cms.finalAction),
+  };
+  return merged as unknown as HomepageContent;
 }
 
 export interface SeoMetaOverride {

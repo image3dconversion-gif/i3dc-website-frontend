@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
+import { resolveMetadata } from "@/lib/seo/metadata";
 import { Section } from "@/components/ui/Section";
 import { ButtonLink } from "@/components/ui/Button";
 import { PageHero } from "@/components/sections/PageHero";
 import { RouteCards } from "@/components/sections/RouteCards";
 import { PlanningPanel } from "@/components/ui/PlanningPanel";
+import { getCaseEvidence } from "@/content/source";
 import { cta } from "@/content/cta-routes";
 import { img } from "@/content/images";
 
@@ -11,12 +13,14 @@ import { img } from "@/content/images";
 // NOTE: no case examples are invented and no unapproved/patient imagery is used.
 // This page publishes the evidence FRAMEWORK; real cases are added only once
 // de-identified and consent-cleared.
-export const metadata: Metadata = {
-  title: { absolute: "Guided Implant Workflow Case Evidence | Image3DConversion" },
-  description:
-    "Review how Image3DConversion presents anonymised digital implant workflows — case objective, records, planning decisions, approvals and delivered components.",
-  alternates: { canonical: "/case-evidence/" },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return resolveMetadata({
+    path: "/case-evidence/",
+    title: "Guided Implant Workflow Case Evidence | Image3DConversion",
+    description:
+      "Review how Image3DConversion presents anonymised digital implant workflows — case objective, records, planning decisions, approvals and delivered components.",
+  });
+}
 
 const pattern = [
   "Starting condition",
@@ -45,7 +49,10 @@ const objectives = [
   { title: "Zygoma & pterygoid", body: "Advanced anchorage where anatomy and restoration must agree.", linkLabel: "Advanced planning", href: "/zygoma-pterygoid-planning/" },
 ];
 
-export default function CaseEvidencePage() {
+export default async function CaseEvidencePage() {
+  // Published cases appear only once approved AND anonymised in the CMS; until
+  // then this renders nothing and the evidence framework below stands alone.
+  const cases = await getCaseEvidence();
   return (
     <>
       <PageHero
@@ -108,6 +115,26 @@ export default function CaseEvidencePage() {
         </p>
         <div className="mt-8"><RouteCards cards={objectives} columns={4} /></div>
       </Section>
+
+      {cases.length > 0 && (
+        <Section tone="tint" aria-labelledby="published-h">
+          <h2 id="published-h">Published case workflows</h2>
+          <p className="mt-4 max-w-2xl text-ink">
+            De-identified, consent-cleared examples, each presented in the same transparent pattern.
+          </p>
+          <ul className="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+            {cases.map((c) => (
+              <li key={c.title} className="rounded-[var(--radius-card)] border border-line bg-white p-6 shadow-[var(--shadow-sm)]">
+                {c.workflow && (
+                  <p className="text-xs font-bold uppercase tracking-wider text-brand">{c.workflow}</p>
+                )}
+                <h3 className="mt-2 text-lg">{c.title}</h3>
+                <p className="mt-2 text-sm text-ink">{c.summary}</p>
+              </li>
+            ))}
+          </ul>
+        </Section>
+      )}
 
       <Section aria-labelledby="ce-note-h" width="narrow">
         <h2 id="ce-note-h">Published examples are prepared carefully</h2>

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { resolveMetadata } from "@/lib/seo/metadata";
 import { Section } from "@/components/ui/Section";
 import { ButtonLink } from "@/components/ui/Button";
 import { PageHero } from "@/components/sections/PageHero";
@@ -9,12 +10,14 @@ import { cta } from "@/content/cta-routes";
 import { img } from "@/content/images";
 
 // Copy source: How It Works / Workflow Overview v1.0 (visitor copy only).
-export const metadata: Metadata = {
-  title: { absolute: "How Image3DConversion Works | Guided Implant Workflow" },
-  description:
-    "Understand how Image3DConversion supports guided implant planning, case data preparation, design review, approval and delivery workflows for dental practices.",
-  alternates: { canonical: "/how-it-works/" },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return resolveMetadata({
+    path: "/how-it-works/",
+    title: "How Image3DConversion Works | Guided Implant Workflow",
+    description:
+      "Understand how Image3DConversion supports guided implant planning, case data preparation, design review, approval and delivery workflows for dental practices.",
+  });
+}
 
 const stages = [
   { n: "01", title: "Discuss the case route", body: "Identify the case type and workflow need — planning, design-only, design-to-delivery, global support or partnership.", where: "Discuss a Case" },

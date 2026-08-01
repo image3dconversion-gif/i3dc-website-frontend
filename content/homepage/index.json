@@ -1,0 +1,53 @@
+{
+  "hero": {
+    "eyebrow": "DIGITAL IMPLANT PLANNING & SURGICAL GUIDE SERVICES",
+    "h1": "Plan the outcome. Guide the execution.",
+    "body": "Begin with the smile you intend to restore. Image3DConversion helps coordinate the aesthetic and prosthetic objective with function, biology, anatomy, implant planning, guide design and the approved route to delivery. Your treatment plan remains under your approval at every critical stage.",
+    "utility": "Already working with us? Open the Case Portal.",
+    "professionalNote": "Services are provided to dental professionals and authorised workflow partners."
+  },
+  "smile": {
+    "h2": "Start with the smile you intend to restore.",
+    "body": "The smile establishes the destination. Tooth position, proportion, display, lip support and prosthetic form shape the aesthetic objective. Function, occlusion, biology and available anatomy then determine how that objective can be supported responsibly."
+  },
+  "workflows": {
+    "h2": "Choose the workflow your case needs.",
+    "intro": "Start with the clinical situation. We will show you the records, planning path and deliverables that belong together."
+  },
+  "differentiation": {
+    "h2": "The guide is one part of the workflow.",
+    "body": "A usable guide begins before guide design. The patient data must align. The planned restoration must be visible. The implant system and drilling protocol must be confirmed. The clinician must review the plan. We coordinate those steps before production begins.",
+    "pullLine": "The guide is the last step, not the point."
+  },
+  "steps": {
+    "h2": "One case. Five visible steps.",
+    "responsibilityNote": "The treating clinician remains responsible for diagnosis, treatment decisions and final approval."
+  },
+  "support": {
+    "h2": "Choose how much support your practice needs."
+  },
+  "global": {
+    "h2": "Built to work with practices across borders.",
+    "body": "Use Image3DConversion as a design partner for validated local production, coordinate design and delivery through one case, or establish a white-label workflow for a practice group, laboratory or implant partner."
+  },
+  "complexCase": {
+    "h2": "Bring us the cases that need more than a template.",
+    "lead": "A full-arch case is not a collection of products. It is one sequence.",
+    "body": "Full-arch, immediate-loading, pterygoid and zygomatic cases involve more than implant coordinates. They require a shared understanding of the restorative goal, support strategy, surgical sequence and approval points.",
+    "closingLine": "Discuss the workflow before uploading the complete case if the scope is still being defined."
+  },
+  "requirements": {
+    "h2": "Send the right data before planning begins.",
+    "body": "Requirements change by workflow. Review the DICOM, intraoral scan, bite, prosthetic reference, implant system and supporting records before you submit.",
+    "privacyNotice": "Do not email or place patient-identifying information in a public enquiry form. Clinical files are submitted only through the Case Portal."
+  },
+  "trust": {
+    "eyebrow": "Who we are",
+    "h2": "A digital workflow team for guided implantology.",
+    "body": "Image3DConversion coordinates the digital work that happens before surgery: restoration-led planning, implant and guide design, and the review and approval steps that keep the treating clinician in control. The dentist retains clinical authority; we manage the digital execution around the approved plan. As an India-based, remote-first workflow team, we support practices across India and international partner workflows."
+  },
+  "finalAction": {
+    "h2": "Ready when the case is.",
+    "body": "Start the case when your records and scope are clear. If the workflow is still being defined, speak with the team first."
+  }
+}

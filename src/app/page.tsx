@@ -11,20 +11,32 @@ import { CtaBand } from "@/components/sections/CtaBand";
 import { IconList } from "@/components/ui/IconList";
 import { FeatureGrid } from "@/components/ui/FeatureGrid";
 import { CutoutFrame } from "@/components/ui/CutoutFrame";
+import { ProofStrip } from "@/components/sections/ProofStrip";
 import { cta } from "@/content/cta-routes";
-import { home } from "@/content/pages/home";
+import { getHomepage, getTestimonials } from "@/content/source";
+import { resolveMetadata } from "@/lib/seo/metadata";
 import { img } from "@/content/images";
 
-export const metadata: Metadata = {
-  title: { absolute: "Digital Implant Planning & Surgical Guides | Image3DConversion" },
-  description: home.seo.description,
-  alternates: { canonical: "/" },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return resolveMetadata({
+    path: "/",
+    title: "Digital Implant Planning & Surgical Guides | Image3DConversion",
+    description:
+      "Plan routine and complex guided implant cases with expert digital planning, surgical guides, full-arch workflows and clinician review before production.",
+  });
+}
 
-export default function HomePage() {
+export default async function HomePage() {
+  // Business copy comes from the CMS homepage singleton (static fallback);
+  // approved+consented testimonials render only when present (else nothing).
+  const home = await getHomepage();
+  const testimonials = (await getTestimonials()).map((t) => ({
+    quote: t.quote,
+    attribution: [t.role, t.organisation].filter(Boolean).join(", ") || t.attribution,
+  }));
   return (
     <>
-      <Hero />
+      <Hero hero={home.hero} />
 
       {/* 2 — Patient outcome */}
       <SmileSection />
@@ -75,6 +87,9 @@ export default function HomePage() {
           </ButtonLink>
         </p>
       </Section>
+
+      {/* Proof — renders only when approved, consented testimonials exist. */}
+      <ProofStrip testimonials={testimonials} />
 
       {/* 6 — Support modes */}
       <Section aria-labelledby="support-h">

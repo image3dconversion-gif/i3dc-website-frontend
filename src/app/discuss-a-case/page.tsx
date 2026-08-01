@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { resolveMetadata } from "@/lib/seo/metadata";
 import { Section } from "@/components/ui/Section";
 import { ButtonLink } from "@/components/ui/Button";
 import { PageHero } from "@/components/sections/PageHero";
@@ -9,12 +10,14 @@ import { cta } from "@/content/cta-routes";
 
 // Copy source: Contact / Discuss a Case v1.0. Public enquiry only — NO file
 // upload, NO patient data. Returning/ready cases route to the Case Portal.
-export const metadata: Metadata = {
-  title: { absolute: "Discuss a Guided Implant Case | Image3DConversion" },
-  description:
-    "Contact Image3DConversion to discuss guided implant planning, full-arch workflows, design-only support, design-to-delivery routes or global workflow partnership.",
-  alternates: { canonical: "/discuss-a-case/" },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return resolveMetadata({
+    path: "/discuss-a-case/",
+    title: "Discuss a Guided Implant Case | Image3DConversion",
+    description:
+      "Contact Image3DConversion to discuss guided implant planning, full-arch workflows, design-only support, design-to-delivery routes or global workflow partnership.",
+  });
+}
 
 const routes = [
   { title: "Guided Implant Planning", body: "Implant planning and guide-design support for routine or multi-implant cases.", linkLabel: "Start here", href: "#form" },
