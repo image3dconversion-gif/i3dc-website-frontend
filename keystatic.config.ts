@@ -39,10 +39,21 @@ export default config({
   storage: { kind: "local" },
   ui: {
     brand: { name: "Image3DConversion CMS" },
+    // Grouped by whether edits are LIVE on the site today. "Advanced" entries
+    // exist in the model but are not yet wired to the frontend — editing them
+    // has no visible effect until a developer connects them (see launch notes).
     navigation: {
-      "Site & SEO": ["siteSettings", "contactSettings", "footerSettings", "seoDefaults"],
-      "Marketing content": ["homepage", "services", "workflowPages", "faqs", "testimonials", "caseEvidence"],
-      "Structure": ["navigation", "ctas", "pages", "seoMeta"],
+      "Live · Site & contact": ["siteSettings", "contactSettings", "footerSettings"],
+      "Live · Marketing content": ["homepage", "faqs", "testimonials", "caseEvidence"],
+      "Live · SEO (per page)": ["seoMeta"],
+      "Advanced · wire before editing": [
+        "seoDefaults",
+        "services",
+        "workflowPages",
+        "pages",
+        "navigation",
+        "ctas",
+      ],
       "Media governance": ["imageAssets"],
     },
   },
