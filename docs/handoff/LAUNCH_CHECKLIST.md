@@ -41,11 +41,11 @@ ZOHO_MODULE=Leads
 - [ ] Set env on the host, then submit **one test lead** and confirm it lands in the right pipeline before go-live.
 
 ## D. Hosting / deploy configuration — at deploy time 🚀
-- [ ] **Confirm hosting target (BLOCKS deploy)** — choose one:
-  - **GoDaddy only** — works for a *static export*; but this app needs a Node runtime for `/api/enquiry` (Zoho), Keystatic admin, and `middleware.ts`. GoDaddy shared hosting cannot run these. Not recommended unless moving to static-only (which would drop the server enquiry route).
-  - **Vercel/other Node host + GoDaddy DNS** *(recommended)* — deploy the Next.js app on Vercel (or similar), point GoDaddy DNS (A/CNAME) at it. Full support for API route, middleware `/keystatic` gate, and ISR. Simplest correct path.
-  - **VPS/server + GoDaddy DNS** — run `next build && next start` (or Docker/PM2) on a VPS, GoDaddy DNS → server IP. Full control; more ops.
-- [ ] Set `NEXT_PUBLIC`-free server env on the host.
+- [x] **Hosting target — DECIDED: Vercel + GoDaddy DNS.** Deploy the Next.js app on Vercel; keep the domain at GoDaddy and point DNS at Vercel. Full support for `/api/enquiry`, the `middleware.ts` `/keystatic` gate, and ISR.
+  Vercel steps: import the repo → framework auto-detected (Next.js) → add env vars (below) → deploy → add domain `www.image3dconversion.com` (+ apex) in Vercel → set GoDaddy DNS per Vercel's records (A `76.76.21.21` for apex, CNAME `cname.vercel-dns.com` for `www`, or Vercel nameservers).
+- [ ] Set server env vars in Vercel (Project → Settings → Environment Variables), Production scope:
+  - Keystatic admin (optional): `KEYSTATIC_ENABLED`, `KEYSTATIC_ADMIN_USER`, `KEYSTATIC_ADMIN_PASSWORD` — all three, or leave unset to keep `/keystatic` 404. (Note: on serverless, Keystatic local-storage writes don't persist — edit content locally and commit, or plan GitHub storage; the admin is optional in prod.)
+  - Zoho (only when going live): the 7 `ZOHO_*` vars from section C.
 - [ ] **Keystatic admin:** either omit `/keystatic` from the deployed app, OR set `KEYSTATIC_ENABLED=true` + `KEYSTATIC_ADMIN_USER` + `KEYSTATIC_ADMIN_PASSWORD` (all three) to expose it behind Basic Auth. Missing any → stays 404 (fail-safe).
 - [ ] Consider a durable rate-limiter (KV/Upstash) for `/api/enquiry` on serverless (current limiter is per-instance, best-effort).
 - [ ] Verify `site.url` (`https://www.image3dconversion.com`) matches the production domain for canonicals/sitemap.
