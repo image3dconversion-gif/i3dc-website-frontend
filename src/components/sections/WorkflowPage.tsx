@@ -5,6 +5,7 @@ import { PageHero } from "@/components/sections/PageHero";
 import { CtaBand } from "@/components/sections/CtaBand";
 import { CutoutFrame } from "@/components/ui/CutoutFrame";
 import { Accordion, type QA } from "@/components/ui/Accordion";
+import { FaqPageJsonLd, BreadcrumbJsonLd } from "@/lib/seo/jsonld";
 import { cta } from "@/content/cta-routes";
 import type { Img } from "@/content/images";
 
@@ -64,7 +65,12 @@ export interface WorkflowContent {
  * system (PageHero + planning panel, blueprint tint bands, app-window depth).
  * Content-driven — see src/content/pages/workflows.ts.
  */
-export function WorkflowPage({ c }: { c: WorkflowContent }) {
+export function WorkflowPage({
+  c,
+}: {
+  // `canonical` is carried by the workflows.ts entries; used for breadcrumb SEO.
+  c: WorkflowContent & { canonical?: string };
+}) {
   // Never duplicate the primary: if the page leads with "Discuss", the
   // secondary becomes Start a Case, otherwise it's Discuss a Complex Case.
   const leadsWithDiscuss = c.primary.href === cta.discussCase.href;
@@ -85,6 +91,18 @@ export function WorkflowPage({ c }: { c: WorkflowContent }) {
 
   return (
     <>
+      {c.faq && c.faq.length > 0 && (
+        <FaqPageJsonLd items={c.faq.map((f) => ({ q: f.q, a: f.a }))} />
+      )}
+      {c.canonical && (
+        <BreadcrumbJsonLd
+          crumbs={[
+            { name: "Home", path: "/" },
+            { name: "Digital implant workflows", path: "/digital-implant-workflows/" },
+            { name: c.h1, path: c.canonical },
+          ]}
+        />
+      )}
       <PageHero
         eyebrow={c.eyebrow}
         h1={c.h1}

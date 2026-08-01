@@ -2,12 +2,18 @@ import Link from "next/link";
 import Image from "next/image";
 import { Container } from "@/components/ui/Container";
 import { ContactChannels } from "@/components/sections/ContactChannels";
-import { footerNav, educationLink } from "@/content/navigation";
-import { site, positioning } from "@/content/site";
+import { footerNav } from "@/content/navigation";
 import { img } from "@/content/images";
+import { getSiteSettings, getFooterSettings } from "@/content/source";
 
-/** Global footer — "a quiet end, not a second homepage" (Homepage §5). */
-export function Footer() {
+/**
+ * Global footer — "a quiet end, not a second homepage" (Homepage §5).
+ * Text is sourced through the CMS abstraction; if the CMS is empty it falls
+ * back to the approved static content and renders identically.
+ */
+export async function Footer() {
+  const siteData = await getSiteSettings();
+  const footerData = await getFooterSettings();
   return (
     <footer className="border-t-2 border-brand bg-bg-tint">
       <Container className="py-14">
@@ -21,11 +27,11 @@ export function Footer() {
               className="h-9 w-auto"
             />
             <p className="mt-3 text-sm font-semibold text-heading">
-              {site.descriptor}
+              {siteData.descriptor}
             </p>
-            <p className="mt-2 text-sm text-muted">{site.footerLine}</p>
-            <p className="mt-4 text-sm font-semibold text-heading">{positioning.base}</p>
-            <p className="mt-1 text-sm text-muted">{positioning.reach}</p>
+            <p className="mt-2 text-sm text-muted">{siteData.footerLine}</p>
+            <p className="mt-4 text-sm font-semibold text-heading">{siteData.positioningBase}</p>
+            <p className="mt-1 text-sm text-muted">{siteData.positioningReach}</p>
           </div>
 
           {footerNav.map((group) => (
@@ -57,23 +63,23 @@ export function Footer() {
           <p className="text-sm text-muted">
             Education:{" "}
             <a
-              href={educationLink.href}
+              href={footerData.educationHref}
               target="_blank"
               rel="noopener noreferrer"
               className="font-semibold"
             >
-              {educationLink.label}
+              {footerData.educationLabel}
             </a>{" "}
             — external destination.
           </p>
           <p className="mt-3 max-w-3xl text-xs leading-relaxed text-muted">
-            {site.professionalNotice}
+            {footerData.legalNotice}
           </p>
           {/* Company address, legal entity, tax details, phone and regional
               contacts must be verified before publishing (Homepage §5). */}
           <p className="mt-4 text-xs text-muted">
             © {/* year set at build; keep static to avoid hydration drift */}
-            2026 {site.name}. All rights reserved.
+            2026 {footerData.copyrightName}. All rights reserved.
           </p>
         </div>
       </Container>

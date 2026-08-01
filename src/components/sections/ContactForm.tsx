@@ -1,15 +1,23 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import {
+  INQUIRY_LABELS,
+  INQUIRY_TYPES,
+  type EnquiryPayload,
+  type InquiryType,
+} from "@/lib/enquiry/types";
 
 /**
- * Public "Discuss a Case" enquiry form.
+ * Public enquiry form.
  *
- * HARD BOUNDARY: collects professional context + a NON-identifying workflow
- * summary only. There is NO file-upload control and no patient-data field. It
- * does not transmit — per the blueprint the approved/tested intake route (e.g.
- * the existing Zoho endpoint) must be wired before launch and must not be
- * silently replaced. On submit it validates and shows a local confirmation.
+ * HARD BOUNDARY (unchanged): collects professional context + a NON-identifying
+ * workflow summary only. No file-upload control, no patient-data field.
+ *
+ * It now submits to the same-origin server route `/api/enquiry`, which
+ * validates and routes to Zoho CRM (guarded — dry-run until live submission is
+ * approved and configured server-side). The visual design is unchanged; new
+ * fields reuse the existing token classes.
  */
 
 const WORKFLOWS = [
@@ -32,58 +40,141 @@ const CASE_TYPES = [
   "Partnership",
   "Not sure",
 ];
-const NEXT_STEPS = [
-  "Call",
-  "Email reply",
-  "Case Portal setup",
-  "Global workflow discussion",
-  "Partnership discussion",
-];
+const URGENCY = ["Planning ahead", "Within a month", "Within two weeks", "Urgent"];
 
 const fieldCls =
   "mt-1.5 w-full rounded-[var(--radius-card)] border border-line-strong bg-white px-3 py-2.5 text-sm text-ink outline-none focus:border-brand focus:ring-2 focus:ring-[var(--focus-ring)]/40";
 const labelCls = "block text-sm font-semibold text-heading";
 const req = <span className="text-brand"> *</span>;
 
-export function ContactForm() {
-  const [submitted, setSubmitted] = useState(false);
+type Status = "idle" | "submitting" | "success" | "error";
 
-  if (submitted) {
+export function ContactForm({
+  defaultInquiryType = "discuss-a-case",
+}: {
+  defaultInquiryType?: InquiryType;
+}) {
+  const [status, setStatus] = useState<Status>("idle");
+  const [errorMsg, setErrorMsg] = useState<string>("");
+  const [successMsg, setSuccessMsg] = useState<string>("");
+
+  // Capture attribution + page source on the client (no Suspense needed).
+  const [meta, setMeta] = useState<{ pageSource?: string; utm?: EnquiryPayload["utm"] }>({});
+  useEffect(() => {
+    const p = new URLSearchParams(window.location.search);
+    const utm = {
+      source: p.get("utm_source") || undefined,
+      medium: p.get("utm_medium") || undefined,
+      campaign: p.get("utm_campaign") || undefined,
+      content: p.get("utm_content") || undefined,
+    };
+    setMeta({
+      pageSource: window.location.pathname,
+      utm: Object.values(utm).some(Boolean) ? utm : undefined,
+    });
+  }, []);
+
+  if (status === "success") {
     return (
       <div className="rounded-[var(--radius-card)] border border-line-strong bg-white p-8 shadow-[var(--shadow-float)]">
-        <p className="text-xs font-bold uppercase tracking-wider text-brand">Enquiry ready</p>
-        <h3 className="mt-2">Thanks — your workflow enquiry is ready to send.</h3>
-        <p className="mt-3 text-sm text-ink">
-          We’ll review the workflow category and professional context, then confirm the
-          right next step. If clinical records are needed, we’ll route you to the
-          authenticated Case Portal — never a public form.
-        </p>
+        <p className="text-xs font-bold uppercase tracking-wider text-brand">Enquiry sent</p>
+        <h3 className="mt-2">Thanks — your workflow enquiry has been received.</h3>
+        <p className="mt-3 text-sm text-ink">{successMsg}</p>
         <p className="mt-4 rounded-[var(--radius-card)] border border-line bg-blue-50 px-4 py-3 text-xs text-muted">
-          Note: this preview form does not transmit yet. The approved, tested intake
-          route is connected before launch.
+          If clinical records are needed, we’ll route you to the authenticated Case Portal —
+          never a public form.
         </p>
         <button
           type="button"
-          onClick={() => setSubmitted(false)}
+          onClick={() => setStatus("idle")}
           className="mt-5 text-sm font-bold text-brand underline underline-offset-4"
         >
-          ← Edit the enquiry
+          ← Send another enquiry
         </button>
       </div>
     );
+  }
+
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const formEl = e.currentTarget;
+    if (!formEl.checkValidity()) {
+      formEl.reportValidity();
+      return;
+    }
+    const fd = new FormData(formEl);
+    const payload: EnquiryPayload = {
+      inquiryType: (fd.get("inquiryType") as InquiryType) || defaultInquiryType,
+      name: String(fd.get("name") || ""),
+      email: String(fd.get("email") || ""),
+      phone: String(fd.get("phone") || "") || undefined,
+      city: String(fd.get("location") || "") || undefined,
+      organization: String(fd.get("org") || "") || undefined,
+      role: String(fd.get("role") || "") || undefined,
+      serviceInterest: String(fd.get("caseType") || "") || undefined,
+      workflowInterest: String(fd.get("workflow") || "") || undefined,
+      urgency: String(fd.get("urgency") || "") || undefined,
+      preferredCallback: String(fd.get("preferredCallback") || "") || undefined,
+      existingCustomer: fd.get("existingCustomer") === "on",
+      message: String(fd.get("summary") || ""),
+      consent: fd.get("consent") === "on",
+      companyWebsite: String(fd.get("companyWebsite") || ""), // honeypot
+      pageSource: meta.pageSource,
+      utm: meta.utm,
+    };
+
+    setStatus("submitting");
+    setErrorMsg("");
+    try {
+      const res = await fetch("/api/enquiry", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+      if (res.ok && data.ok) {
+        if (data.action === "redirect" && data.redirectUrl) {
+          window.location.href = data.redirectUrl;
+          return;
+        }
+        setSuccessMsg(
+          data.message ||
+            "We’ll review the workflow category and professional context, then confirm the right next step.",
+        );
+        setStatus("success");
+      } else {
+        const firstErr =
+          data.errors && typeof data.errors === "object"
+            ? String(Object.values(data.errors)[0])
+            : data.error;
+        setErrorMsg(firstErr || "Something went wrong. Please try again.");
+        setStatus("error");
+      }
+    } catch {
+      setErrorMsg("Network error. Please try again.");
+      setStatus("error");
+    }
   }
 
   return (
     <form
       id="form"
       noValidate
-      onSubmit={(e) => {
-        e.preventDefault();
-        if ((e.currentTarget as HTMLFormElement).checkValidity()) setSubmitted(true);
-        else (e.currentTarget as HTMLFormElement).reportValidity();
-      }}
+      onSubmit={onSubmit}
       className="rounded-[var(--radius-card)] border border-line bg-white p-6 shadow-[var(--shadow-float)] sm:p-8"
     >
+      {/* Honeypot — hidden from humans; bots that fill it are rejected. */}
+      <div aria-hidden className="absolute h-0 w-0 overflow-hidden" style={{ position: "absolute", left: "-9999px" }}>
+        <label htmlFor="companyWebsite">Company website</label>
+        <input id="companyWebsite" name="companyWebsite" tabIndex={-1} autoComplete="off" />
+      </div>
+
+      {status === "error" && (
+        <div role="alert" className="mb-5 rounded-[var(--radius-card)] border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-800">
+          {errorMsg}
+        </div>
+      )}
+
       <div className="grid gap-5 sm:grid-cols-2">
         <div>
           <label className={labelCls} htmlFor="name">Name{req}</label>
@@ -110,6 +201,14 @@ export function ContactForm() {
           <input id="location" name="location" required className={fieldCls} />
         </div>
         <div>
+          <label className={labelCls} htmlFor="inquiryType">Enquiry type{req}</label>
+          <select id="inquiryType" name="inquiryType" required defaultValue={defaultInquiryType} className={fieldCls}>
+            {INQUIRY_TYPES.map((t) => (
+              <option key={t} value={t}>{INQUIRY_LABELS[t]}</option>
+            ))}
+          </select>
+        </div>
+        <div>
           <label className={labelCls} htmlFor="workflow">Workflow interest{req}</label>
           <select id="workflow" name="workflow" required defaultValue="" className={fieldCls}>
             <option value="" disabled>Select a workflow…</option>
@@ -117,11 +216,28 @@ export function ContactForm() {
           </select>
         </div>
         <div>
-          <label className={labelCls} htmlFor="caseType">Case type</label>
+          <label className={labelCls} htmlFor="caseType">Case / service type</label>
           <select id="caseType" name="caseType" defaultValue="" className={fieldCls}>
             <option value="">Optional…</option>
             {CASE_TYPES.map((c) => <option key={c} value={c}>{c}</option>)}
           </select>
+        </div>
+        <div>
+          <label className={labelCls} htmlFor="urgency">Case urgency</label>
+          <select id="urgency" name="urgency" defaultValue="" className={fieldCls}>
+            <option value="">Optional…</option>
+            {URGENCY.map((u) => <option key={u} value={u}>{u}</option>)}
+          </select>
+        </div>
+        <div>
+          <label className={labelCls} htmlFor="preferredCallback">Preferred callback time</label>
+          <input id="preferredCallback" name="preferredCallback" placeholder="e.g. weekday mornings IST" className={fieldCls} />
+        </div>
+        <div className="flex items-end">
+          <label className="flex items-center gap-2 text-sm text-ink">
+            <input type="checkbox" name="existingCustomer" className="h-4 w-4 rounded border-line-strong text-brand focus:ring-[var(--focus-ring)]/40" />
+            I’m an existing customer
+          </label>
         </div>
       </div>
 
@@ -148,19 +264,22 @@ export function ContactForm() {
         />
       </div>
 
-      <div className="mt-5 max-w-xs">
-        <label className={labelCls} htmlFor="nextStep">Preferred next step</label>
-        <select id="nextStep" name="nextStep" defaultValue="" className={fieldCls}>
-          <option value="">Optional…</option>
-          {NEXT_STEPS.map((n) => <option key={n} value={n}>{n}</option>)}
-        </select>
+      <div className="mt-5">
+        <label className="flex items-start gap-2 text-sm text-ink">
+          <input type="checkbox" name="consent" required className="mt-0.5 h-4 w-4 rounded border-line-strong text-brand focus:ring-[var(--focus-ring)]/40" />
+          <span>
+            I agree to be contacted about this enquiry and confirm no patient-identifying
+            information is included.{req}
+          </span>
+        </label>
       </div>
 
       <button
         type="submit"
-        className="mt-7 inline-flex min-h-12 items-center justify-center rounded-[var(--radius-card)] bg-brand px-6 text-base font-bold text-white transition-colors hover:bg-brand-hover"
+        disabled={status === "submitting"}
+        className="mt-7 inline-flex min-h-12 items-center justify-center rounded-[var(--radius-card)] bg-brand px-6 text-base font-bold text-white transition-colors hover:bg-brand-hover disabled:opacity-70"
       >
-        Send workflow enquiry
+        {status === "submitting" ? "Sending…" : "Send workflow enquiry"}
       </button>
     </form>
   );

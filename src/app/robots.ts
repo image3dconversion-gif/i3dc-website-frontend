@@ -6,8 +6,8 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
-      // Internal reference page; portal app lives on a separate host.
-      disallow: ["/design-system/"],
+      // Internal reference page + CMS admin; portal app lives on a separate host.
+      disallow: ["/design-system/", "/keystatic/", "/api/"],
     },
     sitemap: `${site.url}/sitemap.xml`,
   };

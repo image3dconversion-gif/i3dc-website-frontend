@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Bricolage_Grotesque, Lato } from "next/font/google";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { SiteChrome } from "@/components/layout/SiteChrome";
+import { OrganizationJsonLd, ProfessionalServiceJsonLd } from "@/lib/seo/jsonld";
 import { site } from "@/content/site";
 import "./globals.css";
 
@@ -33,6 +35,14 @@ export const metadata: Metadata = {
     type: "website",
     siteName: site.name,
     url: site.url,
+    images: [{ url: "/images/logos/i3dc-logo.webp", width: 1200, height: 630, alt: site.name }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Digital Implant Planning & Surgical Guides | Image3DConversion",
+    description:
+      "Expert digital planning, surgical guides and full-arch workflows with clinician review before production.",
+    images: ["/images/logos/i3dc-logo.webp"],
   },
   robots: { index: true, follow: true },
 };
@@ -49,9 +59,11 @@ export default function RootLayout({
         >
           Skip to content
         </a>
-        <Header />
-        <main id="main">{children}</main>
-        <Footer />
+        <OrganizationJsonLd />
+        <ProfessionalServiceJsonLd />
+        <SiteChrome header={<Header />} footer={<Footer />}>
+          {children}
+        </SiteChrome>
       </body>
     </html>
   );

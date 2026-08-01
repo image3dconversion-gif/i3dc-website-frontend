@@ -3,6 +3,7 @@ import { Section } from "@/components/ui/Section";
 import { ButtonLink } from "@/components/ui/Button";
 import { PageHero } from "@/components/sections/PageHero";
 import { Accordion, type QA } from "@/components/ui/Accordion";
+import { FaqPageJsonLd, BreadcrumbJsonLd } from "@/lib/seo/jsonld";
 import { cta } from "@/content/cta-routes";
 
 // Copy source: FAQ / Practice Questions v1.0. Conversion FAQ — top-5 friction
@@ -68,8 +69,16 @@ const groups: { title: string; items: QA[] }[] = [
 ];
 
 export default function FaqPage() {
+  const allFaqs = [...priority, ...groups.flatMap((g) => g.items)];
   return (
     <>
+      <FaqPageJsonLd items={allFaqs} />
+      <BreadcrumbJsonLd
+        crumbs={[
+          { name: "Home", path: "/" },
+          { name: "FAQ", path: "/faq/" },
+        ]}
+      />
       <PageHero
         eyebrow="Practice questions"
         h1="Questions before you start a case? Start here."
