@@ -2,6 +2,7 @@ import { Section } from "@/components/ui/Section";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { ImageOrSlot } from "@/components/ui/ImageOrSlot";
 import { home } from "@/content/pages/home";
+import { img } from "@/content/images";
 
 /**
  * Homepage "Start with the smile" — editorial two-up. Left: the aesthetic-first
@@ -60,12 +61,12 @@ export function SmileSection() {
           </ol>
         </div>
 
-        {/* Right: consented smile + tooth-setup (P0-3) — labelled slot until approved */}
+        {/* Right: illustrative smile-design analysis (approved asset). */}
         <div>
           <ImageOrSlot
-            image={null}
-            alt="Consented patient smile paired with the planned tooth setup, showing the aesthetic objective the plan is built to restore."
-            slot="P0-3 · consented smile + tooth-setup pair (signed patient consent required)"
+            image={img.pSmileDesign}
+            alt={img.pSmileDesign.alt}
+            slot="Smile-design analysis"
             label="Smile → planned tooth setup"
             ratio="4/3"
             sizes="(max-width: 1024px) 100vw, 560px"

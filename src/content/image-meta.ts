@@ -347,6 +347,7 @@ export const imageMeta = {
       pStackableGuided: { ...base, key: "pStackableGuided", title: "Exploded full-arch stackable guide system", source: "premium-images/06-full-arch-stackable/stackable guided- 2.png", usageMap: ["full-arch-stackable-workflow:hero"], caption: "Founder-directed use of the §6-held graded (pink/purple/rainbow) stackable render; processed without colour-grade. Brand note: saturated grade is off the neutral-cool palette — neutral grey alternative is img.pStackableGrey." },
       pAboutImplantPlan: { ...base, key: "pAboutImplantPlan", title: "Digital implant planning render", category: "planning", backgroundType: "opaque", source: "premium-images/03-implant-planning/implant-planning-picture.png", usageMap: ["about:hero"] },
       pZygomaPlanning3d: { ...base, key: "pZygomaPlanning3d", title: "Zygomatic implant planning render", category: "planning", backgroundType: "opaque", source: "premium-images/03-implant-planning/ZYGOMA-PLANNING-3D.png", usageMap: ["home:workflows-card-zygoma"] },
+      pSmileDesign: { ...base, key: "pSmileDesign", title: "Illustrative smile-design analysis", category: "planning", source: "premium-images/07-smile-design/SMILE-DESIGN.png", usageMap: ["home:smile-section"], caption: "Stylised illustration (not a real patient); lower face only, no identity. Note: source shows a third-party monitor logo." },
     };
   })(),
 } as const satisfies Record<keyof typeof img, ImageMeta>;

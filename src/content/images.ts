@@ -238,4 +238,13 @@ export const img = {
     height: 788,
     alt: "Zygomatic implant plan: four zygomatic implants and multi-unit abutments supporting a full-arch prosthesis over translucent skull anatomy.",
   },
+
+  // Illustrative smile-design analysis (stylised render, not a real patient
+  // photo — lower face only, no identity). Homepage "Start with the smile".
+  pSmileDesign: {
+    src: "/images/premium/smile-design-analysis.webp",
+    width: 590,
+    height: 474,
+    alt: "Illustrative smile-design analysis on a monitor: a smile marked with midline, smile-line and horizontal reference guides, beside a column of tooth-setup options.",
+  },
 } as const satisfies Record<string, Img>;
