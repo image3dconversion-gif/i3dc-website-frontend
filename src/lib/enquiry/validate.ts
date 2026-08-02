@@ -26,9 +26,26 @@ const MAX = {
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-// Signals that a patient file/identifier may have been pasted into free text.
+/**
+ * HARD REJECT guard — patient-identifying info or a pasted clinical file. These
+ * must never be stored in the CRM; the submission is bounced back to the portal.
+ * (Strengthened: adds CBCT and NIfTI/zip file references.)
+ */
 const CLINICAL_LEAK_RE =
-  /\b(dicom|\.stl\b|\.dcm\b|patient name|date of birth|\bdob\b|medical record|\bmrn\b|aadhaar|passport no)\b/i;
+  /\b(dicom|cbct|\.stl\b|\.dcm\b|\.nii\b|\.zip\b|patient name|date of birth|\bdob\b|medical record|\bmrn\b|aadhaar|passport no)\b/i;
+
+/**
+ * SOFT ROUTE signal — commercial/case terms that are NOT patient PII but must be
+ * handled in the Case Portal, not this form. A match does not reject; it flags
+ * the lead for `Journey_Stage = Portal Guidance Needed` (see mapping.ts).
+ */
+const PORTAL_TOPIC_RE =
+  /\b(case|cases|price|pricing|cost|quote|quotation|treatment plan|surgery plan|guide design|implant system|implant brand|production|delivery|case status|order status|quotation request)\b/i;
+
+/** True when the message mentions a case/commercial topic that the Case Portal owns. */
+export function mentionsPortalTopic(message: string): boolean {
+  return PORTAL_TOPIC_RE.test(message);
+}
 
 const str = (v: unknown): string => (typeof v === "string" ? v.trim() : "");
 
@@ -73,10 +90,10 @@ export function validateEnquiry(
   else if (!EMAIL_RE.test(email)) errors.email = "Enter a valid email.";
 
   const message = clean(body.message, MAX.message);
-  if (!message) errors.message = "A short workflow summary is required.";
+  if (!message) errors.message = "A short summary of your question is required.";
   else if (CLINICAL_LEAK_RE.test(message)) {
     errors.message =
-      "Please remove patient identifiers or clinical file references. Clinical records go through the Case Portal, not this form.";
+      "Please remove patient identifiers or clinical file references. Case files, planning, and case-specific help go through the I3DC Case Portal, not this form.";
   }
 
   if (body.consent !== true) {
@@ -90,14 +107,8 @@ export function validateEnquiry(
     name,
     email,
     phone: clean(body.phone, MAX.short) || undefined,
-    city: clean(body.city, MAX.short) || undefined,
     organization: clean(body.organization, MAX.short) || undefined,
-    role: clean(body.role, MAX.short) || undefined,
-    serviceInterest: clean(body.serviceInterest, MAX.short) || undefined,
-    workflowInterest: clean(body.workflowInterest, MAX.short) || undefined,
-    urgency: clean(body.urgency, MAX.short) || undefined,
     message,
-    preferredCallback: clean(body.preferredCallback, MAX.short) || undefined,
     existingCustomer: body.existingCustomer === true,
     consent: true,
     pageSource: clean(body.pageSource, MAX.short) || undefined,

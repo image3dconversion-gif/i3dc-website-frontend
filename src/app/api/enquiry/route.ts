@@ -2,12 +2,15 @@
  * POST /api/enquiry — same-origin server intake for the public enquiry form.
  *
  * Pipeline: parse → honeypot → rate-limit → validate + PII/clinical guard →
- * route by inquiry type → guarded Zoho submit (dry-run unless approved).
+ * guarded Zoho submit (dry-run unless approved) → route by journey.
  * Zoho credentials are read server-side only and never exposed to the browser.
  *
- * "existing-customer" enquiries are NOT sent to CRM — the caller is told to
- * redirect to the authenticated Case Portal (real case/order operations live
- * there, not in the CMS or this form).
+ * The website form is a GENERIC-INQUIRY funnel — it never handles case files,
+ * pricing, planning, guide design, production, or case status. Portal-bound
+ * enquiries (existing customer, portal-help, existing-customer-support, or a
+ * message mentioning a Portal-owned topic) still create a captured (dry-run)
+ * lead flagged `Journey_Stage = Portal Guidance Needed`, and the caller is then
+ * pointed to the authenticated I3DC Case Portal where case work actually lives.
  */
 import { NextResponse } from "next/server";
 import { validateEnquiry } from "@/lib/enquiry/validate";
@@ -59,16 +62,6 @@ export async function POST(req: Request) {
 
   const enquiry = result.value;
 
-  // Existing customers: redirect to the Case Portal, no CRM record created.
-  if (enquiry.inquiryType === "existing-customer") {
-    return NextResponse.json({
-      ok: true,
-      action: "redirect",
-      redirectUrl: portal.loginUrl,
-      message: "Existing cases are handled in the Case Portal.",
-    });
-  }
-
   const routing = PIPELINE_ROUTING[enquiry.inquiryType];
   const lead = toZohoLead(enquiry);
   const submit = await submitLead(lead);
@@ -82,11 +75,25 @@ export async function POST(req: Request) {
     );
   }
 
+  // Portal-bound enquiries: the lead is captured (flagged Portal Guidance Needed);
+  // guide the user into the Case Portal, where case work actually happens.
+  const toPortal = routing.portal || enquiry.existingCustomer === true;
+  if (toPortal) {
+    return NextResponse.json({
+      ok: true,
+      action: "redirect",
+      redirectUrl: portal.loginUrl,
+      mode: submit.mode,
+      message:
+        "For case-specific help, files, pricing, planning, or case status, continue in the I3DC Case Portal.",
+    });
+  }
+
   return NextResponse.json({
     ok: true,
     action: "submitted",
     mode: submit.mode,
-    pipeline: routing.pipeline,
+    pipeline: routing.label,
     message:
       submit.mode === "dry-run"
         ? "Enquiry validated (preview mode — live CRM submission not yet enabled)."

@@ -9,38 +9,19 @@ import {
 } from "@/lib/enquiry/types";
 
 /**
- * Public enquiry form.
+ * Public enquiry form — GENERIC-INQUIRY funnel only.
  *
- * HARD BOUNDARY (unchanged): collects professional context + a NON-identifying
- * workflow summary only. No file-upload control, no patient-data field.
+ * HARD BOUNDARY: collects generic questions, portal help, service information at
+ * category level, collaboration, and lab/vendor interest. It is NOT a
+ * case/service-order funnel — no case files, DICOM/STL/CBCT, pricing, planning,
+ * guide design, production, or case status. Those live only in the I3DC Case
+ * Portal. Collected fields are exactly: Name, Clinic/Organization,
+ * Mobile/WhatsApp, Email, Inquiry Type, Message, Existing Customer, Consent, and
+ * (auto) Page Submitted From.
  *
- * It now submits to the same-origin server route `/api/enquiry`, which
- * validates and routes to Zoho CRM (guarded — dry-run until live submission is
- * approved and configured server-side). The visual design is unchanged; new
- * fields reuse the existing token classes.
+ * Submits to the same-origin route `/api/enquiry`, which validates and routes to
+ * Zoho CRM (guarded — dry-run until live submission is approved server-side).
  */
-
-const WORKFLOWS = [
-  "Guided Implant Planning",
-  "Full-Arch / Stackable",
-  "Immediate Loading",
-  "Advanced Case (Zygoma / Pterygoid)",
-  "Design-Only",
-  "Design-to-Delivery",
-  "Global Practice",
-  "Partnership",
-];
-const CASE_TYPES = [
-  "Single implant",
-  "Multi-implant",
-  "Full arch",
-  "Immediate loading",
-  "Zygoma / Pterygoid",
-  "Design-only",
-  "Partnership",
-  "Not sure",
-];
-const URGENCY = ["Planning ahead", "Within a month", "Within two weeks", "Urgent"];
 
 const fieldCls =
   "mt-1.5 w-full rounded-[var(--radius-card)] border border-line-strong bg-white px-3 py-2.5 text-sm text-ink outline-none focus:border-brand focus:ring-2 focus:ring-[var(--focus-ring)]/40";
@@ -50,7 +31,7 @@ const req = <span className="text-brand"> *</span>;
 type Status = "idle" | "submitting" | "success" | "error";
 
 export function ContactForm({
-  defaultInquiryType = "discuss-a-case",
+  defaultInquiryType = "general",
 }: {
   defaultInquiryType?: InquiryType;
 }) {
@@ -78,11 +59,11 @@ export function ContactForm({
     return (
       <div className="rounded-[var(--radius-card)] border border-line-strong bg-white p-8 shadow-[var(--shadow-float)]">
         <p className="text-xs font-bold uppercase tracking-wider text-brand">Enquiry sent</p>
-        <h3 className="mt-2">Thanks — your workflow enquiry has been received.</h3>
+        <h3 className="mt-2">Thanks — your enquiry has been received.</h3>
         <p className="mt-3 text-sm text-ink">{successMsg}</p>
         <p className="mt-4 rounded-[var(--radius-card)] border border-line bg-blue-50 px-4 py-3 text-xs text-muted">
-          If clinical records are needed, we’ll route you to the authenticated Case Portal —
-          never a public form.
+          For a specific case, files, pricing, planning, or case status, we’ll point you to the
+          authenticated I3DC Case Portal — never a public form.
         </p>
         <button
           type="button"
@@ -106,17 +87,11 @@ export function ContactForm({
     const payload: EnquiryPayload = {
       inquiryType: (fd.get("inquiryType") as InquiryType) || defaultInquiryType,
       name: String(fd.get("name") || ""),
-      email: String(fd.get("email") || ""),
-      phone: String(fd.get("phone") || "") || undefined,
-      city: String(fd.get("location") || "") || undefined,
       organization: String(fd.get("org") || "") || undefined,
-      role: String(fd.get("role") || "") || undefined,
-      serviceInterest: String(fd.get("caseType") || "") || undefined,
-      workflowInterest: String(fd.get("workflow") || "") || undefined,
-      urgency: String(fd.get("urgency") || "") || undefined,
-      preferredCallback: String(fd.get("preferredCallback") || "") || undefined,
-      existingCustomer: fd.get("existingCustomer") === "on",
+      phone: String(fd.get("phone") || "") || undefined,
+      email: String(fd.get("email") || ""),
       message: String(fd.get("summary") || ""),
+      existingCustomer: fd.get("existingCustomer") === "on",
       consent: fd.get("consent") === "on",
       companyWebsite: String(fd.get("companyWebsite") || ""), // honeypot
       pageSource: meta.pageSource,
@@ -139,7 +114,7 @@ export function ContactForm({
         }
         setSuccessMsg(
           data.message ||
-            "We’ll review the workflow category and professional context, then confirm the right next step.",
+            "We’ll review your question and confirm the right next step.",
         );
         setStatus("success");
       } else {
@@ -181,24 +156,16 @@ export function ContactForm({
           <input id="name" name="name" required autoComplete="name" className={fieldCls} />
         </div>
         <div>
-          <label className={labelCls} htmlFor="org">Practice / organisation{req}</label>
+          <label className={labelCls} htmlFor="org">Clinic / organisation{req}</label>
           <input id="org" name="org" required autoComplete="organization" className={fieldCls} />
         </div>
         <div>
-          <label className={labelCls} htmlFor="role">Professional role{req}</label>
-          <input id="role" name="role" required placeholder="Dentist, surgeon, lab, DSO, partner…" className={fieldCls} />
+          <label className={labelCls} htmlFor="phone">Mobile / WhatsApp</label>
+          <input id="phone" name="phone" type="tel" autoComplete="tel" className={fieldCls} />
         </div>
         <div>
           <label className={labelCls} htmlFor="email">Professional email{req}</label>
           <input id="email" name="email" type="email" required autoComplete="email" className={fieldCls} />
-        </div>
-        <div>
-          <label className={labelCls} htmlFor="phone">Phone / WhatsApp</label>
-          <input id="phone" name="phone" type="tel" autoComplete="tel" className={fieldCls} />
-        </div>
-        <div>
-          <label className={labelCls} htmlFor="location">City and country{req}</label>
-          <input id="location" name="location" required className={fieldCls} />
         </div>
         <div>
           <label className={labelCls} htmlFor="inquiryType">Enquiry type{req}</label>
@@ -208,31 +175,6 @@ export function ContactForm({
             ))}
           </select>
         </div>
-        <div>
-          <label className={labelCls} htmlFor="workflow">Workflow interest{req}</label>
-          <select id="workflow" name="workflow" required defaultValue="" className={fieldCls}>
-            <option value="" disabled>Select a workflow…</option>
-            {WORKFLOWS.map((w) => <option key={w} value={w}>{w}</option>)}
-          </select>
-        </div>
-        <div>
-          <label className={labelCls} htmlFor="caseType">Case / service type</label>
-          <select id="caseType" name="caseType" defaultValue="" className={fieldCls}>
-            <option value="">Optional…</option>
-            {CASE_TYPES.map((c) => <option key={c} value={c}>{c}</option>)}
-          </select>
-        </div>
-        <div>
-          <label className={labelCls} htmlFor="urgency">Case urgency</label>
-          <select id="urgency" name="urgency" defaultValue="" className={fieldCls}>
-            <option value="">Optional…</option>
-            {URGENCY.map((u) => <option key={u} value={u}>{u}</option>)}
-          </select>
-        </div>
-        <div>
-          <label className={labelCls} htmlFor="preferredCallback">Preferred callback time</label>
-          <input id="preferredCallback" name="preferredCallback" placeholder="e.g. weekday mornings IST" className={fieldCls} />
-        </div>
         <div className="flex items-end">
           <label className="flex items-center gap-2 text-sm text-ink">
             <input type="checkbox" name="existingCustomer" className="h-4 w-4 rounded border-line-strong text-brand focus:ring-[var(--focus-ring)]/40" />
@@ -241,25 +183,27 @@ export function ContactForm({
         </div>
       </div>
 
-      {/* Privacy notice sits directly above the message field. */}
+      {/* Boundary notice sits directly above the message field. */}
       <div className="mt-6 rounded-[var(--radius-card)] border border-line-strong bg-blue-50 px-4 py-3">
         <p className="text-sm font-semibold text-heading">
-          Do not include patient-identifying information or clinical files here.
+          For a specific case, price, file review, planning, guide design, or case status,
+          please use the I3DC Case Portal.
         </p>
         <p className="mt-1 text-xs text-muted">
-          No DICOM, STL, photographs or prescriptions. Clinical records are submitted only
-          through the authenticated Case Portal after the right route is confirmed.
+          This form is for general questions, portal help, and collaboration enquiries only.
+          Do not include patient identifiers or clinical files (no DICOM, STL, CBCT, photographs
+          or prescriptions) — those are handled securely in the authenticated Case Portal.
         </p>
       </div>
 
       <div className="mt-5">
-        <label className={labelCls} htmlFor="summary">Non-identifying workflow summary{req}</label>
+        <label className={labelCls} htmlFor="summary">Your question{req}</label>
         <textarea
           id="summary"
           name="summary"
           required
           rows={4}
-          placeholder="Briefly describe the workflow you’re considering — no patient names, record links or identifiers."
+          placeholder="Ask a general question about I3DC, portal access, service categories, or collaboration — no patient names, case files or identifiers."
           className={fieldCls}
         />
       </div>
@@ -279,7 +223,7 @@ export function ContactForm({
         disabled={status === "submitting"}
         className="mt-7 inline-flex min-h-12 items-center justify-center rounded-[var(--radius-card)] bg-brand px-6 text-base font-bold text-white transition-colors hover:bg-brand-hover disabled:opacity-70"
       >
-        {status === "submitting" ? "Sending…" : "Send workflow enquiry"}
+        {status === "submitting" ? "Sending…" : "Send enquiry"}
       </button>
     </form>
   );
