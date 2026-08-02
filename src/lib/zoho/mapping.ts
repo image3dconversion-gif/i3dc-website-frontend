@@ -70,6 +70,9 @@ export interface ZohoLeadRecord {
   Clinic_Practice_Name?: string;
   Lead_Source: string;
   Description: string;
+  /** Native Leads kanban/stage field. Set so website leads don't land in the
+   *  "Unknown" column; uses the existing shared value "Not Contacted". */
+  Lead_Status?: string;
   Business_Unit?: string;
   Inquiry_Type?: string;
   Journey_Stage?: string;
@@ -95,6 +98,9 @@ function splitName(full: string): { first?: string; last: string } {
 function buildDescription(e: NormalisedEnquiry, portalRouted: boolean): string {
   const lines = [
     `Enquiry type: ${INQUIRY_LABELS[e.inquiryType]}`,
+    // Fallback: preserve organisation in Description in case Clinic_Practice_Name
+    // is not on the target layout (Zoho silently drops off-layout fields).
+    e.organization && `Clinic / organisation: ${e.organization}`,
     `Existing customer: ${e.existingCustomer ? "Yes" : "No"}`,
     `Consent given: ${e.consent ? "Yes" : "No"}`,
     e.pageSource && `Submitted from: ${e.pageSource}`,
@@ -127,6 +133,8 @@ export function toZohoLead(e: NormalisedEnquiry): ZohoLeadRecord {
     Clinic_Practice_Name: e.organization,
     Lead_Source: e.leadSource,
     Description: buildDescription(e, portalRouted),
+    // Native kanban stage — keep website leads out of the "Unknown" column.
+    Lead_Status: "Not Contacted",
     Business_Unit: e.businessTag,
     Inquiry_Type: INQUIRY_LABELS[e.inquiryType],
     Journey_Stage: portalRouted ? PORTAL_GUIDANCE_STAGE : DEFAULT_JOURNEY_STAGE,
