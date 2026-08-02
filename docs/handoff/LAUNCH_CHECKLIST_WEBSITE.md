@@ -32,9 +32,19 @@ Ran `next build` + `next start` (production mode) locally and smoke-tested the r
 - `sitemap.xml` + `robots.txt` carry the production canonical `https://www.image3dconversion.com`; robots disallows `/keystatic/` + `/api/`.
 - Form **not** submitted (Zoho dry-run boundary respected).
 
-Remaining for a real Vercel preview (founder-side): commit + push this branch, then Vercel dashboard import + deploy (needs the founder's Vercel account — assistant cannot execute).
+Branch committed + pushed: `cms-foundation-keystatic-zoho-dryrun` @ `b2323f0`.
 
-**Exit:** preview URL green + smoke test pass. No founder approval needed for a preview.
+### Vercel preview — ✅ FOUNDER MANUALLY VERIFIED (2026-08-02)
+Vercel preview is live; founder confirmed on the preview URL:
+- ✅ Public pages working
+- ✅ `robots.txt` opens
+- ✅ `sitemap.xml` opens
+- ✅ `/keystatic/` → not found (404)
+- ✅ `/api/keystatic/config/` → not found (404)
+
+(Deploy stayed dry-run — no env vars set; no lead sent. DNS/production untouched.)
+
+**Exit:** ✅ **MET** — preview URL green + smoke test passed (local production run + founder manual verification). No production/DNS change made.
 
 ---
 
