@@ -19,6 +19,10 @@
  *   ZOHO_CLIENT_SECRET=...
  *   ZOHO_REFRESH_TOKEN=...
  *   ZOHO_MODULE=Leads                                 (default Leads)
+ *
+ * Live mode additionally requires a production build. On a local dev server
+ * submission is forced to dry-run unless ZOHO_ALLOW_LOCAL_LIVE=true is set
+ * deliberately (local only — never set it in Vercel).
  */
 import "server-only";
 import type { ZohoLeadRecord } from "./mapping";
@@ -65,9 +69,25 @@ function readEnv(): ZohoEnv | null {
     ZOHO_REFRESH_TOKEN,
     ZOHO_MODULE,
     ZOHO_LAYOUT_ID,
+    ZOHO_ALLOW_LOCAL_LIVE,
   } = process.env;
 
   if (ZOHO_SUBMIT_ENABLED !== "true") return null;
+
+  // Local-development guard. A dev server must never write to the live CRM,
+  // even when .env.local holds real credentials — an ordinary `npm run dev`
+  // session working on the form would otherwise create genuine leads.
+  //
+  // Keyed on NODE_ENV, matching the Keystatic gate in middleware.ts. Vercel sets
+  // NODE_ENV=production for Production and Preview builds, so this is inert
+  // there: it can only fail closed on a positively-identified local `next dev`.
+  // It deliberately does NOT key on VERCEL/VERCEL_ENV — if those were ever
+  // absent at runtime the site would silently revert to dry-run, which is the
+  // exact lead loss this module exists to prevent.
+  if (process.env.NODE_ENV !== "production" && ZOHO_ALLOW_LOCAL_LIVE !== "true") {
+    return null;
+  }
+
   if (
     !ZOHO_ACCOUNTS_URL ||
     !ZOHO_API_DOMAIN ||
@@ -157,6 +177,14 @@ async function getAccessToken(env: ZohoEnv): Promise<string> {
  */
 export async function submitLead(record: ZohoLeadRecord): Promise<SubmitResult> {
   const env = readEnv();
+
+  if (env && process.env.NODE_ENV !== "production") {
+    // Only reachable via the deliberate ZOHO_ALLOW_LOCAL_LIVE override. Loud on
+    // every submission so it cannot be left switched on unnoticed.
+    console.warn(
+      "[enquiry:LOCAL-LIVE] ZOHO_ALLOW_LOCAL_LIVE is set — this development server is writing to the LIVE Zoho CRM.",
+    );
+  }
 
   if (!env) {
     // DRY-RUN: log server-side, do not contact Zoho. Classification only —
