@@ -7,6 +7,7 @@ import {
   type EnquiryPayload,
   type InquiryType,
 } from "@/lib/enquiry/types";
+import { contact } from "@/content/site";
 
 /**
  * Public enquiry form — GENERIC-INQUIRY funnel only.
@@ -21,6 +22,11 @@ import {
  *
  * Submits to the same-origin route `/api/enquiry`, which validates and routes to
  * Zoho CRM (guarded — dry-run until live submission is approved server-side).
+ *
+ * If the CRM submission fails, the route answers 503 and the form says so
+ * plainly rather than showing a false success. The entered values are left in
+ * place and the founder-approved direct channels are offered, so the enquiry is
+ * never silently lost.
  */
 
 const fieldCls =
@@ -37,6 +43,9 @@ export function ContactForm({
 }) {
   const [status, setStatus] = useState<Status>("idle");
   const [errorMsg, setErrorMsg] = useState<string>("");
+  // Set when the CRM could not be reached: switches the error block into the
+  // "contact us directly" state. Null for ordinary validation errors.
+  const [fallbackRef, setFallbackRef] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string>("");
 
   // Capture attribution + page source on the client (no Suspense needed).
@@ -100,6 +109,7 @@ export function ContactForm({
 
     setStatus("submitting");
     setErrorMsg("");
+    setFallbackRef(null);
     try {
       const res = await fetch("/api/enquiry", {
         method: "POST",
@@ -122,6 +132,7 @@ export function ContactForm({
           data.errors && typeof data.errors === "object"
             ? String(Object.values(data.errors)[0])
             : data.error;
+        if (data.action === "fallback") setFallbackRef(data.requestId || "");
         setErrorMsg(firstErr || "Something went wrong. Please try again.");
         setStatus("error");
       }
@@ -146,7 +157,34 @@ export function ContactForm({
 
       {status === "error" && (
         <div role="alert" className="mb-5 rounded-[var(--radius-card)] border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-800">
-          {errorMsg}
+          <p>{errorMsg}</p>
+          {fallbackRef !== null && (
+            <>
+              <p className="mt-2">
+                Your details are still in the form below — please send them to us
+                directly and we’ll pick it up from there.
+              </p>
+              <ul className="mt-2 space-y-1">
+                {contact.email && (
+                  <li>
+                    Email:{" "}
+                    <a className="font-semibold underline" href={`mailto:${contact.email}`}>
+                      {contact.email}
+                    </a>
+                  </li>
+                )}
+                {contact.whatsapp && (
+                  <li>
+                    WhatsApp only — no calls:{" "}
+                    <span className="font-semibold">{contact.whatsapp}</span>
+                  </li>
+                )}
+              </ul>
+              {fallbackRef && (
+                <p className="mt-2 text-xs text-red-700">Reference: {fallbackRef}</p>
+              )}
+            </>
+          )}
         </div>
       )}
 

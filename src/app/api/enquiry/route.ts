@@ -5,6 +5,11 @@
  * guarded Zoho submit (dry-run unless approved) → route by journey.
  * Zoho credentials are read server-side only and never exposed to the browser.
  *
+ * A failed live submission is NEVER reported to the visitor as success: the
+ * route answers 503 with the founder-approved direct channels so the enquiry
+ * survives outside the CRM. Failure logs carry operational evidence only —
+ * request id, timestamp, stage, category, route — never enquirer data.
+ *
  * The website form is a GENERIC-INQUIRY funnel — it never handles case files,
  * pricing, planning, guide design, production, or case status. Portal-bound
  * enquiries (existing customer, portal-help, existing-customer-support, or a
@@ -12,11 +17,12 @@
  * lead flagged `Journey_Stage = Portal Guidance Needed`, and the caller is then
  * pointed to the authenticated I3DC Case Portal where case work actually lives.
  */
+import { randomUUID } from "node:crypto";
 import { NextResponse } from "next/server";
 import { validateEnquiry } from "@/lib/enquiry/validate";
 import { PIPELINE_ROUTING, toZohoLead } from "@/lib/zoho/mapping";
 import { submitLead } from "@/lib/zoho/client";
-import { portal } from "@/content/site";
+import { contact, portal } from "@/content/site";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -38,6 +44,17 @@ function rateLimited(ip: string): boolean {
 function clientIp(req: Request): string {
   const fwd = req.headers.get("x-forwarded-for");
   return fwd ? fwd.split(",")[0]!.trim() : "unknown";
+}
+
+const ROUTE_ID = "api/enquiry";
+
+/**
+ * Correlation id for an undelivered enquiry. Prefers Vercel's own request id so
+ * the alarm line joins up with the platform log entry; falls back to a uuid
+ * locally. Contains no enquirer data.
+ */
+function requestId(req: Request): string {
+  return req.headers.get("x-vercel-id") ?? randomUUID();
 }
 
 export async function POST(req: Request) {
@@ -67,11 +84,26 @@ export async function POST(req: Request) {
   const submit = await submitLead(lead);
 
   if (!submit.ok) {
-    // Do not lose the enquiry: acknowledge receipt; ops follow-up via logs.
-    console.error("[enquiry] submit failed:", submit.detail);
+    const rid = requestId(req);
+    // Operational evidence ONLY. The enquiry itself is intentionally absent from
+    // logs, so it is not recoverable from here — the visitor is handed a direct
+    // channel below instead, and keeps their typed message on screen.
+    console.error("[enquiry:UNDELIVERED]", {
+      request_id: rid,
+      route: ROUTE_ID,
+      at: new Date().toISOString(),
+      failure_stage: submit.stage ?? "unknown",
+      category: submit.category ?? "unknown",
+    });
     return NextResponse.json(
-      { ok: true, action: "received", degraded: true, message: "Enquiry received." },
-      { status: 202 },
+      {
+        ok: false,
+        action: "fallback",
+        requestId: rid,
+        error: "We couldn’t file your enquiry automatically.",
+        fallback: { email: contact.email, whatsapp: contact.whatsapp },
+      },
+      { status: 503 },
     );
   }
 
