@@ -36,6 +36,40 @@ const req = <span className="text-brand"> *</span>;
 
 type Status = "idle" | "submitting" | "success" | "error";
 
+const FIRST_TOUCH_KEY = "i3dc.firstTouch";
+const LAST_TOUCH_KEY = "i3dc.lastTouch";
+
+/**
+ * First time this browser was seen on the site. Stored locally and never sent
+ * anywhere except with an enquiry the visitor chooses to submit. Storage can be
+ * unavailable (private mode, blocked cookies) — every failure degrades to
+ * "unknown" rather than breaking the form.
+ */
+function readFirstTouch(): string | undefined {
+  try {
+    const existing = window.localStorage.getItem(FIRST_TOUCH_KEY);
+    if (existing) return existing;
+    const now = new Date().toISOString();
+    window.localStorage.setItem(FIRST_TOUCH_KEY, now);
+    return now;
+  } catch {
+    return undefined;
+  }
+}
+
+/** Start of the current visit. */
+function readLastTouch(): string | undefined {
+  try {
+    const existing = window.sessionStorage.getItem(LAST_TOUCH_KEY);
+    if (existing) return existing;
+    const now = new Date().toISOString();
+    window.sessionStorage.setItem(LAST_TOUCH_KEY, now);
+    return now;
+  } catch {
+    return undefined;
+  }
+}
+
 export function ContactForm({
   defaultInquiryType = "general",
 }: {
@@ -49,7 +83,11 @@ export function ContactForm({
   const [successMsg, setSuccessMsg] = useState<string>("");
 
   // Capture attribution + page source on the client (no Suspense needed).
-  const [meta, setMeta] = useState<{ pageSource?: string; utm?: EnquiryPayload["utm"] }>({});
+  const [meta, setMeta] = useState<{
+    pageSource?: string;
+    utm?: EnquiryPayload["utm"];
+    attribution?: EnquiryPayload["attribution"];
+  }>({});
   useEffect(() => {
     const p = new URLSearchParams(window.location.search);
     const utm = {
@@ -57,10 +95,17 @@ export function ContactForm({
       medium: p.get("utm_medium") || undefined,
       campaign: p.get("utm_campaign") || undefined,
       content: p.get("utm_content") || undefined,
+      term: p.get("utm_term") || undefined,
     };
     setMeta({
       pageSource: window.location.pathname,
       utm: Object.values(utm).some(Boolean) ? utm : undefined,
+      attribution: {
+        referrer: document.referrer || undefined,
+        gclid: p.get("gclid") || undefined,
+        firstTouchIso: readFirstTouch(),
+        lastTouchIso: readLastTouch(),
+      },
     });
   }, []);
 
@@ -102,9 +147,14 @@ export function ContactForm({
       message: String(fd.get("summary") || ""),
       existingCustomer: fd.get("existingCustomer") === "on",
       consent: fd.get("consent") === "on",
+      // Read independently — an unticked box is a refusal, not an inherited yes.
+      consentWhatsAppOperational: fd.get("consentWhatsAppOperational") === "on",
+      consentEmailMarketing: fd.get("consentEmailMarketing") === "on",
+      consentWhatsAppMarketing: fd.get("consentWhatsAppMarketing") === "on",
       companyWebsite: String(fd.get("companyWebsite") || ""), // honeypot
       pageSource: meta.pageSource,
       utm: meta.utm,
+      attribution: meta.attribution,
     };
 
     setStatus("submitting");
@@ -255,6 +305,48 @@ export function ContactForm({
           </span>
         </label>
       </div>
+
+      {/*
+        Three INDEPENDENT permissions, each optional and unticked by default.
+        They are deliberately not bundled with the required consent above: that
+        one permits handling this enquiry, these grant specific channels. Any
+        change to this wording must bump CONSENT_WORDING_VERSION in
+        lib/enquiry/types.ts, or stored consents become unauditable.
+      */}
+      <fieldset className="mt-5 rounded-[var(--radius-card)] border border-line bg-bg-tint p-4">
+        <legend className="px-1 text-sm font-semibold text-heading">
+          Optional — how else may we contact you?
+        </legend>
+        <p className="mb-3 mt-1 text-xs text-muted">
+          All optional. Leave unticked to decline. You can withdraw any of these at any time.
+        </p>
+        <div className="space-y-2.5">
+          <label className="flex items-start gap-2 text-sm text-ink">
+            <input
+              type="checkbox"
+              name="consentWhatsAppOperational"
+              className="mt-0.5 h-4 w-4 rounded border-line-strong text-brand focus:ring-[var(--focus-ring)]/40"
+            />
+            <span>Send me WhatsApp updates about <strong>this enquiry</strong> (no marketing).</span>
+          </label>
+          <label className="flex items-start gap-2 text-sm text-ink">
+            <input
+              type="checkbox"
+              name="consentEmailMarketing"
+              className="mt-0.5 h-4 w-4 rounded border-line-strong text-brand focus:ring-[var(--focus-ring)]/40"
+            />
+            <span>Email me occasional workflow guidance and service updates.</span>
+          </label>
+          <label className="flex items-start gap-2 text-sm text-ink">
+            <input
+              type="checkbox"
+              name="consentWhatsAppMarketing"
+              className="mt-0.5 h-4 w-4 rounded border-line-strong text-brand focus:ring-[var(--focus-ring)]/40"
+            />
+            <span>Send me occasional updates on WhatsApp.</span>
+          </label>
+        </div>
+      </fieldset>
 
       <button
         type="submit"

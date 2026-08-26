@@ -5,13 +5,19 @@
  */
 import {
   BUSINESS_TAG,
+  CONSENT_SOURCE,
+  CONSENT_WORDING_VERSION,
   INQUIRY_TYPES,
   LEAD_SOURCE,
+  SOURCE_WEBSITE,
+  type Attribution,
   type EnquiryPayload,
   type InquiryType,
   type NormalisedEnquiry,
   type Utm,
 } from "./types";
+import { normaliseEmail, normalisePhone } from "./normalise";
+import { assessSpam } from "./spam";
 
 export interface ValidationResult {
   ok: boolean;
@@ -22,6 +28,8 @@ export interface ValidationResult {
 const MAX = {
   short: 160,
   message: 4000,
+  /** Zoho UTM/GCLID/referrer text fields are 255. */
+  url: 255,
 } as const;
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -53,6 +61,28 @@ function clean(v: unknown, max: number): string {
   return str(v).slice(0, max);
 }
 
+/** Strict boolean read — only a literal `true` counts as an opt-in. */
+const optIn = (v: unknown): boolean => v === true;
+
+/** Attribution is advisory metadata; it is cleaned, never rejected. */
+function cleanAttribution(a: unknown): Attribution {
+  const o = (a && typeof a === "object" ? a : {}) as Record<string, unknown>;
+  const iso = (v: unknown): string | undefined => {
+    const raw = str(v);
+    if (!raw) return undefined;
+    const d = new Date(raw);
+    return Number.isNaN(d.getTime()) ? undefined : d.toISOString();
+  };
+  return {
+    // Server-fixed: a client-supplied origin would be trivially forgeable.
+    sourceWebsite: SOURCE_WEBSITE,
+    referrer: clean(o.referrer, MAX.url) || undefined,
+    gclid: clean(o.gclid, MAX.short) || undefined,
+    firstTouchIso: iso(o.firstTouchIso),
+    lastTouchIso: iso(o.lastTouchIso),
+  };
+}
+
 function cleanUtm(u: unknown): Utm | undefined {
   if (!u || typeof u !== "object") return undefined;
   const o = u as Record<string, unknown>;
@@ -61,6 +91,7 @@ function cleanUtm(u: unknown): Utm | undefined {
     medium: clean(o.medium, MAX.short) || undefined,
     campaign: clean(o.campaign, MAX.short) || undefined,
     content: clean(o.content, MAX.short) || undefined,
+    term: clean(o.term, MAX.short) || undefined,
   };
   return Object.values(out).some(Boolean) ? out : undefined;
 }
@@ -102,21 +133,49 @@ export function validateEnquiry(
 
   if (Object.keys(errors).length > 0) return { ok: false, errors };
 
+  const phone = clean(body.phone, MAX.short) || undefined;
+  const organization = clean(body.organization, MAX.short) || undefined;
+  const phoneNormalisation = normalisePhone(phone);
+
+  // The three marketing/operational permissions are read INDEPENDENTLY of the
+  // required processing consent above. An unticked box is a refusal, and a
+  // missing key is an unticked box — never inherit permission from `consent`.
+  const consentSelections = {
+    processing: true,
+    operationalWhatsApp: optIn(body.consentWhatsAppOperational),
+    emailMarketing: optIn(body.consentEmailMarketing),
+    whatsAppMarketing: optIn(body.consentWhatsAppMarketing),
+  };
+
   const value: NormalisedEnquiry = {
     inquiryType,
     name,
     email,
-    phone: clean(body.phone, MAX.short) || undefined,
-    organization: clean(body.organization, MAX.short) || undefined,
+    phone,
+    organization,
     message,
     existingCustomer: body.existingCustomer === true,
     consent: true,
+    consentWhatsAppOperational: consentSelections.operationalWhatsApp,
+    consentEmailMarketing: consentSelections.emailMarketing,
+    consentWhatsAppMarketing: consentSelections.whatsAppMarketing,
     pageSource: clean(body.pageSource, MAX.short) || undefined,
     utm: cleanUtm(body.utm),
     // Governance fields are FIXED server-side, never trusted from the client.
     leadSource: LEAD_SOURCE,
     businessTag: BUSINESS_TAG,
     receivedAtIso,
+    consentSelections,
+    // Server clock, not a client timestamp: consent provenance must not be spoofable.
+    consentCapturedAtIso: receivedAtIso,
+    consentSource: `${CONSENT_SOURCE}@${CONSENT_WORDING_VERSION}`,
+    consentWordingVersion: CONSENT_WORDING_VERSION,
+    normalisedEmail: normaliseEmail(email),
+    normalisedPhone: phoneNormalisation.normalised,
+    phoneBasis: phoneNormalisation.basis,
+    attribution: cleanAttribution(body.attribution),
+    // Advisory only — assessSpam never rejects.
+    spamIndicators: assessSpam({ name, email, message, organization }).indicators,
   };
 
   return { ok: true, errors: {}, value };

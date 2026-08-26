@@ -8,7 +8,8 @@
     "build": "next build",
     "start": "next start -p 3001",
     "lint": "next lint",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "node --import ./tests/ts-resolve.mjs --test \"tests/**/*.test.ts\""
   },
   "dependencies": {
     "@keystatic/core": "^0.6.4",
