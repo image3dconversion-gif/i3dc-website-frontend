@@ -99,9 +99,9 @@ describe("each permission is independent", () => {
 });
 
 describe("consent provenance is auditable and server-controlled", () => {
-  test("records the wording version it was captured under", () => {
+  test("records source and wording version as separate values", () => {
     const v = ok(base());
-    assert.equal(v.consentSource, `${CONSENT_SOURCE}@${CONSENT_WORDING_VERSION}`);
+    assert.equal(v.consentSource, CONSENT_SOURCE);
     assert.equal(v.consentWordingVersion, CONSENT_WORDING_VERSION);
   });
 
@@ -110,8 +110,9 @@ describe("consent provenance is auditable and server-controlled", () => {
     assert.equal(v.consentCapturedAtIso, AT, "a client-supplied timestamp must be ignored");
   });
 
-  test("source value cannot be overridden by the client", () => {
-    const v = ok(base({ consentSource: "attacker-supplied" }));
-    assert.equal(v.consentSource, `${CONSENT_SOURCE}@${CONSENT_WORDING_VERSION}`);
+  test("source and version cannot be overridden by the client", () => {
+    const v = ok(base({ consentSource: "attacker-supplied", consentWordingVersion: "9.9" }));
+    assert.equal(v.consentSource, CONSENT_SOURCE);
+    assert.equal(v.consentWordingVersion, CONSENT_WORDING_VERSION);
   });
 });

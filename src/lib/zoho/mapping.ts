@@ -104,7 +104,10 @@ export interface ZohoLeadRecord {
   Consent_Email_Marketing?: boolean;
   Consent_WA_Marketing?: boolean;
   Consent_Captured_At?: string;
+  /** Controlled source value on its own, e.g. `i3dc-website-form`. */
   Consent_Source?: string;
+  /** The wording version the permission was captured under. */
+  Consent_Wording_Version?: string;
 
   // ── Duplicate-matching keys (read by "V2 SYS - Duplicate Classification") ─
   V2_Email_Normalized?: string;
@@ -121,6 +124,7 @@ export interface ZohoLeadRecord {
 /** Zoho text-field limits for the fields written above. */
 const LIMITS = {
   text255: 255,
+  text120: 120,
   normalisedEmail: 100,
   normalisedPhone: 30,
 } as const;
@@ -191,7 +195,7 @@ function buildDescription(e: NormalisedEnquiry, portalRouted: boolean): string {
     `  Operational WhatsApp:    ${yesNo(e.consentSelections.operationalWhatsApp)}`,
     `  Email marketing:         ${yesNo(e.consentSelections.emailMarketing)}`,
     `  WhatsApp marketing:      ${yesNo(e.consentSelections.whatsAppMarketing)}`,
-    `  Captured at: ${e.consentCapturedAtIso} · Source: ${e.consentSource}`,
+    `  Captured at: ${e.consentCapturedAtIso} · Source: ${e.consentSource} · Wording: ${e.consentWordingVersion}`,
     "",
     "Attribution:",
     `  Source website: ${e.attribution.sourceWebsite}`,
@@ -254,6 +258,7 @@ export function toZohoLead(e: NormalisedEnquiry): ZohoLeadRecord {
     Consent_WA_Marketing: e.consentSelections.whatsAppMarketing,
     Consent_Captured_At: toZohoDateTime(e.consentCapturedAtIso) || undefined,
     Consent_Source: fit(e.consentSource, LIMITS.text255),
+    Consent_Wording_Version: fit(e.consentWordingVersion, LIMITS.text120),
 
     V2_Email_Normalized: fit(e.normalisedEmail, LIMITS.normalisedEmail),
     V2_Phone_Normalized: fit(e.normalisedPhone, LIMITS.normalisedPhone),

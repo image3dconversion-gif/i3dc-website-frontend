@@ -11,7 +11,12 @@ import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 import { validateEnquiry } from "../src/lib/enquiry/validate.ts";
 import { toZohoLead } from "../src/lib/zoho/mapping.ts";
-import { INQUIRY_TYPES, type NormalisedEnquiry } from "../src/lib/enquiry/types.ts";
+import {
+  CONSENT_SOURCE,
+  CONSENT_WORDING_VERSION,
+  INQUIRY_TYPES,
+  type NormalisedEnquiry,
+} from "../src/lib/enquiry/types.ts";
 
 const AT = "2026-08-26T10:00:00.000Z";
 
@@ -23,7 +28,8 @@ const ALLOWED_FIELDS = new Set([
   "Consent", "UTM_Source", "UTM_Medium", "UTM_Campaign", "UTM_Content", "UTM_Term",
   "Ad_GCLID", "Journey_Engine_Version", "V2_Journey_Stage", "Automation_Test",
   "Consent_WA_Operational", "Consent_Email_Marketing", "Consent_WA_Marketing",
-  "Consent_Captured_At", "Consent_Source", "V2_Email_Normalized", "V2_Phone_Normalized",
+  "Consent_Captured_At", "Consent_Source", "Consent_Wording_Version",
+  "V2_Email_Normalized", "V2_Phone_Normalized",
   "Service_Interest", "Workflow_Interest", "Layout",
 ]);
 
@@ -103,6 +109,14 @@ describe("the record only contains fields that exist in the CRM", () => {
     }
   });
 
+  test("collaboration folds onto General Enquiry but keeps its intent", () => {
+    const record = lead({ inquiryType: "collaboration" });
+    assert.equal(record.Inquiry_Type, "General Enquiry");
+    assert.notEqual(record.Inquiry_Type, "White-Label Inquiry");
+    assert.equal(record.Inquiry_Category, "Collaboration", "intent must survive in the category");
+    assert.match(record.Description, /Enquiry type: Collaboration Inquiry/);
+  });
+
   test("Inquiry_Type is mapped for ALL six website intents", () => {
     // Regression guard: four website labels have no matching picklist value and
     // must be folded onto one that exists.
@@ -161,10 +175,20 @@ describe("consent reaches the CRM as three independent flags", () => {
     assert.equal(record.Consent_WA_Operational, false);
   });
 
-  test("captured-at is a Zoho-safe datetime and source carries the wording version", () => {
+  test("captured-at is a Zoho-safe datetime", () => {
     const record = lead();
     assert.match(record.Consent_Captured_At as string, /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\+00:00$/);
-    assert.match(record.Consent_Source as string, /^i3dc-website-form@/);
+  });
+
+  test("source and wording version are stored in their own fields", () => {
+    const record = lead();
+    assert.equal(record.Consent_Source, CONSENT_SOURCE);
+    assert.equal(record.Consent_Wording_Version, CONSENT_WORDING_VERSION);
+    assert.ok(
+      !(record.Consent_Source as string).includes("@"),
+      "the version must no longer be smuggled into the source value",
+    );
+    assert.ok((record.Consent_Wording_Version as string).length <= 120, "Zoho field limit");
   });
 });
 

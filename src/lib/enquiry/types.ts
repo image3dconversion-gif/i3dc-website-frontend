@@ -56,7 +56,11 @@ export const INQUIRY_ZOHO_VALUES: Record<InquiryType, string> = {
   // No "Portal Help" value exists; Inquiry_Category=Portal-Routed carries it.
   "portal-help": "General Enquiry",
   "service-information": "Service Inquiry",
-  collaboration: "White-Label Inquiry",
+  // Folded onto General Enquiry rather than "White-Label Inquiry": a
+  // collaboration approach is not necessarily a white-label one, and
+  // mis-labelling it would misroute the lead. The exact intent survives in
+  // Inquiry_Category = "Collaboration" and in the Description.
+  collaboration: "General Enquiry",
   "lab-vendor": "Lab / Vendor Inquiry",
   // No "Existing Customer Support" value exists; Journey_Stage carries it.
   "existing-customer-support": "General Enquiry",
@@ -72,11 +76,12 @@ export const BUSINESS_TAG = "Image3DConversion" as const;
 export const SOURCE_WEBSITE = "https://www.image3dconversion.com" as const;
 
 /**
- * Controlled consent provenance. `Consent_Source` is written as
- * `${CONSENT_SOURCE}@${CONSENT_WORDING_VERSION}` so every stored permission
- * records WHICH wording the person agreed to. Bump the version whenever the
- * on-page consent wording changes — never edit the wording without bumping it,
- * or older consents become unauditable.
+ * Controlled consent provenance, written to two separate CRM fields:
+ * `Consent_Source` holds the controlled source value and
+ * `Consent_Wording_Version` holds the wording version, so both stay queryable
+ * on their own. Bump the version whenever the on-page consent wording changes —
+ * never edit the wording without bumping it, or older consents become
+ * unauditable.
  */
 export const CONSENT_SOURCE = "i3dc-website-form" as const;
 export const CONSENT_WORDING_VERSION = "2026-08-26.v1" as const;

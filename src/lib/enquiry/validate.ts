@@ -168,7 +168,7 @@ export function validateEnquiry(
     consentSelections,
     // Server clock, not a client timestamp: consent provenance must not be spoofable.
     consentCapturedAtIso: receivedAtIso,
-    consentSource: `${CONSENT_SOURCE}@${CONSENT_WORDING_VERSION}`,
+    consentSource: CONSENT_SOURCE,
     consentWordingVersion: CONSENT_WORDING_VERSION,
     normalisedEmail: normaliseEmail(email),
     normalisedPhone: phoneNormalisation.normalised,
