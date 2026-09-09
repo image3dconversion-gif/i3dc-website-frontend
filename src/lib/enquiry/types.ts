@@ -84,11 +84,87 @@ export const SOURCE_WEBSITE = "https://www.image3dconversion.com" as const;
  * unauditable.
  */
 export const CONSENT_SOURCE = "i3dc-website-form" as const;
-export const CONSENT_WORDING_VERSION = "2026-08-26.v1" as const;
+/**
+ * Bumped from 2026-08-26.v1: the Case Portal pre-launch interest form adds new
+ * consent wording, so consents captured from this build must be auditable
+ * against a different wording set than the enquiry-only build.
+ */
+export const CONSENT_WORDING_VERSION = "2026-09-09.v2" as const;
 
-/** CRM V2 control values (verified against the live Leads picklists). */
-export const JOURNEY_ENGINE_VERSION = "V2" as const;
-export const V2_NEW_ENQUIRY_STAGE = "New Enquiry" as const;
+/*
+ * DELIBERATELY NOT DEFINED HERE — the CRM owns this state, not the website.
+ *
+ *   Journey_Engine_Version · V2_Journey_Stage · V2_Email_Normalized ·
+ *   V2_Phone_Normalized · Duplicate_Status · Automation_Exception ·
+ *   Nurture_Suppressed · Active_Nurture_Journey
+ *
+ * "V2 ING - I3DC Website Ingress" fires only while Journey_Engine_Version is
+ * EMPTY, so writing it from the website would stop the ingress rule from
+ * running at all. The shared V2 duplicate classifier computes and writes both
+ * normalised identifiers itself. The website supplies FACTS; the CRM derives
+ * STATE.
+ */
+
+/**
+ * Service-intent cards on /discuss-a-case/.
+ *
+ * The website owns this intent — it is a fact about what the visitor clicked,
+ * not a lifecycle state. Values below are EXACT `Service_Interest` /
+ * `Workflow_Interest` picklist entries; nothing is invented. A card that maps
+ * to no unambiguous picklist value leaves the field unset rather than guessing,
+ * because a wrong intent misroutes the lead more damagingly than an absent one.
+ */
+export const SERVICE_KEYS = [
+  "guided-implant-planning",
+  "full-arch-stackable",
+  "immediate-loading",
+  "advanced-case",
+  "design-only",
+  "design-to-delivery",
+  "global-practice",
+  "partnership",
+] as const;
+
+export type ServiceKey = (typeof SERVICE_KEYS)[number];
+
+export interface ServiceIntent {
+  /** Exact `Service_Interest` picklist value, or undefined when ambiguous. */
+  service?: string;
+  /** Exact `Workflow_Interest` picklist value, or undefined when ambiguous. */
+  workflow?: string;
+}
+
+/** Card labels, so the form can confirm back what the visitor chose. */
+export const SERVICE_LABELS: Record<ServiceKey, string> = {
+  "guided-implant-planning": "Guided Implant Planning",
+  "full-arch-stackable": "Full-Arch / Stackable",
+  "immediate-loading": "Immediate Loading",
+  "advanced-case": "Advanced Case",
+  "design-only": "Design-Only",
+  "design-to-delivery": "Design-to-Delivery",
+  "global-practice": "Global Practice",
+  partnership: "Partnership",
+};
+
+export const SERVICE_INTENT: Record<ServiceKey, ServiceIntent> = {
+  "guided-implant-planning": { service: "Guided Implant Planning" },
+  "full-arch-stackable": { service: "Full-Arch/Stackable Guide", workflow: "Full-Arch" },
+  "immediate-loading": { service: "Guided Implant Planning", workflow: "Immediate Loading" },
+  // Workflow deliberately UNSET: "Advanced Case" covers complex anatomy
+  // generally, and inferring "Zygoma / Pterygoid" from it would assert an
+  // anatomy the visitor never chose.
+  "advanced-case": { service: "Guided Implant Planning" },
+  "design-only": { service: "Digital Design Service", workflow: "Guide Design" },
+  // "Other" rather than "3D Printing / Production": this route spans planning,
+  // design AND production, so naming one stage would misdescribe it. The literal
+  // website label is preserved in the Description so the intent is not lost.
+  "design-to-delivery": { service: "Other" },
+  // Geography/logistics intent, not a service — carried by Inquiry_Category.
+  "global-practice": {},
+  // Commercial intent, not a service. Routed via Inquiry_Type + Inquiry_Category
+  // in toZohoLead() rather than by inventing a Service_Interest value.
+  partnership: {},
+};
 
 /** Journey routing values written to Zoho (fields pending admin creation/approval). */
 export const DEFAULT_JOURNEY_STAGE = "New Website Inquiry" as const;
@@ -103,17 +179,30 @@ export interface Utm {
   term?: string;
 }
 
-/** Campaign/entry attribution collected on the client, all optional. */
+/**
+ * Campaign/entry attribution, all optional.
+ *
+ * Collected by lib/attribution and persisted across page views, because a paid
+ * visitor rarely lands on the form page directly — before persistence existed,
+ * every campaign value was lost the moment they navigated.
+ */
 export interface Attribution {
   /** Server-fixed origin site; client values are ignored. */
   sourceWebsite: string;
-  /** document.referrer at submit time, when the browser exposes one. */
+  /** EXTERNAL referrer for this acquisition touch (own-host referrers dropped). */
   referrer?: string;
-  /** Google Ads click id from the landing URL. */
+  /** Google Ads click id, carried from the landing URL. */
   gclid?: string;
+  /**
+   * Meta click id. Carried for continuity only — there is NO Meta field on the
+   * Leads module, so it travels in the Description. No Pixel, no CAPI here.
+   */
+  fbclid?: string;
+  /** First URL of this acquisition touch (path + campaign query only). */
+  landingUrl?: string;
   /** First time this browser was seen on the site (persisted locally). */
   firstTouchIso?: string;
-  /** Start of the visit this enquiry was sent in. */
+  /** Start of the current acquisition touch. */
   lastTouchIso?: string;
 }
 
@@ -131,7 +220,19 @@ export interface ConsentSelections {
   whatsAppMarketing: boolean;
 }
 
+/**
+ * Which website form produced this submission.
+ *
+ * `portal-interest` is the Case Portal PRE-LAUNCH notification capture. It is a
+ * different fact, not a different lifecycle stage: the CRM still derives all
+ * state from it. See toZohoLead() for exactly what differs.
+ */
+export const FORM_TYPES = ["enquiry", "portal-interest"] as const;
+export type FormType = (typeof FORM_TYPES)[number];
+
 export interface EnquiryPayload {
+  /** Defaults to "enquiry" when absent, preserving the existing contract. */
+  formType?: FormType;
   inquiryType: InquiryType;
   name: string;
   /** Clinic / organisation. */
@@ -153,6 +254,11 @@ export interface EnquiryPayload {
   consentEmailMarketing?: boolean;
   /** Optional, unticked by default: marketing WhatsApp. */
   consentWhatsAppMarketing?: boolean;
+  /**
+   * Which service card the visitor chose. Only the KEY crosses the wire; the
+   * server maps it to picklist values, so a client cannot inject a CRM value.
+   */
+  serviceKey?: ServiceKey;
   /** Route the form was submitted from (e.g. /discuss-a-case/). */
   pageSource?: string;
   utm?: Utm;
@@ -164,7 +270,9 @@ export interface EnquiryPayload {
 
 /** Server-normalised enquiry: governance fields fixed, inputs trimmed. */
 export interface NormalisedEnquiry
-  extends Omit<EnquiryPayload, "companyWebsite" | "attribution"> {
+  extends Omit<EnquiryPayload, "companyWebsite" | "attribution" | "formType"> {
+  /** Always resolved server-side; never optional past validation. */
+  formType: FormType;
   leadSource: typeof LEAD_SOURCE;
   businessTag: typeof BUSINESS_TAG;
   receivedAtIso: string;
@@ -175,7 +283,13 @@ export interface NormalisedEnquiry
   /** Controlled provenance: `i3dc-website-form@<wording-version>`. */
   consentSource: string;
   consentWordingVersion: typeof CONSENT_WORDING_VERSION;
-  /** Duplicate-matching keys. Raw email/phone above are left untouched. */
+  /** Resolved once, server-side, from `serviceKey` then the page path. */
+  serviceIntent: ServiceIntent;
+  /**
+   * Advisory only — NOT sent to Zoho. The V2 duplicate classifier computes and
+   * writes the authoritative V2_Email_Normalized / V2_Phone_Normalized itself;
+   * these exist so the Description can record how the phone was read.
+   */
   normalisedEmail?: string;
   normalisedPhone?: string;
   /** How the phone was interpreted, or why it could not be. */

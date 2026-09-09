@@ -16,11 +16,10 @@ import {
   DEFAULT_JOURNEY_STAGE,
   INQUIRY_LABELS,
   INQUIRY_ZOHO_VALUES,
-  JOURNEY_ENGINE_VERSION,
   LEAD_SOURCE,
+  SERVICE_LABELS,
   PORTAL_GUIDANCE_STAGE,
   PORTAL_ROUTED_CATEGORY,
-  V2_NEW_ENQUIRY_STAGE,
   type InquiryType,
   type NormalisedEnquiry,
 } from "../enquiry/types";
@@ -91,12 +90,17 @@ export interface ZohoLeadRecord {
   UTM_Term?: string;
   /** Google Ads click id. */
   Ad_GCLID?: string;
+  /**
+   * Meta click id. The structured field is authoritative; the Description copy
+   * is a human-readable convenience only. Capturing the id is NOT tracking —
+   * no Pixel, no CAPI, no _fbp/_fbc, no campaign/adset/ad id logic here.
+   */
+  Meta_FBCLID?: string;
 
-  // ── CRM V2 control fields ───────────────────────────────────────────────
-  /** Marks the lead as owned by the V2 journey engine from the moment of creation. */
-  Journey_Engine_Version?: string;
-  V2_Journey_Stage?: string;
-  /** Explicitly false so the live acknowledgement rule does not treat it as a test. */
+  /**
+    * Server-controlled, always false for a real website submission. A client
+    * cannot set it: no request value is read anywhere in this mapping.
+    */
   Automation_Test?: boolean;
 
   // ── Purpose-separated permissions (each independent) ────────────────────
@@ -108,10 +112,6 @@ export interface ZohoLeadRecord {
   Consent_Source?: string;
   /** The wording version the permission was captured under. */
   Consent_Wording_Version?: string;
-
-  // ── Duplicate-matching keys (read by "V2 SYS - Duplicate Classification") ─
-  V2_Email_Normalized?: string;
-  V2_Phone_Normalized?: string;
 
   // ── Derived intent (never city/venue — those belong to the education BU) ─
   Service_Interest?: string;
@@ -125,8 +125,6 @@ export interface ZohoLeadRecord {
 const LIMITS = {
   text255: 255,
   text120: 120,
-  normalisedEmail: 100,
-  normalisedPhone: 30,
 } as const;
 
 /** Trim to a Zoho field limit; over-long values are rejected by the API, not truncated. */
@@ -135,42 +133,9 @@ function fit(value: string | undefined, max: number): string | undefined {
   return value.slice(0, max);
 }
 
-/**
- * Derive service / workflow intent from the page the enquiry came from.
- *
- * Values are exact `Service_Interest` / `Workflow_Interest` picklist entries.
- * Only unambiguous pages are mapped; anything else is left unset rather than
- * guessed, because a wrong intent is worse for routing than an absent one.
- *
- * Deliberately contains NO city, venue or location value. Location fields on the
- * Leads module (`Location`, `Workshop_City`, `Workshop_Location`) belong to the
- * education business unit and must never be written by the I3DC website.
- */
-function derivedIntent(pageSource: string | undefined): {
-  service?: string;
-  workflow?: string;
-} {
-  const path = (pageSource ?? "").toLowerCase();
-  if (path.includes("full-arch-stackable")) {
-    return { service: "Full-Arch/Stackable Guide", workflow: "Full-Arch" };
-  }
-  if (path.includes("zygoma-pterygoid")) {
-    return { service: "Guided Implant Planning", workflow: "Zygoma / Pterygoid" };
-  }
-  if (path.includes("immediate-loading")) {
-    return { service: "Guided Implant Planning", workflow: "Immediate Loading" };
-  }
-  if (path.includes("design-only")) {
-    return { service: "Digital Design Service", workflow: "Guide Design" };
-  }
-  if (path.includes("design-to-delivery")) {
-    return { service: "3D Printing / Production" };
-  }
-  if (path.includes("guided-implant-workflow")) {
-    return { service: "Guided Implant Planning" };
-  }
-  return {};
-}
+/** Marker that opens a portal pre-launch Description, per the CRM contract. */
+export const PORTAL_INTEREST_MARKER =
+  "Portal launch interest — pre-launch notification request";
 
 function splitName(full: string): { first?: string; last: string } {
   const parts = full.split(/\s+/).filter(Boolean);
@@ -182,8 +147,14 @@ const yesNo = (v: boolean): string => (v ? "Yes" : "No");
 
 /** Non-clinical context appended to Description. No case/service fields. */
 function buildDescription(e: NormalisedEnquiry, portalRouted: boolean): string {
+  const portalInterest = e.formType === "portal-interest";
   const lines = [
-    `Enquiry type: ${INQUIRY_LABELS[e.inquiryType]}`,
+    portalInterest && PORTAL_INTEREST_MARKER,
+    portalInterest && "",
+    !portalInterest && `Enquiry type: ${INQUIRY_LABELS[e.inquiryType]}`,
+    e.serviceKey && `Service selected: ${SERVICE_LABELS[e.serviceKey]} (${e.serviceKey})`,
+    e.serviceIntent.service && `  → Service_Interest: ${e.serviceIntent.service}`,
+    e.serviceIntent.workflow && `  → Workflow_Interest: ${e.serviceIntent.workflow}`,
     // Fallback: preserve organisation in Description in case Clinic_Practice_Name
     // is not on the target layout (Zoho silently drops off-layout fields).
     e.organization && `Clinic / organisation: ${e.organization}`,
@@ -203,6 +174,9 @@ function buildDescription(e: NormalisedEnquiry, portalRouted: boolean): string {
     e.attribution.firstTouchIso && `  First touch: ${e.attribution.firstTouchIso}`,
     e.attribution.lastTouchIso && `  Last touch: ${e.attribution.lastTouchIso}`,
     e.attribution.gclid && `  GCLID: ${e.attribution.gclid}`,
+    // Mirrors Meta_FBCLID for human review; that field is authoritative.
+    e.attribution.fbclid && `  FBCLID: ${e.attribution.fbclid}`,
+    e.attribution.landingUrl && `  Landing URL: ${e.attribution.landingUrl}`,
     // Referrer and touch timestamps have no dedicated Leads fields yet, so this
     // block is the only place they survive. Keep it until fields exist.
     `  Phone interpreted as: ${e.phoneBasis}`,
@@ -210,9 +184,7 @@ function buildDescription(e: NormalisedEnquiry, portalRouted: boolean): string {
       `  ⚠ Review signals (advisory, did NOT block): ${e.spamIndicators.join(", ")}`,
     portalRouted &&
       "⚠ Mentions a Case Portal topic (case/file/price/plan/status). Route to the I3DC Case Portal — do not handle here.",
-    "",
-    "Summary:",
-    e.message,
+    ...(e.message ? ["", "Summary:", e.message] : []),
   ].filter(Boolean);
   return lines.join("\n");
 }
@@ -227,8 +199,15 @@ function inquiryCategory(e: NormalisedEnquiry, portalRouted: boolean): string {
 
 export function toZohoLead(e: NormalisedEnquiry): ZohoLeadRecord {
   const { first, last } = splitName(e.name);
-  const portalRouted = needsPortalGuidance(e);
-  const intent = derivedIntent(e.pageSource);
+  const portalInterest = e.formType === "portal-interest";
+  const portalRouted = portalInterest || needsPortalGuidance(e);
+  // The Partnership card is a commercial approach, not a service request, so it
+  // is classified through Inquiry_Category rather than a Service_Interest value.
+  // It does NOT touch Inquiry_Type: the visitor's own selection already resolves
+  // to "General Enquiry" unless they picked something more specific (Lab /
+  // Vendor, Service Inquiry, White-Label), and overwriting that would discard
+  // the better value they gave us.
+  const partnership = e.serviceKey === "partnership";
   return {
     Last_Name: last,
     First_Name: first,
@@ -243,8 +222,19 @@ export function toZohoLead(e: NormalisedEnquiry): ZohoLeadRecord {
     Business_Unit: e.businessTag,
     // Picklist-safe value; the exact website intent is preserved in Description.
     Inquiry_Type: INQUIRY_ZOHO_VALUES[e.inquiryType],
-    Journey_Stage: portalRouted ? PORTAL_GUIDANCE_STAGE : DEFAULT_JOURNEY_STAGE,
-    Inquiry_Category: inquiryCategory(e, portalRouted),
+    // Portal pre-launch interest deliberately writes NO Journey_Stage: it is a
+    // lifecycle state and the CRM derives it. The key is omitted outright, not
+    // set to undefined, so the absence is explicit in the object itself rather
+    // than depending on JSON serialisation to drop it. An ordinary enquiry keeps
+    // the existing production behaviour.
+    ...(portalInterest
+      ? {}
+      : { Journey_Stage: portalRouted ? PORTAL_GUIDANCE_STAGE : DEFAULT_JOURNEY_STAGE }),
+    Inquiry_Category: portalInterest
+      ? PORTAL_ROUTED_CATEGORY
+      : partnership
+        ? "Collaboration"
+        : inquiryCategory(e, portalRouted),
     Existing_Customer: e.existingCustomer,
     Page_Submitted_From: fit(e.pageSource, LIMITS.text255),
 
@@ -260,15 +250,12 @@ export function toZohoLead(e: NormalisedEnquiry): ZohoLeadRecord {
     Consent_Source: fit(e.consentSource, LIMITS.text255),
     Consent_Wording_Version: fit(e.consentWordingVersion, LIMITS.text120),
 
-    V2_Email_Normalized: fit(e.normalisedEmail, LIMITS.normalisedEmail),
-    V2_Phone_Normalized: fit(e.normalisedPhone, LIMITS.normalisedPhone),
-
-    Journey_Engine_Version: JOURNEY_ENGINE_VERSION,
-    V2_Journey_Stage: V2_NEW_ENQUIRY_STAGE,
+    // Server-controlled constant. No request value is consulted, so a client
+    // cannot mark its own submission as a test and skip production automation.
     Automation_Test: false,
 
-    Service_Interest: intent.service,
-    Workflow_Interest: intent.workflow,
+    Service_Interest: e.serviceIntent.service,
+    Workflow_Interest: e.serviceIntent.workflow,
 
     UTM_Source: fit(e.utm?.source, LIMITS.text255),
     UTM_Medium: fit(e.utm?.medium, LIMITS.text255),
@@ -276,11 +263,26 @@ export function toZohoLead(e: NormalisedEnquiry): ZohoLeadRecord {
     UTM_Content: fit(e.utm?.content, LIMITS.text255),
     UTM_Term: fit(e.utm?.term, LIMITS.text255),
     Ad_GCLID: fit(e.attribution.gclid, LIMITS.text255),
+    Meta_FBCLID: fit(e.attribution.fbclid, LIMITS.text255),
   };
 }
 
 /*
- * Deliberately NOT written by the website, and why:
+ * Deliberately NOT written by the website, and why.
+ *
+ * THE RULE: the website owns FACTS, the CRM owns STATE.
+ *
+ *   Journey_Engine_Version — "V2 ING - I3DC Website Ingress" fires only while
+ *                           this field is EMPTY. Writing it from the website
+ *                           would stop the ingress rule running at all.
+ *   V2_Journey_Stage      — set by the same ingress rule.
+ *   V2_Email_Normalized,
+ *   V2_Phone_Normalized   — computed and written by the shared V2 duplicate
+ *                           classifier. The website still normalises internally
+ *                           for the Description, but never sends the values.
+ *   Journey_Stage         — omitted for portal-interest submissions only.
+ *   Active_Nurture_Journey,
+ *   Nurture_Suppressed    — CRM lifecycle state.
  *   Duplicate_Status      — owned by "V2 SYS - Duplicate Classification", which
  *                           runs five minutes after create to dodge the search
  *                           index race. Writing it here would fight that rule.

@@ -7,13 +7,19 @@ import {
   BUSINESS_TAG,
   CONSENT_SOURCE,
   CONSENT_WORDING_VERSION,
+  FORM_TYPES,
   INQUIRY_TYPES,
   LEAD_SOURCE,
+  SERVICE_INTENT,
+  SERVICE_KEYS,
   SOURCE_WEBSITE,
   type Attribution,
   type EnquiryPayload,
+  type FormType,
   type InquiryType,
   type NormalisedEnquiry,
+  type ServiceIntent,
+  type ServiceKey,
   type Utm,
 } from "./types";
 import { normaliseEmail, normalisePhone } from "./normalise";
@@ -78,9 +84,39 @@ function cleanAttribution(a: unknown): Attribution {
     sourceWebsite: SOURCE_WEBSITE,
     referrer: clean(o.referrer, MAX.url) || undefined,
     gclid: clean(o.gclid, MAX.short) || undefined,
+    // Carried for CRM continuity only. No Meta Pixel, no CAPI, no _fbp/_fbc.
+    fbclid: clean(o.fbclid, MAX.short) || undefined,
+    landingUrl: clean(o.landingUrl, MAX.url) || undefined,
     firstTouchIso: iso(o.firstTouchIso),
     lastTouchIso: iso(o.lastTouchIso),
   };
+}
+
+/**
+ * Resolve which service the visitor expressed interest in.
+ *
+ * An explicit card selection wins; otherwise the originating page path is used.
+ * Only exact picklist values are ever produced, and an ambiguous page yields
+ * nothing rather than a guess.
+ *
+ * Contains NO city, venue or location value — those Leads fields belong to the
+ * education business unit and must never be written by this site.
+ */
+function resolveServiceIntent(rawKey: unknown, pageSource: string | undefined): ServiceIntent {
+  const key = str(rawKey) as ServiceKey;
+  if (SERVICE_KEYS.includes(key)) return SERVICE_INTENT[key];
+
+  const path = (pageSource ?? "").toLowerCase();
+  if (path.includes("full-arch-stackable")) return SERVICE_INTENT["full-arch-stackable"];
+  if (path.includes("zygoma-pterygoid")) {
+    // Stated by the page subject itself, not inferred from a generic label.
+    return { service: "Guided Implant Planning", workflow: "Zygoma / Pterygoid" };
+  }
+  if (path.includes("immediate-loading")) return SERVICE_INTENT["immediate-loading"];
+  if (path.includes("design-only")) return SERVICE_INTENT["design-only"];
+  if (path.includes("design-to-delivery")) return SERVICE_INTENT["design-to-delivery"];
+  if (path.includes("guided-implant-workflow")) return SERVICE_INTENT["guided-implant-planning"];
+  return {};
 }
 
 function cleanUtm(u: unknown): Utm | undefined {
@@ -108,7 +144,15 @@ export function validateEnquiry(
     return { ok: false, errors: { form: "Submission rejected." } };
   }
 
-  const inquiryType = str(body.inquiryType) as InquiryType;
+  // Which website form this came from. Unknown values fall back to "enquiry"
+  // so a malformed client can never unlock the portal-interest contract.
+  const requested = str(body.formType) as FormType;
+  const formType: FormType = FORM_TYPES.includes(requested) ? requested : "enquiry";
+  const isPortalInterest = formType === "portal-interest";
+
+  // The portal pre-launch form has no enquiry-type selector; it is always a
+  // general enquiry as far as the CRM picklist is concerned.
+  const inquiryType = (isPortalInterest ? "general" : str(body.inquiryType)) as InquiryType;
   if (!INQUIRY_TYPES.includes(inquiryType)) {
     errors.inquiryType = "Select an enquiry type.";
   }
@@ -121,8 +165,9 @@ export function validateEnquiry(
   else if (!EMAIL_RE.test(email)) errors.email = "Enter a valid email.";
 
   const message = clean(body.message, MAX.message);
-  if (!message) errors.message = "A short summary of your question is required.";
-  else if (CLINICAL_LEAK_RE.test(message)) {
+  if (!message && !isPortalInterest) {
+    errors.message = "A short summary of your question is required.";
+  } else if (message && CLINICAL_LEAK_RE.test(message)) {
     errors.message =
       "Please remove patient identifiers or clinical file references. Case files, planning, and case-specific help go through the I3DC Case Portal, not this form.";
   }
@@ -148,6 +193,11 @@ export function validateEnquiry(
   };
 
   const value: NormalisedEnquiry = {
+    formType,
+    serviceKey: SERVICE_KEYS.includes(str(body.serviceKey) as ServiceKey)
+      ? (str(body.serviceKey) as ServiceKey)
+      : undefined,
+    serviceIntent: resolveServiceIntent(body.serviceKey, clean(body.pageSource, MAX.short)),
     inquiryType,
     name,
     email,

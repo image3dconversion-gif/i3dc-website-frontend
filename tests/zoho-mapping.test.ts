@@ -26,12 +26,28 @@ const ALLOWED_FIELDS = new Set([
   "Lead_Source", "Description", "Lead_Status", "Business_Unit", "Inquiry_Type",
   "Journey_Stage", "Inquiry_Category", "Existing_Customer", "Page_Submitted_From",
   "Consent", "UTM_Source", "UTM_Medium", "UTM_Campaign", "UTM_Content", "UTM_Term",
-  "Ad_GCLID", "Journey_Engine_Version", "V2_Journey_Stage", "Automation_Test",
+  "Ad_GCLID", "Meta_FBCLID", "Automation_Test",
   "Consent_WA_Operational", "Consent_Email_Marketing", "Consent_WA_Marketing",
   "Consent_Captured_At", "Consent_Source", "Consent_Wording_Version",
-  "V2_Email_Normalized", "V2_Phone_Normalized",
   "Service_Interest", "Workflow_Interest", "Layout",
 ]);
+
+/**
+ * Fields the CRM owns. The website must never send these — writing
+ * Journey_Engine_Version in particular would stop the live
+ * "V2 ING - I3DC Website Ingress" rule firing, because it only runs while that
+ * field is EMPTY.
+ */
+const CRM_OWNED_FIELDS = [
+  "Journey_Engine_Version",
+  "V2_Journey_Stage",
+  "V2_Email_Normalized",
+  "V2_Phone_Normalized",
+  "Active_Nurture_Journey",
+  "Nurture_Suppressed",
+  "Duplicate_Status",
+  "Automation_Exception",
+];
 
 /** Live picklist values, transcribed from the Leads module metadata. */
 const PICKLISTS: Record<string, string[]> = {
@@ -151,11 +167,24 @@ describe("purpose separation", () => {
     }
   });
 
-  test("marks the lead as V2 from creation", () => {
-    const record = lead();
-    assert.equal(record.Journey_Engine_Version, "V2");
-    assert.equal(record.V2_Journey_Stage, "New Enquiry");
-    assert.equal(record.Automation_Test, false);
+  test("NEVER writes the four CRM-owned V2 fields, for any form or intent", () => {
+    const records = [
+      lead(),
+      lead({ formType: "portal-interest" }),
+      lead({ inquiryType: "portal-help" }),
+      lead({ serviceKey: "full-arch-stackable" }),
+    ];
+    for (const record of records) {
+      const r = record as unknown as Record<string, unknown>;
+      for (const owned of CRM_OWNED_FIELDS) {
+        assert.ok(!(owned in r), `${owned} is CRM-owned and must not be sent`);
+      }
+    }
+  });
+
+  test("Automation_Test is server-controlled false and cannot be set true by a client", () => {
+    assert.equal(lead().Automation_Test, false);
+    assert.equal(lead({ automationTest: true, Automation_Test: true }).Automation_Test, false);
   });
 });
 
@@ -199,21 +228,19 @@ describe("identifiers: raw preserved, normalised added", () => {
     assert.equal(record.Mobile, "9876543210");
   });
 
-  test("normalised keys are populated for the duplicate classifier", () => {
-    const record = lead();
-    assert.equal(record.V2_Email_Normalized, "dr.test+crm@example.com");
-    assert.equal(record.V2_Phone_Normalized, "+919876543210");
+  test("normalised identifiers are NOT sent — the CRM classifier computes them", () => {
+    const r = lead() as unknown as Record<string, unknown>;
+    assert.ok(!("V2_Email_Normalized" in r));
+    assert.ok(!("V2_Phone_Normalized" in r));
   });
 
-  test("an unnormalisable phone leaves the key empty but keeps the raw value", () => {
-    const record = lead({ phone: "12345" });
-    assert.equal(record.V2_Phone_Normalized, undefined);
-    assert.equal(record.Mobile, "12345");
+  test("an unnormalisable phone still delivers the raw value", () => {
+    assert.equal(lead({ phone: "12345" }).Mobile, "12345");
   });
 
-  test("international numbers are not re-coded to +91", () => {
-    const record = lead({ phone: "+1 415 555 2671" });
-    assert.equal(record.V2_Phone_Normalized, "+14155552671");
+  test("how the phone was read is recorded for humans in the Description", () => {
+    assert.match(lead({ phone: "+1 415 555 2671" }).Description, /Phone interpreted as: international/);
+    assert.match(lead({ phone: "9876543210" }).Description, /Phone interpreted as: india-bare/);
   });
 });
 
@@ -276,5 +303,190 @@ describe("spam indicators are retained but never block", () => {
   test("a clean enquiry carries no review-signal line", () => {
     const record = lead();
     assert.ok(!/Review signals/.test(record.Description));
+  });
+});
+
+describe("Case Portal pre-launch interest", () => {
+  const portal = (over: Record<string, unknown> = {}) =>
+    lead({ formType: "portal-interest", pageSource: "/case-portal/", message: "", ...over });
+
+  test("sends the agreed acquisition facts", () => {
+    const record = portal();
+    assert.equal(record.Inquiry_Type, "General Enquiry");
+    assert.equal(record.Inquiry_Category, "Portal-Routed");
+    assert.equal(record.Page_Submitted_From, "/case-portal/");
+    assert.equal(record.Lead_Source, "Website - Image 3D Conversion");
+    assert.equal(record.Business_Unit, "Image3DConversion");
+  });
+
+  test("Description opens with the agreed marker", () => {
+    assert.ok(
+      portal().Description.startsWith("Portal launch interest — pre-launch notification request"),
+      "the CRM contract requires this exact opening line",
+    );
+  });
+
+  test("writes NO Journey_Stage — the CRM derives lifecycle state", () => {
+    const r = portal() as unknown as Record<string, unknown>;
+    assert.ok(!("Journey_Stage" in r), "Journey_Stage must be absent for portal interest");
+  });
+
+  test("an ordinary enquiry still DOES write Journey_Stage", () => {
+    assert.equal(lead().Journey_Stage, "New Website Inquiry");
+  });
+
+  test("no message is required, and none is invented", () => {
+    assert.ok(!/Summary:/.test(portal().Description));
+  });
+
+  test("carries consent exactly as ticked", () => {
+    const record = portal({ consentEmailMarketing: true });
+    assert.equal(record.Consent_Email_Marketing, true);
+    assert.equal(record.Consent_WA_Marketing, false);
+    assert.equal(record.Consent_WA_Operational, false);
+    assert.equal(record.Consent, true);
+  });
+
+  test("carries no service intent", () => {
+    const record = portal();
+    assert.equal(record.Service_Interest, undefined);
+    assert.equal(record.Workflow_Interest, undefined);
+  });
+
+  test("a client cannot unlock the portal contract with a bogus formType", () => {
+    const record = lead({ formType: "not-a-form" });
+    assert.equal(record.Journey_Stage, "New Website Inquiry", "falls back to the enquiry contract");
+  });
+});
+
+describe("service intent survives the card click", () => {
+  const matrix: Array<[string, string | undefined, string | undefined]> = [
+    ["guided-implant-planning", "Guided Implant Planning", undefined],
+    ["full-arch-stackable", "Full-Arch/Stackable Guide", "Full-Arch"],
+    ["immediate-loading", "Guided Implant Planning", "Immediate Loading"],
+    ["advanced-case", "Guided Implant Planning", undefined],
+    ["design-only", "Digital Design Service", "Guide Design"],
+    ["design-to-delivery", "Other", undefined],
+    ["global-practice", undefined, undefined],
+    ["partnership", undefined, undefined],
+  ];
+
+  for (const [key, service, workflow] of matrix) {
+    test(`${key} → ${service ?? "no service"} / ${workflow ?? "no workflow"}`, () => {
+      const record = lead({ serviceKey: key, pageSource: "/discuss-a-case/" });
+      assert.equal(record.Service_Interest, service);
+      assert.equal(record.Workflow_Interest, workflow);
+    });
+  }
+
+  test("every mapped value is a real picklist entry", () => {
+    for (const [key] of matrix) {
+      const record = lead({ serviceKey: key }) as unknown as Record<string, string>;
+      if (record.Service_Interest) {
+        assert.ok(PICKLISTS.Service_Interest.includes(record.Service_Interest), key);
+      }
+      if (record.Workflow_Interest) {
+        assert.ok(PICKLISTS.Workflow_Interest.includes(record.Workflow_Interest), key);
+      }
+    }
+  });
+
+  test("an unknown serviceKey is ignored, not passed through", () => {
+    const record = lead({ serviceKey: "Surgical Guide", pageSource: "/discuss-a-case/" });
+    assert.equal(record.Service_Interest, undefined, "a client must not inject a CRM value");
+  });
+
+  test("the literal website label AND key are recorded in the Description", () => {
+    assert.ok(lead({ serviceKey: "design-only" }).Description.includes("Service selected: Design-Only (design-only)"));
+    assert.ok(
+      lead({ serviceKey: "design-to-delivery" }).Description.includes("Service selected: Design-to-Delivery (design-to-delivery)"),
+      "Other loses the stage detail, so the literal label must survive",
+    );
+  });
+
+  test("Advanced Case does NOT imply Zygoma / Pterygoid", () => {
+    const record = lead({ serviceKey: "advanced-case" });
+    assert.equal(record.Service_Interest, "Guided Implant Planning");
+    assert.equal(record.Workflow_Interest, undefined, "anatomy must not be inferred from 'Advanced Case'");
+  });
+
+  test("the zygoma PAGE still states the anatomy explicitly", () => {
+    const record = lead({ pageSource: "/zygoma-pterygoid-planning/" });
+    assert.equal(record.Workflow_Interest, "Zygoma / Pterygoid", "the page subject is a stated fact, not an inference");
+  });
+
+  test("Design-to-Delivery maps to Other, not a single production stage", () => {
+    const record = lead({ serviceKey: "design-to-delivery" });
+    assert.equal(record.Service_Interest, "Other");
+    assert.notEqual(record.Service_Interest, "3D Printing / Production");
+    assert.equal(record.Workflow_Interest, undefined);
+  });
+
+  test("Partnership with no specific enquiry type → General Enquiry / Collaboration", () => {
+    const record = lead({ serviceKey: "partnership", inquiryType: "general" });
+    assert.equal(record.Inquiry_Type, "General Enquiry");
+    assert.equal(record.Inquiry_Category, "Collaboration");
+    assert.equal(record.Service_Interest, undefined);
+    assert.equal(record.Workflow_Interest, undefined);
+  });
+
+  test("Partnership NEVER overwrites a more specific enquiry type", () => {
+    // The visitor told us something more precise than "partnership" — keep it.
+    const labVendor = lead({ serviceKey: "partnership", inquiryType: "lab-vendor" });
+    assert.equal(labVendor.Inquiry_Type, "Lab / Vendor Inquiry");
+    assert.equal(labVendor.Inquiry_Category, "Collaboration");
+
+    const serviceInfo = lead({ serviceKey: "partnership", inquiryType: "service-information" });
+    assert.equal(serviceInfo.Inquiry_Type, "Service Inquiry");
+    assert.equal(serviceInfo.Inquiry_Category, "Collaboration");
+  });
+
+  test("Partnership sets Collaboration for every enquiry type", () => {
+    for (const type of INQUIRY_TYPES) {
+      const record = lead({ serviceKey: "partnership", inquiryType: type });
+      assert.equal(record.Inquiry_Category, "Collaboration", `inquiryType=${type}`);
+      assert.ok(
+        PICKLISTS.Inquiry_Type.includes(record.Inquiry_Type as string),
+        `inquiryType=${type} produced an off-picklist Inquiry_Type`,
+      );
+    }
+  });
+
+  test("Partnership keeps Collaboration even when a portal topic is mentioned", () => {
+    const record = lead({ serviceKey: "partnership", message: "What is the price for this case?" });
+    assert.equal(record.Inquiry_Category, "Collaboration");
+  });
+
+  test("without the Partnership card, portal topics still route as before", () => {
+    const record = lead({ message: "What is the price for this case?" });
+    assert.equal(record.Inquiry_Category, "Portal-Routed");
+  });
+
+  test("page-path derivation still works when no card was clicked", () => {
+    const record = lead({ pageSource: "/full-arch-stackable-workflow/" });
+    assert.equal(record.Service_Interest, "Full-Arch/Stackable Guide");
+    assert.equal(record.Workflow_Interest, "Full-Arch");
+  });
+});
+
+describe("attribution continuity", () => {
+  test("fbclid maps to the structured Meta_FBCLID field", () => {
+    const record = lead({
+      attribution: { fbclid: "IwAR-test", landingUrl: "https://image3dconversion.com/guided-implant-workflow/?utm_source=meta" },
+    });
+    assert.equal(record.Meta_FBCLID, "IwAR-test", "the structured field is authoritative");
+    assert.match(record.Description, /FBCLID: IwAR-test/, "human-readable copy retained");
+    assert.ok((record.Description || "").includes("Landing URL: https://image3dconversion.com/guided-implant-workflow/"));
+  });
+
+  test("Meta_FBCLID is absent when no fbclid was captured", () => {
+    assert.equal(lead().Meta_FBCLID, undefined);
+  });
+
+  test("no Meta campaign/adset/ad id logic is introduced in this step", () => {
+    const r = lead({ attribution: { fbclid: "IwAR-test" } }) as unknown as Record<string, unknown>;
+    for (const later of ["Meta_Campaign_ID", "Meta_Adset_ID", "Meta_Ad_ID"]) {
+      assert.ok(!(later in r), later + " belongs to the later tracking gate");
+    }
   });
 });

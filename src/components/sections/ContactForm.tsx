@@ -4,9 +4,13 @@ import { useEffect, useState } from "react";
 import {
   INQUIRY_LABELS,
   INQUIRY_TYPES,
+  SERVICE_KEYS,
+  SERVICE_LABELS,
   type EnquiryPayload,
   type InquiryType,
+  type ServiceKey,
 } from "@/lib/enquiry/types";
+import { captureAcquisition } from "@/lib/attribution/acquisition";
 import { contact } from "@/content/site";
 
 /**
@@ -36,40 +40,6 @@ const req = <span className="text-brand"> *</span>;
 
 type Status = "idle" | "submitting" | "success" | "error";
 
-const FIRST_TOUCH_KEY = "i3dc.firstTouch";
-const LAST_TOUCH_KEY = "i3dc.lastTouch";
-
-/**
- * First time this browser was seen on the site. Stored locally and never sent
- * anywhere except with an enquiry the visitor chooses to submit. Storage can be
- * unavailable (private mode, blocked cookies) — every failure degrades to
- * "unknown" rather than breaking the form.
- */
-function readFirstTouch(): string | undefined {
-  try {
-    const existing = window.localStorage.getItem(FIRST_TOUCH_KEY);
-    if (existing) return existing;
-    const now = new Date().toISOString();
-    window.localStorage.setItem(FIRST_TOUCH_KEY, now);
-    return now;
-  } catch {
-    return undefined;
-  }
-}
-
-/** Start of the current visit. */
-function readLastTouch(): string | undefined {
-  try {
-    const existing = window.sessionStorage.getItem(LAST_TOUCH_KEY);
-    if (existing) return existing;
-    const now = new Date().toISOString();
-    window.sessionStorage.setItem(LAST_TOUCH_KEY, now);
-    return now;
-  } catch {
-    return undefined;
-  }
-}
-
 export function ContactForm({
   defaultInquiryType = "general",
 }: {
@@ -87,25 +57,22 @@ export function ContactForm({
     pageSource?: string;
     utm?: EnquiryPayload["utm"];
     attribution?: EnquiryPayload["attribution"];
+    serviceKey?: ServiceKey;
   }>({});
   useEffect(() => {
-    const p = new URLSearchParams(window.location.search);
-    const utm = {
-      source: p.get("utm_source") || undefined,
-      medium: p.get("utm_medium") || undefined,
-      campaign: p.get("utm_campaign") || undefined,
-      content: p.get("utm_content") || undefined,
-      term: p.get("utm_term") || undefined,
-    };
+    // The acquisition touch is captured at the ENTRY page and carried across
+    // navigation. Reading it here rather than from this page's own query string
+    // is what stops campaign data being lost when a visitor arrives from an ad
+    // on a service page and then clicks through to the form.
+    const acquisition = captureAcquisition();
+    const requested = new URLSearchParams(window.location.search).get("service") || "";
     setMeta({
       pageSource: window.location.pathname,
-      utm: Object.values(utm).some(Boolean) ? utm : undefined,
-      attribution: {
-        referrer: document.referrer || undefined,
-        gclid: p.get("gclid") || undefined,
-        firstTouchIso: readFirstTouch(),
-        lastTouchIso: readLastTouch(),
-      },
+      utm: acquisition.utm,
+      attribution: acquisition,
+      serviceKey: SERVICE_KEYS.includes(requested as ServiceKey)
+        ? (requested as ServiceKey)
+        : undefined,
     });
   }, []);
 
@@ -152,6 +119,8 @@ export function ContactForm({
       consentEmailMarketing: fd.get("consentEmailMarketing") === "on",
       consentWhatsAppMarketing: fd.get("consentWhatsAppMarketing") === "on",
       companyWebsite: String(fd.get("companyWebsite") || ""), // honeypot
+      formType: "enquiry",
+      serviceKey: meta.serviceKey,
       pageSource: meta.pageSource,
       utm: meta.utm,
       attribution: meta.attribution,
@@ -236,6 +205,12 @@ export function ContactForm({
             </>
           )}
         </div>
+      )}
+
+      {meta.serviceKey && (
+        <p className="mb-5 rounded-[var(--radius-card)] border border-line bg-bg-tint px-4 py-3 text-sm text-ink">
+          Enquiring about <strong>{SERVICE_LABELS[meta.serviceKey]}</strong>. Add anything else below.
+        </p>
       )}
 
       <div className="grid gap-5 sm:grid-cols-2">

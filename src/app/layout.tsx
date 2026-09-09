@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { Bricolage_Grotesque, Lato } from "next/font/google";
+import { Suspense } from "react";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { AcquisitionCapture } from "@/components/layout/AcquisitionCapture";
 import { SiteChrome } from "@/components/layout/SiteChrome";
 import { OrganizationJsonLd, ProfessionalServiceJsonLd } from "@/lib/seo/jsonld";
 import { site } from "@/content/site";
@@ -66,6 +68,14 @@ export default function RootLayout({
         >
           Skip to content
         </a>
+        {/* Records the acquisition touch on every page view, so a campaign that
+            lands on a service page still reaches the form. Renders nothing and
+            makes no network request. Suspense-wrapped because it reads search
+            params, which would otherwise opt the whole tree out of static
+            rendering. */}
+        <Suspense fallback={null}>
+          <AcquisitionCapture />
+        </Suspense>
         <OrganizationJsonLd />
         <ProfessionalServiceJsonLd />
         <SiteChrome header={<Header />} footer={<Footer />}>

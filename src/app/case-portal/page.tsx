@@ -6,16 +6,16 @@ import { Eyebrow } from "@/components/ui/Eyebrow";
 import { ButtonLink } from "@/components/ui/Button";
 import { RouteCards } from "@/components/sections/RouteCards";
 import { PortalMock } from "@/components/sections/PortalMock";
-import { cta } from "@/content/cta-routes";
+import { PortalInterestForm } from "@/components/sections/PortalInterestForm";
 
 // Copy source: Case Portal Page v1.0. PUBLIC GATEWAY ONLY — explains the portal
 // and routes in. No clinical upload, no invented screenshots, no PII.
 export async function generateMetadata(): Promise<Metadata> {
   return resolveMetadata({
     path: "/case-portal/",
-    title: "Image3DConversion Case Portal | Login & Start a Case",
+    title: "Image3DConversion Case Portal | Launching Soon",
     description:
-      "Access the Image3DConversion Case Portal to start, review, approve and track your digital implant workflow.",
+      "The Image3DConversion Case Portal is launching soon. Register to get the first launch notification, or discuss a case with us now.",
   });
 }
 
@@ -41,7 +41,7 @@ const journey = [
 ];
 
 const routes = [
-  { title: "Returning practice", body: "Continue existing cases, start a new case or review required actions.", linkLabel: "Open the Case Portal", href: cta.openPortal.href },
+  { title: "Returning practice", body: "Portal access is not open yet. Register and we will notify you first.", linkLabel: "Get launch notification", href: "#notify" },
   { title: "New practice", body: "Share professional details and workflow need before clinical records are exchanged.", linkLabel: "Discuss case setup", href: "/discuss-a-case/" },
   { title: "Global practice", body: "Clarify region, production route and responsibility boundaries first.", linkLabel: "Global workflows", href: "/global-practices/" },
   { title: "Partner organisation", body: "Discuss white-label or behind-the-scenes workflow scope before case intake.", linkLabel: "Explore partnership", href: "/white-label-workflow-partner/" },
@@ -62,14 +62,18 @@ export default function CasePortalPage() {
             <h1 className="text-[length:var(--fs-hero)] font-bold leading-[1.04] tracking-[-0.02em] text-white">
               Start, review and track your guided implant cases in one place.
             </h1>
+            <p className="mt-4 inline-flex rounded-[var(--radius-sm)] border border-white/25 px-3 py-1 text-xs font-bold uppercase tracking-wider text-white">
+              Launching soon
+            </p>
             <p className="mt-5 max-w-xl text-lg text-[var(--text-on-invert)]">
               The Case Portal gives dental practices and authorised workflow partners a structured
               place to submit case requirements, follow progress, review planning outputs, request
-              changes, approve the agreed route and access final deliverables.
+              changes, approve the agreed route and access final deliverables. It is not open yet —
+              register below and you&rsquo;ll be told the moment access is available.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <ButtonLink href={cta.openPortal.href} external variant="inverse">{cta.openPortal.label}</ButtonLink>
-              <ButtonLink href="/discuss-a-case/" variant="inverseOutline">New practice? Discuss case setup</ButtonLink>
+              <ButtonLink href="#notify" variant="inverse">Get First Launch Notification</ButtonLink>
+              <ButtonLink href="/discuss-a-case/" variant="inverseOutline">Discuss a Case Now</ButtonLink>
             </div>
             <p className="mt-6 max-w-xl text-xs leading-relaxed text-[var(--text-on-invert-muted)]">
               Clinical diagnosis, treatment indication, patient consent, surgical execution and
@@ -151,8 +155,22 @@ export default function CasePortalPage() {
           professional intake route.
         </p>
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-          <ButtonLink href={cta.openPortal.href} external>{cta.openPortal.label}</ButtonLink>
-          <ButtonLink href="/discuss-a-case/" variant="secondary">New practice? Discuss case setup</ButtonLink>
+          <ButtonLink href="#notify">Get First Launch Notification</ButtonLink>
+          <ButtonLink href="/discuss-a-case/" variant="secondary">Discuss a Case Now</ButtonLink>
+        </div>
+      </Section>
+
+      {/* Pre-launch interest capture. Posts to the same /api/enquiry route with
+          formType "portal-interest"; the server decides everything the CRM sees. */}
+      <Section tone="tint" aria-labelledby="notify-h" width="narrow">
+        <span aria-hidden className="tech-rule mb-4 block" />
+        <h2 id="notify-h">Be first in when the portal opens</h2>
+        <p className="mt-4 max-w-2xl text-ink">
+          Registration takes a few seconds and asks for professional details only — no patient
+          information, no case files.
+        </p>
+        <div className="mt-8">
+          <PortalInterestForm />
         </div>
       </Section>
     </>

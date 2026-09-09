@@ -19,15 +19,18 @@ export async function generateMetadata(): Promise<Metadata> {
   });
 }
 
+// Each card carries its service key in the query string so the choice survives
+// into the form and on into the CRM. Previously these were bare "#form" anchors
+// and the selection was discarded the moment the visitor scrolled.
 const routes = [
-  { title: "Guided Implant Planning", body: "Implant planning and guide-design support for routine or multi-implant cases.", linkLabel: "Start here", href: "#form" },
-  { title: "Full-Arch / Stackable", body: "Prosthetic reference, bone reduction, implant sequence, MUA direction and guide coordination.", linkLabel: "Start here", href: "#form" },
-  { title: "Immediate Loading", body: "Provisional, aesthetic and prosthetic coordination around immediate-loading treatment.", linkLabel: "Start here", href: "#form" },
-  { title: "Advanced Case", body: "Zygoma, pterygoid or complex anatomy needing specialist-led planning.", linkLabel: "Start here", href: "#form" },
-  { title: "Design-Only", body: "Production-ready files while you keep production local.", linkLabel: "Start here", href: "#form" },
-  { title: "Design-to-Delivery", body: "Coordinated planning, design and production handoff where available.", linkLabel: "Start here", href: "#form" },
-  { title: "Global Practice", body: "Cross-border collaboration, file handoff or production coordination.", linkLabel: "Start here", href: "#form" },
-  { title: "Partnership", body: "Labs, DSOs, implant companies, education groups and white-label partners.", linkLabel: "Start here", href: "#form" },
+  { title: "Guided Implant Planning", body: "Implant planning and guide-design support for routine or multi-implant cases.", linkLabel: "Start here", href: "?service=guided-implant-planning#form" },
+  { title: "Full-Arch / Stackable", body: "Prosthetic reference, bone reduction, implant sequence, MUA direction and guide coordination.", linkLabel: "Start here", href: "?service=full-arch-stackable#form" },
+  { title: "Immediate Loading", body: "Provisional, aesthetic and prosthetic coordination around immediate-loading treatment.", linkLabel: "Start here", href: "?service=immediate-loading#form" },
+  { title: "Advanced Case", body: "Zygoma, pterygoid or complex anatomy needing specialist-led planning.", linkLabel: "Start here", href: "?service=advanced-case#form" },
+  { title: "Design-Only", body: "Production-ready files while you keep production local.", linkLabel: "Start here", href: "?service=design-only#form" },
+  { title: "Design-to-Delivery", body: "Coordinated planning, design and production handoff where available.", linkLabel: "Start here", href: "?service=design-to-delivery#form" },
+  { title: "Global Practice", body: "Cross-border collaboration, file handoff or production coordination.", linkLabel: "Start here", href: "?service=global-practice#form" },
+  { title: "Partnership", body: "Labs, DSOs, implant companies, education groups and white-label partners.", linkLabel: "Start here", href: "?service=partnership#form" },
 ];
 
 const afterSteps = [
