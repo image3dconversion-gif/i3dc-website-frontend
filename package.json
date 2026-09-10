@@ -9,7 +9,8 @@
     "start": "next start -p 3001",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "test": "node --import ./tests/ts-resolve.mjs --test \"tests/**/*.test.ts\""
+    "test": "node --import ./tests/ts-resolve.mjs --test \"tests/**/*.test.ts\"",
+    "test:browser": "node tests/browser/soft-navigation.mjs"
   },
   "dependencies": {
     "@keystatic/core": "^0.6.4",

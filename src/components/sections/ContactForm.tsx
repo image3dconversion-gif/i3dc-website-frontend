@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import {
   INQUIRY_LABELS,
   INQUIRY_TYPES,
@@ -53,28 +54,43 @@ export function ContactForm({
   const [successMsg, setSuccessMsg] = useState<string>("");
 
   // Capture attribution + page source on the client (no Suspense needed).
+  const searchParams = useSearchParams();
+
+  /**
+   * The chosen service card, DERIVED from the live URL on every render.
+   *
+   * It must not be captured once on mount. The cards use next/link, so clicking
+   * one is a client-side soft navigation WITHIN this same route: React keeps
+   * this component instance alive and a mount-only effect never re-runs. The
+   * URL would show ?service=… while the form still believed nothing was chosen,
+   * and the selection was dropped from the payload — which is exactly how a
+   * live enquiry reached the CRM with Service_Interest empty.
+   */
+  const requestedService = searchParams.get("service") ?? "";
+  const serviceKey = SERVICE_KEYS.includes(requestedService as ServiceKey)
+    ? (requestedService as ServiceKey)
+    : undefined;
+
   const [meta, setMeta] = useState<{
     pageSource?: string;
     utm?: EnquiryPayload["utm"];
     attribution?: EnquiryPayload["attribution"];
-    serviceKey?: ServiceKey;
   }>({});
   useEffect(() => {
     // The acquisition touch is captured at the ENTRY page and carried across
     // navigation. Reading it here rather than from this page's own query string
     // is what stops campaign data being lost when a visitor arrives from an ad
     // on a service page and then clicks through to the form.
+    //
+    // Re-runs on searchParams for the same reason as above: a soft navigation
+    // into this route must refresh what the form is about to send.
     const acquisition = captureAcquisition();
-    const requested = new URLSearchParams(window.location.search).get("service") || "";
     setMeta({
       pageSource: window.location.pathname,
       utm: acquisition.utm,
       attribution: acquisition,
-      serviceKey: SERVICE_KEYS.includes(requested as ServiceKey)
-        ? (requested as ServiceKey)
-        : undefined,
     });
-  }, []);
+  }, [searchParams]);
 
   if (status === "success") {
     return (
@@ -120,7 +136,7 @@ export function ContactForm({
       consentWhatsAppMarketing: fd.get("consentWhatsAppMarketing") === "on",
       companyWebsite: String(fd.get("companyWebsite") || ""), // honeypot
       formType: "enquiry",
-      serviceKey: meta.serviceKey,
+      serviceKey,
       pageSource: meta.pageSource,
       utm: meta.utm,
       attribution: meta.attribution,
@@ -207,9 +223,9 @@ export function ContactForm({
         </div>
       )}
 
-      {meta.serviceKey && (
+      {serviceKey && (
         <p className="mb-5 rounded-[var(--radius-card)] border border-line bg-bg-tint px-4 py-3 text-sm text-ink">
-          Enquiring about <strong>{SERVICE_LABELS[meta.serviceKey]}</strong>. Add anything else below.
+          Enquiring about <strong>{SERVICE_LABELS[serviceKey]}</strong>. Add anything else below.
         </p>
       )}
 

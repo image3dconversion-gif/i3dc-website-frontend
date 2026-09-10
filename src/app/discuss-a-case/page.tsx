@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import { resolveMetadata } from "@/lib/seo/metadata";
 import { Section } from "@/components/ui/Section";
@@ -87,7 +88,13 @@ export default function DiscussPage() {
               <ContactChannels />
             </div>
           </div>
-          <ContactForm />
+          {/* ContactForm reads ?service= via useSearchParams so a soft
+              navigation from the cards above updates it. The boundary keeps
+              this page statically prerendered; only the form waits for the
+              client-side URL. */}
+          <Suspense fallback={null}>
+            <ContactForm />
+          </Suspense>
         </div>
       </Section>
 
