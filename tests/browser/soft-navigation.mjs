@@ -174,6 +174,33 @@ async function fillAndSubmit(page, message = NEUTRAL) {
         `${rec?.Service_Interest} / ${rec?.Workflow_Interest}`);
 await page.close();
     }
+
+    // ── 4. Routing: everyday service vocabulary must not reach the portal lane ─
+    {
+      const page = await newPage(browser);
+      await page.goto(`http://127.0.0.1:${PORT}/discuss-a-case/`, { waitUntil: "networkidle0" });
+      await page.click('a[href*="service=guided-implant-planning"]');
+      await page.waitForFunction(() => window.location.search.includes("service="), { timeout: 10000 });
+      const rec = await fillAndSubmit(page, "I have a case coming up and want guided implant planning support.");
+      check('message containing "case" is NOT portal-routed',
+        rec?.Inquiry_Category === "Service-Info" && rec?.Journey_Stage === "New Website Inquiry",
+        `${rec?.Inquiry_Category} / ${rec?.Journey_Stage}`);
+      check('service intent still lands alongside the "case" wording',
+        rec?.Service_Interest === "Guided Implant Planning", String(rec?.Service_Interest));
+      await page.close();
+    }
+
+    // ── 5. Genuine commercial intent still routes to the portal lane ──────────
+    {
+      const page = await newPage(browser);
+      await page.goto(`http://127.0.0.1:${PORT}/discuss-a-case/`, { waitUntil: "networkidle0" });
+      const rec = await fillAndSubmit(page, "What is the price for a surgical guide?");
+      check("commercial intent still routes to the portal lane",
+        rec?.Inquiry_Category === "Portal-Routed" && rec?.Journey_Stage === "Portal Guidance Needed",
+        `${rec?.Inquiry_Category} / ${rec?.Journey_Stage}`);
+      await page.close();
+    }
+
   } finally {
     await browser.close();
   }

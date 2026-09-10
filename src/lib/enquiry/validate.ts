@@ -52,9 +52,17 @@ const CLINICAL_LEAK_RE =
  * SOFT ROUTE signal — commercial/case terms that are NOT patient PII but must be
  * handled in the Case Portal, not this form. A match does not reject; it flags
  * the lead for `Journey_Stage = Portal Guidance Needed` (see mapping.ts).
+ *
+ * Deliberately narrow. It previously matched the bare word "case" — on a page
+ * called "Discuss a Case" that invites the visitor to describe their case, so
+ * virtually every genuine service enquiry was mis-routed to Portal-Routed. It
+ * also matched "guide design", "production" and "delivery", which are services
+ * I3DC sells, not portal-owned topics. Those five terms are gone; the multi-word
+ * `case status` and `order status` remain as their own alternatives so genuine
+ * status queries still route.
  */
 const PORTAL_TOPIC_RE =
-  /\b(case|cases|price|pricing|cost|quote|quotation|treatment plan|surgery plan|guide design|implant system|implant brand|production|delivery|case status|order status|quotation request)\b/i;
+  /\b(case status|order status|quotation request|treatment plan|surgery plan|implant system|implant brand|pricing|price|quotation|quote|cost)\b/i;
 
 /** True when the message mentions a case/commercial topic that the Case Portal owns. */
 export function mentionsPortalTopic(message: string): boolean {
