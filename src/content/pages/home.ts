@@ -42,7 +42,7 @@ export const home = {
     eyebrow: "DIGITAL IMPLANT PLANNING & SURGICAL GUIDE SERVICES",
     h1: "Plan the outcome. Guide the execution.",
     body: "Begin with the smile you intend to restore. Image3DConversion helps coordinate the aesthetic and prosthetic objective with function, biology, anatomy, implant planning, guide design and the approved route to delivery. Your treatment plan remains under your approval at every critical stage.",
-    utility: "Already working with us? Open the Case Portal.",
+    utility: "Already working with us? Case Portal access is launching soon.",
     professionalNote:
       "Services are provided to dental professionals and authorised workflow partners.",
   },
@@ -119,7 +119,7 @@ export const home = {
     items: [
       {
         title: "Submit securely",
-        body: "Create a practice account and upload the prescription and required case records inside the Case Portal.",
+        body: "Records are submitted inside the Case Portal, which is launching soon. Until it opens, we confirm the right intake route with you directly.",
       },
       {
         title: "Validate the data",
@@ -203,7 +203,7 @@ export const home = {
       "Prosthesis pickup",
     ],
     closingLine:
-      "Discuss the workflow before uploading the complete case if the scope is still being defined.",
+      "Discuss the workflow first if the scope is still being defined.",
     linkLabel: "Explore the Full-Arch Stackable Workflow",
     href: "/full-arch-stackable-workflow/",
   },
@@ -287,6 +287,6 @@ export const home = {
 
   finalAction: {
     h2: "Ready when the case is.",
-    body: "Start the case when your records and scope are clear. If the workflow is still being defined, speak with the team first.",
+    body: "The Case Portal is launching soon. Until it opens, discuss the case with the team and we will confirm the right route.",
   },
 } as const;

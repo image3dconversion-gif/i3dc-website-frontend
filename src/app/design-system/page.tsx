@@ -92,9 +92,9 @@ export default function DesignSystemPage() {
       <Section aria-labelledby="ds-buttons">
         <h2 id="ds-buttons">Buttons</h2>
         <div className="mt-6 flex flex-wrap items-center gap-4">
-          <ButtonLink href="#" variant="primary">Start a Case</ButtonLink>
+          <ButtonLink href="#" variant="primary">Case Portal — Coming Soon</ButtonLink>
           <ButtonLink href="#" variant="secondary">Discuss a Complex Case</ButtonLink>
-          <ButtonLink href="#" variant="utility">Open the Case Portal →</ButtonLink>
+          <ButtonLink href="#" variant="utility">About the Case Portal →</ButtonLink>
         </div>
       </Section>
 

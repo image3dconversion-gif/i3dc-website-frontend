@@ -2,9 +2,14 @@
  * Canonical CTA definitions. One place to change label + destination so the
  * primary/secondary/utility action discipline stays consistent site-wide.
  *
- * CTA discipline (Homepage v1.2 §1): Primary = Start a Case,
- * Secondary = Discuss a Complex Case, Utility = Open the Case Portal.
+ * CTA discipline (Homepage v1.2 §1): Primary = the Case Portal route,
+ * Secondary = Discuss a Complex Case, Utility = the Case Portal explainer.
  * No fourth competing CTA above the footer.
+ *
+ * PUBLIC AVAILABILITY (MKT-04): the Case Portal has NOT launched. Public labels
+ * must state "coming soon" and must never imply open public case intake. The
+ * startCase key is kept so every call site stays wired to one definition; its
+ * label and destination are the pre-launch route until the portal is live.
  */
 import { portal } from "./site";
 
@@ -22,7 +27,7 @@ export interface Cta {
 
 export const cta = {
   startCase: {
-    label: "Start a Case",
+    label: "Case Portal — Coming Soon",
     href: portal.startCaseUrl,
     variant: "primary",
     event: "home_start_case",
@@ -35,7 +40,7 @@ export const cta = {
     event: "home_discuss_case",
   },
   openPortal: {
-    label: "Open the Case Portal",
+    label: "About the Case Portal",
     href: portal.loginUrl,
     variant: "utility",
     event: "home_open_portal",

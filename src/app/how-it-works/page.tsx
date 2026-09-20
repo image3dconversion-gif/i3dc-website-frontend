@@ -22,7 +22,7 @@ export async function generateMetadata(): Promise<Metadata> {
 const stages = [
   { n: "01", title: "Discuss the case route", body: "Identify the case type and workflow need — planning, design-only, design-to-delivery, global support or partnership.", where: "Discuss a Case" },
   { n: "02", title: "Prepare diagnostic records", body: "Prepare CBCT/DICOM, scans, bite, photographs and prosthetic reference as required by the case type.", where: "Case Data & Diagnostic Preparation" },
-  { n: "03", title: "Submit through the right pathway", body: "Ready cases move through the authenticated Case Portal. Early enquiries stay on the public route until submission is appropriate.", where: "Case Portal" },
+  { n: "03", title: "Submit through the right pathway", body: "Ready cases will move through the authenticated Case Portal, which is launching soon. Until it opens, we confirm the intake route with you directly.", where: "Case Portal (launching soon)" },
   { n: "04", title: "Plan, design and review", body: "Planning, guide design, prosthetic alignment, revision handling and review-ready outputs within the agreed scope.", where: "Relevant workflow page" },
   { n: "05", title: "Approve and receive deliverables", body: "Review, request changes where needed, record approval and receive production-ready files or delivery support.", where: "Case Portal / agreed route" },
 ];

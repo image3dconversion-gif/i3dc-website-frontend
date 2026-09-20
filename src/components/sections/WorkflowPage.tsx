@@ -72,7 +72,7 @@ export function WorkflowPage({
   c: WorkflowContent & { canonical?: string };
 }) {
   // Never duplicate the primary: if the page leads with "Discuss", the
-  // secondary becomes Start a Case, otherwise it's Discuss a Complex Case.
+  // secondary becomes the Case Portal route, otherwise Discuss a Complex Case.
   const leadsWithDiscuss = c.primary.href === cta.discussCase.href;
   const secondary = leadsWithDiscuss
     ? { label: cta.startCase.label, href: cta.startCase.href, external: true }
@@ -245,7 +245,7 @@ export function WorkflowPage({
         heading={c.ctaHeading ?? "Ready to move this case forward?"}
         body={
           c.ctaBody ??
-          "Start the case when your records and scope are clear, or discuss the workflow first if it is still being defined."
+          "The Case Portal is launching soon. Discuss the case with the team now and we will confirm the right route."
         }
         primary={{ label: c.primary.label, href: c.primary.href, external: c.primary.external }}
         secondary={{ label: secondary.label, href: secondary.href, external: secondary.external }}

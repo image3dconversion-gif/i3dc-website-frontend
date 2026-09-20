@@ -91,19 +91,28 @@ export default function DiscussPage() {
           {/* ContactForm reads ?service= via useSearchParams so a soft
               navigation from the cards above updates it. The boundary keeps
               this page statically prerendered; only the form waits for the
-              client-side URL. */}
-          <Suspense fallback={null}>
-            <ContactForm />
-          </Suspense>
+              client-side URL.
+
+              The public #form anchor lives on this server-rendered wrapper, not
+              on the client-rendered <form>: the browser resolves the hash on a
+              cold load before hydration, so an anchor that only appears once the
+              boundary resolves is never found. The grid wrapper keeps the form the same
+              stretched grid item it was when it carried the id itself. */}
+          <div id="form" className="grid scroll-mt-20">
+            <Suspense fallback={null}>
+              <ContactForm />
+            </Suspense>
+          </div>
         </div>
       </Section>
 
       <Section aria-labelledby="ready-h" width="narrow" className="text-center">
-        <h2 id="ready-h">Already ready to submit a case?</h2>
+        <h2 id="ready-h">Preparing to submit a case?</h2>
         <p className="mx-auto mt-4 max-w-xl text-ink">
-          If your practice already has an account and the case is ready, use the Case Portal instead
-          of this public form — the correct place to start cases, upload required records, review
-          outputs, request changes, approve the route and access deliverables.
+          The authenticated Case Portal — where cases are started, required records submitted,
+          outputs reviewed, changes requested, the route approved and deliverables accessed — is
+          launching soon. See what it covers and register for the launch notification. Until it
+          opens, start here and we will confirm the right route for your case.
         </p>
         <div className="mt-8 flex justify-center">
           <ButtonLink href={cta.openPortal.href} external>{cta.openPortal.label}</ButtonLink>

@@ -20,7 +20,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 const actions = [
-  { t: "Start a Case", d: "Create a new guided, full-arch, advanced, immediate-loading or design workflow request." },
+  { t: "Open a new case request", d: "Create a new guided, full-arch, advanced, immediate-loading or design workflow request." },
   { t: "Upload required records", d: "Submit DICOM, STL, images and instructions only inside the authenticated workspace." },
   { t: "Track a Case", d: "See the current stage and whether any practice action is required." },
   { t: "Review Plan", d: "Open the proposed plan, notes or design output prepared for professional review." },
@@ -102,7 +102,7 @@ export default function CasePortalPage() {
       </Section>
 
       <Section tone="tint" aria-labelledby="actions-h">
-        <h2 id="actions-h">What you can do inside the portal</h2>
+        <h2 id="actions-h">What you will be able to do inside the portal</h2>
         <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {actions.map((a) => (
             <li key={a.t} className="rounded-[var(--radius-card)] border border-line bg-white p-5 shadow-[var(--shadow-sm)]">

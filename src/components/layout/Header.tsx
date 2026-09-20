@@ -84,7 +84,7 @@ export function Header() {
             rel="noopener noreferrer"
             className="hidden text-sm font-semibold text-brand no-underline hover:text-brand-hover lg:inline"
           >
-            Open Case Portal
+            {cta.openPortal.label}
           </a>
           <span className="hidden sm:block">
             <ButtonLink href={cta.startCase.href} external={cta.startCase.external}>

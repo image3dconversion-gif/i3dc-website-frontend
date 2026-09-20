@@ -142,7 +142,7 @@ async function fillAndSubmit(page, message = NEUTRAL) {
 
       // The chip is the user-visible proof the form saw the selection.
       const chip = await page.evaluate(() =>
-        [...document.querySelectorAll("form#form p")].map((p) => p.innerText.trim()).find((t) => /Enquiring about/.test(t)) || null,
+        [...document.querySelectorAll("#form form p")].map((p) => p.innerText.trim()).find((t) => /Enquiring about/.test(t)) || null,
       );
       check(`${key}: form state updated after soft navigation`, !!chip, chip || "NO CHIP");
 

@@ -9,7 +9,7 @@ import { cta } from "@/content/cta-routes";
 /**
  * Mobile / tablet navigation (shown below `lg`). A hamburger toggles a
  * full-width panel listing the Solutions groups, primary nav, the portal link
- * and Start a Case. Closes on route change and on Escape; locks body scroll
+ * and the Case Portal CTA. Closes on route change and on Escape; locks body scroll
  * while open. Keyboard accessible.
  */
 export function MobileNav() {
@@ -92,7 +92,7 @@ export function MobileNav() {
                 rel="noopener noreferrer"
                 className="inline-flex min-h-12 items-center justify-center rounded-[var(--radius-card)] border border-line-strong px-6 text-base font-bold text-brand no-underline"
               >
-                Open Case Portal
+                {cta.openPortal.label}
               </a>
               <a
                 href={cta.startCase.href}

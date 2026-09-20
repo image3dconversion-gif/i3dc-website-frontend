@@ -96,9 +96,9 @@ export const pages: PageMeta[] = [
   {
     slug: "case-portal",
     path: "/case-portal/",
-    title: "Image3DConversion Case Portal | Login & Start a Case",
+    title: "Image3DConversion Case Portal | Launching Soon",
     description:
-      "Access the Case Portal to start, review, approve and track your digital implant workflow.",
+      "The Image3DConversion Case Portal is launching soon. Register to get the first launch notification, or discuss a case with us now.",
     sections: ["page-hero", "portal-mock", "prose", "feature-grid", "prose", "route-cards", "prose"],
     editable: true,
     governanceSensitive: true,

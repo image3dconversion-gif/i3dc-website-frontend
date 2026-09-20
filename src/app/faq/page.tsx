@@ -31,7 +31,7 @@ const groups: { title: string; items: QA[] }[] = [
   {
     title: "Starting a case",
     items: [
-      { q: "Where should a new practice begin?", a: "Start with Discuss a Case if you are unsure which workflow fits. If you already have an account and the case is ready, use the Case Portal." },
+      { q: "Where should a new practice begin?", a: "Start with Discuss a Case. The Case Portal is launching soon; until it opens, every route begins with a workflow enquiry and we confirm the right next step." },
       { q: "Can I upload DICOM, STL or photos on the public FAQ page?", a: "No. Public pages explain preparation and collect non-identifying enquiries only. Clinical files belong inside the authenticated Case Portal or another approved professional intake route." },
       { q: "Who approves the final plan or design?", a: "The treating clinician or responsible professional team must review and approve the clinical direction. Image3DConversion supports digital planning and workflow preparation within the agreed scope." },
       { q: "What if I’m not sure whether my case is guided, design-only or design-to-delivery?", a: "Use the public discussion route with a non-identifying workflow summary. The team can help route the enquiry before clinical records are submitted." },
