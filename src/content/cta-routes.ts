@@ -2,14 +2,15 @@
  * Canonical CTA definitions. One place to change label + destination so the
  * primary/secondary/utility action discipline stays consistent site-wide.
  *
- * CTA discipline (Homepage v1.2 §1): Primary = the Case Portal route,
- * Secondary = Discuss a Complex Case, Utility = the Case Portal explainer.
+ * CTA discipline (Homepage v1.2 §1): Primary = Request an Invitation,
+ * Secondary = Discuss a Complex Case, Utility = Sign In to the Portal.
  * No fourth competing CTA above the footer.
  *
- * PUBLIC AVAILABILITY (MKT-04): the Case Portal has NOT launched. Public labels
- * must state "coming soon" and must never imply open public case intake. The
- * startCase key is kept so every call site stays wired to one definition; its
- * label and destination are the pre-launch route until the portal is live.
+ * PUBLIC AVAILABILITY (MKT-04, 2026-09-22): the Case Portal is LIVE but
+ * INVITE-ONLY. Public registration is not open, so the public site offers
+ * exactly two portal paths and no third — request an invitation (reviewed by
+ * the team), or sign in if the practice is already authorised. The startCase
+ * key name is kept so every call site stays wired to one definition.
  */
 import { portal } from "./site";
 
@@ -27,11 +28,12 @@ export interface Cta {
 
 export const cta = {
   startCase: {
-    label: "Case Portal — Coming Soon",
-    href: portal.startCaseUrl,
+    label: "Request an Invitation",
+    href: portal.requestInvitationUrl,
     variant: "primary",
     event: "home_start_case",
-    external: true,
+    // Same-site anchor now, so it must NOT open a new tab.
+    external: false,
   },
   discussCase: {
     label: "Discuss a Complex Case",
@@ -40,7 +42,7 @@ export const cta = {
     event: "home_discuss_case",
   },
   openPortal: {
-    label: "About the Case Portal",
+    label: "Sign In to the Portal",
     href: portal.loginUrl,
     variant: "utility",
     event: "home_open_portal",

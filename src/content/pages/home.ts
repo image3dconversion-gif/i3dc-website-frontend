@@ -42,7 +42,7 @@ export const home = {
     eyebrow: "DIGITAL IMPLANT PLANNING & SURGICAL GUIDE SERVICES",
     h1: "Plan the outcome. Guide the execution.",
     body: "Begin with the smile you intend to restore. Image3DConversion helps coordinate the aesthetic and prosthetic objective with function, biology, anatomy, implant planning, guide design and the approved route to delivery. Your treatment plan remains under your approval at every critical stage.",
-    utility: "Already working with us? Case Portal access is launching soon.",
+    utility: "Already onboarded? Sign in to the Case Portal.",
     professionalNote:
       "Services are provided to dental professionals and authorised workflow partners.",
   },
@@ -119,7 +119,7 @@ export const home = {
     items: [
       {
         title: "Submit securely",
-        body: "Records are submitted inside the Case Portal, which is launching soon. Until it opens, we confirm the right intake route with you directly.",
+        body: "Invited practices submit the prescription and required case records inside the authenticated Case Portal. Access is by invitation, and we review every request.",
       },
       {
         title: "Validate the data",
@@ -287,6 +287,6 @@ export const home = {
 
   finalAction: {
     h2: "Ready when the case is.",
-    body: "The Case Portal is launching soon. Until it opens, discuss the case with the team and we will confirm the right route.",
+    body: "The Case Portal is live for invited practices. Request an invitation, or discuss the case with the team first if the workflow is still being defined.",
   },
 } as const;

@@ -264,8 +264,8 @@ export function ContactForm({
       {/* Boundary notice sits directly above the message field. */}
       <div className="mt-6 rounded-[var(--radius-card)] border border-line-strong bg-blue-50 px-4 py-3">
         <p className="text-sm font-semibold text-heading">
-          The I3DC Case Portal is launching soon. Until it opens, tell us what you need here
-          and we will confirm the right route.
+          Case work runs inside the authenticated I3DC Case Portal, which is live for invited
+          practices. Tell us what you need here and we will confirm the right route.
         </p>
         <p className="mt-1 text-xs text-muted">
           This form is for general questions, portal help, and collaboration enquiries only.

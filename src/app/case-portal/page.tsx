@@ -7,15 +7,20 @@ import { ButtonLink } from "@/components/ui/Button";
 import { RouteCards } from "@/components/sections/RouteCards";
 import { PortalMock } from "@/components/sections/PortalMock";
 import { PortalInterestForm } from "@/components/sections/PortalInterestForm";
+import { portal } from "@/content/site";
 
 // Copy source: Case Portal Page v1.0. PUBLIC GATEWAY ONLY — explains the portal
 // and routes in. No clinical upload, no invented screenshots, no PII.
+//
+// The portal is LIVE but INVITE-ONLY. This page carries exactly two public
+// paths: request an invitation (reviewed) and sign in (already authorised).
+// It must never expose registration or suggest payments are available.
 export async function generateMetadata(): Promise<Metadata> {
   return resolveMetadata({
     path: "/case-portal/",
-    title: "Image3DConversion Case Portal | Launching Soon",
+    title: "Image3DConversion Case Portal | Live, Invite Only",
     description:
-      "The Image3DConversion Case Portal is launching soon. Register to get the first launch notification, or discuss a case with us now.",
+      "The Image3DConversion Case Portal is live for invited dental practices. Public registration is not open — request an invitation, or sign in if your practice is already authorised.",
   });
 }
 
@@ -41,8 +46,8 @@ const journey = [
 ];
 
 const routes = [
-  { title: "Returning practice", body: "Portal access is not open yet. Register and we will notify you first.", linkLabel: "Get launch notification", href: "#notify" },
-  { title: "New practice", body: "Share professional details and workflow need before clinical records are exchanged.", linkLabel: "Discuss case setup", href: "/discuss-a-case/" },
+  { title: "Authorised practice", body: "Your practice is already onboarded. Sign in to open, track and review your cases.", linkLabel: "Sign in to the Portal", href: portal.loginUrl },
+  { title: "New practice", body: "Access is invite-only. Request an invitation, or discuss the workflow first if the scope is still being defined.", linkLabel: "Request an invitation", href: "#request-invitation" },
   { title: "Global practice", body: "Clarify region, production route and responsibility boundaries first.", linkLabel: "Global workflows", href: "/global-practices/" },
   { title: "Partner organisation", body: "Discuss white-label or behind-the-scenes workflow scope before case intake.", linkLabel: "Explore partnership", href: "/white-label-workflow-partner/" },
 ];
@@ -63,18 +68,26 @@ export default function CasePortalPage() {
               Start, review and track your guided implant cases in one place.
             </h1>
             <p className="mt-4 inline-flex rounded-[var(--radius-sm)] border border-white/25 px-3 py-1 text-xs font-bold uppercase tracking-wider text-white">
-              Launching soon
+              Live · Invite only
             </p>
             <p className="mt-5 max-w-xl text-lg text-[var(--text-on-invert)]">
-              The Case Portal gives dental practices and authorised workflow partners a structured
-              place to submit case requirements, follow progress, review planning outputs, request
-              changes, approve the agreed route and access final deliverables. It is not open yet —
-              register below and you&rsquo;ll be told the moment access is available.
+              The Case Portal gives invited dental practices and authorised workflow partners a
+              structured place to submit case requirements, follow progress, review planning
+              outputs, request changes, approve the agreed route and access final deliverables.
+              Access is by invitation and every request is reviewed — public registration is not
+              open.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <ButtonLink href="#notify" variant="inverse">Get First Launch Notification</ButtonLink>
-              <ButtonLink href="/discuss-a-case/" variant="inverseOutline">Discuss a Case Now</ButtonLink>
+              <ButtonLink href="#request-invitation" variant="inverse">Request an Invitation</ButtonLink>
+              <ButtonLink href={portal.loginUrl} variant="inverseOutline" external>Sign In to the Portal</ButtonLink>
             </div>
+            <p className="mt-4 text-sm text-[var(--text-on-invert)]">
+              Not ready for the portal?{" "}
+              <a href="/discuss-a-case/" className="font-semibold text-white underline underline-offset-4">
+                Discuss a case now
+              </a>
+              .
+            </p>
             <p className="mt-6 max-w-xl text-xs leading-relaxed text-[var(--text-on-invert-muted)]">
               Clinical diagnosis, treatment indication, patient consent, surgical execution and
               final approval remain with the treating clinician or responsible professional team.
@@ -102,7 +115,7 @@ export default function CasePortalPage() {
       </Section>
 
       <Section tone="tint" aria-labelledby="actions-h">
-        <h2 id="actions-h">What you will be able to do inside the portal</h2>
+        <h2 id="actions-h">What you can do inside the portal</h2>
         <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {actions.map((a) => (
             <li key={a.t} className="rounded-[var(--radius-card)] border border-line bg-white p-5 shadow-[var(--shadow-sm)]">
@@ -141,7 +154,7 @@ export default function CasePortalPage() {
       </Section>
 
       <Section tone="tint" aria-labelledby="portal-routes-h">
-        <h2 id="portal-routes-h">New practice or returning practice?</h2>
+        <h2 id="portal-routes-h">Already authorised, or asking for access?</h2>
         <div className="mt-8"><RouteCards cards={routes} columns={4} /></div>
       </Section>
 
@@ -155,21 +168,26 @@ export default function CasePortalPage() {
           professional intake route.
         </p>
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-          <ButtonLink href="#notify">Get First Launch Notification</ButtonLink>
+          <ButtonLink href="#request-invitation">Request an Invitation</ButtonLink>
           <ButtonLink href="/discuss-a-case/" variant="secondary">Discuss a Case Now</ButtonLink>
         </div>
       </Section>
 
-      {/* Pre-launch interest capture. Posts to the same /api/enquiry route with
-          formType "portal-interest"; the server decides everything the CRM sees. */}
+      {/* Invitation request. UNCHANGED submission mechanism: the same
+          /api/enquiry route with formType "portal-interest"; the server still
+          decides everything the CRM sees. Only the copy was repositioned.
+
+          The #request-invitation anchor sits on this server-rendered wrapper so
+          a cold deep link resolves it before hydration; the legacy #notify
+          anchor on the form itself is kept so older links still work. */}
       <Section tone="tint" aria-labelledby="notify-h" width="narrow">
         <span aria-hidden className="tech-rule mb-4 block" />
-        <h2 id="notify-h">Be first in when the portal opens</h2>
+        <h2 id="notify-h">Request an invitation</h2>
         <p className="mt-4 max-w-2xl text-ink">
-          Registration takes a few seconds and asks for professional details only — no patient
-          information, no case files.
+          An invitation request takes a few seconds and asks for professional details only — no
+          patient information, no case files. We review every request before access is granted.
         </p>
-        <div className="mt-8">
+        <div id="request-invitation" className="mt-8 scroll-mt-20">
           <PortalInterestForm />
         </div>
       </Section>

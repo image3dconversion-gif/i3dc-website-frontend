@@ -8,9 +8,11 @@ import { RouteCards } from "@/components/sections/RouteCards";
 import { ContactForm } from "@/components/sections/ContactForm";
 import { ContactChannels } from "@/components/sections/ContactChannels";
 import { cta } from "@/content/cta-routes";
+import { portal } from "@/content/site";
 
 // Copy source: Contact / Discuss a Case v1.0. Public enquiry only — NO file
-// upload, NO patient data. Returning/ready cases route to the Case Portal.
+// upload, NO patient data. Authorised practices route to the live Case Portal;
+// everyone else requests an invitation, which the team reviews.
 export async function generateMetadata(): Promise<Metadata> {
   return resolveMetadata({
     path: "/discuss-a-case/",
@@ -36,7 +38,7 @@ const routes = [
 
 const afterSteps = [
   { n: "1", t: "We review the enquiry", d: "We check the workflow category, professional context and the support requested." },
-  { n: "2", t: "We confirm the right path", d: "A workflow call, Case Portal setup, returning-user login, global discussion or partnership conversation." },
+  { n: "2", t: "We confirm the right path", d: "A workflow call, a reviewed Case Portal invitation, sign-in for an already-authorised practice, a global discussion or a partnership conversation." },
   { n: "3", t: "You prepare records only when requested", d: "If clinical records are required, you’re routed into the authenticated portal or another approved intake route." },
   { n: "4", t: "The case moves into workflow", d: "Once scope and records are correctly submitted, the case follows the applicable route." },
 ];
@@ -107,15 +109,18 @@ export default function DiscussPage() {
       </Section>
 
       <Section aria-labelledby="ready-h" width="narrow" className="text-center">
-        <h2 id="ready-h">Preparing to submit a case?</h2>
+        <h2 id="ready-h">Ready to work inside the Case Portal?</h2>
         <p className="mx-auto mt-4 max-w-xl text-ink">
           The authenticated Case Portal — where cases are started, required records submitted,
           outputs reviewed, changes requested, the route approved and deliverables accessed — is
-          launching soon. See what it covers and register for the launch notification. Until it
-          opens, start here and we will confirm the right route for your case.
+          live for invited practices. Public registration is not open: request an invitation and
+          we will review it, or sign in if your practice is already authorised.
         </p>
-        <div className="mt-8 flex justify-center">
-          <ButtonLink href={cta.openPortal.href} external>{cta.openPortal.label}</ButtonLink>
+        <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+          <ButtonLink href={portal.requestInvitationUrl}>Request an Invitation</ButtonLink>
+          <ButtonLink href={cta.openPortal.href} variant="secondary" external>
+            {cta.openPortal.label}
+          </ButtonLink>
         </div>
       </Section>
     </>

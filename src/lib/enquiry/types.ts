@@ -85,11 +85,17 @@ export const SOURCE_WEBSITE = "https://www.image3dconversion.com" as const;
  */
 export const CONSENT_SOURCE = "i3dc-website-form" as const;
 /**
- * Bumped from 2026-08-26.v1: the Case Portal pre-launch interest form adds new
- * consent wording, so consents captured from this build must be auditable
- * against a different wording set than the enquiry-only build.
+ * Bumped from 2026-08-26.v1: the Case Portal interest form adds new consent
+ * wording, so consents captured from this build must be auditable against a
+ * different wording set than the enquiry-only build.
+ *
+ * Bumped again to 2026-09-22.v3: the portal went live invite-only, so that
+ * form's consent lines changed from "notify me when it launches" to "review my
+ * invitation request". Consents captured before this build agreed to different
+ * wording and must stay auditable as such. Field type is text(120), not a
+ * picklist, so a new value cannot be rejected on create.
  */
-export const CONSENT_WORDING_VERSION = "2026-09-09.v2" as const;
+export const CONSENT_WORDING_VERSION = "2026-09-22.v3" as const;
 
 /*
  * DELIBERATELY NOT DEFINED HERE — the CRM owns this state, not the website.
@@ -223,7 +229,9 @@ export interface ConsentSelections {
 /**
  * Which website form produced this submission.
  *
- * `portal-interest` is the Case Portal PRE-LAUNCH notification capture. It is a
+ * `portal-interest` is the Case Portal INVITATION REQUEST capture (it was the
+ * pre-launch notification capture before the portal went live invite-only; the
+ * wire value and every CRM mapping are deliberately unchanged). It is a
  * different fact, not a different lifecycle stage: the CRM still derives all
  * state from it. See toZohoLead() for exactly what differs.
  */

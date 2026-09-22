@@ -6,11 +6,12 @@ import { captureAcquisition } from "@/lib/attribution/acquisition";
 import type { EnquiryPayload } from "@/lib/enquiry/types";
 
 /**
- * Case Portal PRE-LAUNCH interest capture.
+ * Case Portal INVITATION REQUEST capture.
  *
- * The Case Portal has not launched. "Start a Case" deliberately lands here, so
- * this form's job is to turn that high-intent arrival into a recorded interest
- * rather than a dead end — while making no claim that the portal is available.
+ * The Case Portal is live but invite-only, and public registration is not open.
+ * The primary public portal CTA lands here, so this form's job is to turn that
+ * high-intent arrival into a reviewable invitation request — while making no
+ * claim that access is automatic.
  *
  * It posts to the SAME /api/enquiry route as the enquiry form, with
  * `formType: "portal-interest"`. The server decides everything the CRM sees:
@@ -18,10 +19,11 @@ import type { EnquiryPayload } from "@/lib/enquiry/types";
  * submission carries acquisition and intention FACTS only — no Journey_Stage,
  * no V2 state — because the CRM derives lifecycle state itself.
  *
- * CONSENT: the launch-notification permission is a SEPARATE, unticked checkbox.
- * It is required here because notifying the person is the entire purpose of the
+ * CONSENT: the reply permission is a SEPARATE, unticked checkbox. It is
+ * required here because replying to the person is the entire purpose of the
  * form — but it must still be ticked deliberately, never pre-ticked. Any change
- * to this wording requires CONSENT_WORDING_VERSION to be incremented.
+ * to this wording requires CONSENT_WORDING_VERSION to be incremented, and it
+ * was: the 2026-09-22.v3 bump covers this repositioning.
  */
 const fieldCls =
   "mt-1.5 w-full rounded-[var(--radius-card)] border border-line-strong bg-white px-3 py-2.5 text-sm text-ink outline-none focus:border-brand focus:ring-2 focus:ring-[var(--focus-ring)]/40";
@@ -50,10 +52,10 @@ export function PortalInterestForm() {
         id="notify"
         className="rounded-[var(--radius-card)] border border-line-strong bg-white p-8 shadow-[var(--shadow-float)]"
       >
-        <p className="text-xs font-bold uppercase tracking-wider text-brand">You&rsquo;re on the list</p>
-        <h3 className="mt-2">Thanks — we&rsquo;ll tell you when the Case Portal opens.</h3>
+        <p className="text-xs font-bold uppercase tracking-wider text-brand">Request received</p>
+        <h3 className="mt-2">Thanks — your invitation request is with our team.</h3>
         <p className="mt-3 text-sm text-ink">
-          We&rsquo;ll send one notification when access becomes available. Nothing else.
+          We review each request and reply by email with the next step. Nothing else.
         </p>
         <p className="mt-4 text-sm text-ink">
           If you have a case to discuss in the meantime,{" "}
@@ -134,10 +136,10 @@ export function PortalInterestForm() {
         <input id="pi-companyWebsite" name="companyWebsite" tabIndex={-1} autoComplete="off" />
       </div>
 
-      <h3>Get the first launch notification</h3>
+      <h3>Request an invitation</h3>
       <p className="mt-2 text-sm text-muted">
-        The Case Portal is not open yet. Leave your professional details and we&rsquo;ll tell you the
-        moment access is available.
+        The Case Portal is live for invited practices; public registration is not open. Leave your
+        professional details and we&rsquo;ll review your request.
       </p>
 
       {status === "error" && (
@@ -190,17 +192,17 @@ export function PortalInterestForm() {
         <label className="flex items-start gap-2 text-sm text-ink">
           <input type="checkbox" name="consent" required className="mt-0.5 h-4 w-4 rounded border-line-strong text-brand focus:ring-[var(--focus-ring)]/40" />
           <span>
-            I agree to Image3DConversion handling these details to register my interest, and confirm
-            no patient-identifying information is included.{req}
+            I agree to Image3DConversion handling these details to review this invitation request,
+            and confirm no patient-identifying information is included.{req}
           </span>
         </label>
         <label className="flex items-start gap-2 text-sm text-ink">
           <input type="checkbox" name="consentEmailMarketing" required className="mt-0.5 h-4 w-4 rounded border-line-strong text-brand focus:ring-[var(--focus-ring)]/40" />
-          <span>Email me when the I3DC Case Portal launches.{req}</span>
+          <span>Email me about my I3DC Case Portal invitation request.{req}</span>
         </label>
         <label className="flex items-start gap-2 text-sm text-ink">
           <input type="checkbox" name="consentWhatsAppMarketing" className="mt-0.5 h-4 w-4 rounded border-line-strong text-brand focus:ring-[var(--focus-ring)]/40" />
-          <span>Also notify me on WhatsApp (optional).</span>
+          <span>Also reply on WhatsApp about this request (optional).</span>
         </label>
       </div>
 
@@ -209,7 +211,7 @@ export function PortalInterestForm() {
         disabled={status === "submitting"}
         className="mt-7 inline-flex min-h-12 items-center justify-center rounded-[var(--radius-card)] bg-brand px-6 text-base font-bold text-white transition-colors hover:bg-brand-hover disabled:opacity-70"
       >
-        {status === "submitting" ? "Sending…" : "Get First Launch Notification"}
+        {status === "submitting" ? "Sending…" : "Request an Invitation"}
       </button>
 
       <p className="mt-4 text-xs text-muted">

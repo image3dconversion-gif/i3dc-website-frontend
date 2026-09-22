@@ -45,16 +45,17 @@ export const positioning = {
 export const contact = {
   enquiriesLabel: "General & workflow enquiries",
   discussHint: "Tell us your case type and workflow — no patient records on the public site.",
-  portalHint: "For faster case support, please use the I3DC Case Portal once available.",
+  portalHint: "Invited practices run case support inside the I3DC Case Portal.",
   // Founder-approved public business values (2026).
   email: "info@image3dconversion.com" as string | null,
   // No public call line — the number below is WhatsApp-only and must never be
   // presented as a phone/call number.
   phone: null as string | null,
   whatsapp: "+91 99106 30323" as string | null,
-  supportDirection: "For faster case support, please use the I3DC Case Portal once available.",
-  // Portal is not publicly live yet — inform, do not link users to it.
-  portalAvailability: "Case Portal access will be available at portal.image3dconversion.com.",
+  supportDirection: "Invited practices run case support inside the I3DC Case Portal.",
+  // Portal is live at this host, but access is by invitation only.
+  portalAvailability:
+    "The Case Portal is live at portal.image3dconversion.com for invited practices. Public registration is not open.",
 } as const;
 
 /**
@@ -63,8 +64,11 @@ export const contact = {
  * production login/registration URLs (Blueprint §14 decision gate).
  */
 export const portal = {
-  // TODO(portal-lead): replace with tested production URLs before launch.
-  loginUrl: "/case-portal/",
-  startCaseUrl: "/case-portal/",
+  // LIVE, INVITE-ONLY (verified 2026-09-22): portal.image3dconversion.com
+  // serves the authenticated app and routes signed-out users to its own sign-in
+  // screen. Public registration is NOT open, so the only public way in is a
+  // reviewed invitation request on /case-portal/ — never link to registration.
+  loginUrl: "https://portal.image3dconversion.com/",
+  requestInvitationUrl: "/case-portal/#request-invitation",
   label: "Case Portal",
 } as const;

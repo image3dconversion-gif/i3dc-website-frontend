@@ -245,7 +245,7 @@ export function WorkflowPage({
         heading={c.ctaHeading ?? "Ready to move this case forward?"}
         body={
           c.ctaBody ??
-          "The Case Portal is launching soon. Discuss the case with the team now and we will confirm the right route."
+          "The Case Portal is live for invited practices. Request an invitation, or discuss the case with the team if the workflow is still being defined."
         }
         primary={{ label: c.primary.label, href: c.primary.href, external: c.primary.external }}
         secondary={{ label: secondary.label, href: secondary.href, external: secondary.external }}

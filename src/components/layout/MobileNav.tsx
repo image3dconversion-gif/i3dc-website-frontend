@@ -94,14 +94,12 @@ export function MobileNav() {
               >
                 {cta.openPortal.label}
               </a>
-              <a
+              <Link
                 href={cta.startCase.href}
-                target="_blank"
-                rel="noopener noreferrer"
                 className="inline-flex min-h-12 items-center justify-center rounded-[var(--radius-card)] bg-brand px-6 text-base font-bold text-white no-underline"
               >
                 {cta.startCase.label}
-              </a>
+              </Link>
             </div>
           </nav>
         </div>

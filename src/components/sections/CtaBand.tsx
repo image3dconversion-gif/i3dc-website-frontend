@@ -13,7 +13,7 @@ interface CtaBandProps {
   body?: string;
   primary: CtaSpec;
   secondary?: CtaSpec;
-  /** Show the "Open the Case Portal" utility link under the buttons. */
+  /** Show the portal sign-in utility link under the buttons. */
   showPortalLink?: boolean;
 }
 
