@@ -115,9 +115,13 @@ export function isLiveEnabled(): boolean {
 
 /** Auth failure carrying only a coarse category — never a credential or URL. */
 class ZohoAuthError extends Error {
-  constructor(readonly category: string) {
+  // Declared explicitly rather than as a constructor parameter property, which
+  // Node's type-stripping (used by the test runner) cannot execute.
+  readonly category: string;
+  constructor(category: string) {
     super(`Zoho auth failed: ${category}`);
     this.name = "ZohoAuthError";
+    this.category = category;
   }
 }
 

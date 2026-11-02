@@ -5,6 +5,8 @@ import { ContactChannels } from "@/components/sections/ContactChannels";
 import { footerNav } from "@/content/navigation";
 import { img } from "@/content/images";
 import { getSiteSettings, getFooterSettings } from "@/content/source";
+import { resolveBrowserPixelId } from "@/lib/meta/config";
+import { MeasurementPreferencesLink } from "@/components/layout/MeasurementConsent";
 
 /**
  * Global footer — "a quiet end, not a second homepage" (Homepage §5).
@@ -74,6 +76,12 @@ export async function Footer() {
           </p>
           <p className="mt-3 max-w-3xl text-xs leading-relaxed text-muted">
             {footerData.legalNotice}
+            {resolveBrowserPixelId(process.env) && (
+              <>
+                {" "}
+                <MeasurementPreferencesLink />
+              </>
+            )}
           </p>
           {/* Company address, legal entity, tax details, phone and regional
               contacts must be verified before publishing (Homepage §5). */}

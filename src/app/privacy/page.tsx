@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/privacy/" },
 };
 
-const sections: { h: string; p: string[] }[] = [
+const sections: { h: string; p: string[]; id?: string }[] = [
   {
     h: "1. About this notice",
     p: [
@@ -39,29 +39,40 @@ const sections: { h: string; p: string[] }[] = [
   {
     h: "5. Sharing and service providers",
     p: [
-      "We use trusted service providers to operate our business — for example customer-relationship and communication tools — and they process information on our behalf for those purposes. We do not sell personal information.",
+      "We use trusted service providers to operate our business — for example customer-relationship and communication tools — and they process information on our behalf for those purposes. Where you allow advertising measurement, Meta also receives the information described in section 6. We do not sell personal information.",
     ],
   },
   {
-    h: "6. Retention and security",
+    id: "measurement",
+    h: "6. Advertising measurement",
+    p: [
+      "Where advertising measurement is switched on, this website asks whether we may use the Meta Pixel. Nothing is preselected. Unless you choose Allow, including if you ignore the question or choose Don’t allow, the Pixel does not load and we send nothing to Meta about your visit.",
+      "If you choose Allow, your browser loads the Meta Pixel, which reports the pages you view and uses Meta’s first-party cookies (_fbp and _fbc). If you then submit an enquiry or an invitation request and our customer-relationship system accepts it, our server tells Meta that a lead occurred, so we can measure whether our advertising works. That report contains the event details, the page address without its query string, your browser’s user-agent, and those cookie values when they are available.",
+      "We do not send Meta your name, email address, phone number, IP address, organisation or message, whether in plain or hashed form, from this server report. Meta receives your IP address when your browser loads the Pixel, as with any website request, and handles Pixel data under its own terms.",
+      "You can change your answer at any time using “Measurement preferences” in the website footer. If you withdraw permission, the Pixel stops sending, we expire its cookies on this website, and we ignore any such cookies that remain. Your choice is stored in your browser. Your enquiry works the same whichever you choose.",
+      "Separately from Meta, and whatever you choose, we record the campaign details in the address you arrived from (such as UTM parameters and ad or click identifiers) with your enquiry, so we can understand how you found us.",
+    ],
+  },
+  {
+    h: "7. Retention and security",
     p: [
       "We keep information for as long as needed to fulfil the purpose it was collected for, or as required by applicable law, and then delete or de-identify it. We apply reasonable technical and organisational safeguards appropriate to the information we handle.",
     ],
   },
   {
-    h: "7. Your choices",
+    h: "8. Your choices",
     p: [
       "You may contact us to ask about the information we hold about you, to update it, or to request its deletion, subject to applicable law and any records we must retain. Where we contact you about an enquiry, we rely on the consent you provide when submitting the form.",
     ],
   },
   {
-    h: "8. Governing law",
+    h: "9. Governing law",
     p: [
       "This notice and our handling of information are governed by the laws of India.",
     ],
   },
   {
-    h: "9. Contact",
+    h: "10. Contact",
     p: [
       "For any privacy question or request, contact us at info@image3dconversion.com.",
     ],
@@ -80,10 +91,10 @@ export default function Page() {
       />
       <Section width="narrow" aria-labelledby="privacy-h">
         <h2 id="privacy-h" className="sr-only">Privacy Notice</h2>
-        <p className="text-sm text-muted">Last updated: August 2026</p>
+        <p className="text-sm text-muted">Last updated: November 2026</p>
         <div className="mt-8 space-y-10">
           {sections.map((s) => (
-            <div key={s.h}>
+            <div key={s.h} id={s.id} className={s.id ? "scroll-mt-24" : undefined}>
               <h3 className="text-heading">{s.h}</h3>
               {s.p.map((para, i) => (
                 <p key={i} className="mt-3 text-ink">{para}</p>

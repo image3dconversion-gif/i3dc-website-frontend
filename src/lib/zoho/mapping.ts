@@ -176,10 +176,17 @@ function buildDescription(e: NormalisedEnquiry, portalRouted: boolean): string {
     e.attribution.gclid && `  GCLID: ${e.attribution.gclid}`,
     // Mirrors Meta_FBCLID for human review; that field is authoritative.
     e.attribution.fbclid && `  FBCLID: ${e.attribution.fbclid}`,
+    e.attribution.utmId && `  UTM id: ${e.attribution.utmId}`,
+    e.attribution.campaignId && `  Campaign id: ${e.attribution.campaignId}`,
+    e.attribution.adsetId && `  Ad set id: ${e.attribution.adsetId}`,
+    e.attribution.adId && `  Ad id: ${e.attribution.adId}`,
     e.attribution.landingUrl && `  Landing URL: ${e.attribution.landingUrl}`,
     // Referrer and touch timestamps have no dedicated Leads fields yet, so this
     // block is the only place they survive. Keep it until fields exist.
     `  Phone interpreted as: ${e.phoneBasis}`,
+    `  Measurement consent: ${e.measurementConsent}`,
+    e.websiteRef && `  Website ref: ${e.websiteRef}`,
+    e.synthetic && "  ⚠ Synthetic/test submission (server classified). Never a production Meta Lead.",
     e.spamIndicators.length > 0 &&
       `  ⚠ Review signals (advisory, did NOT block): ${e.spamIndicators.join(", ")}`,
     portalRouted &&

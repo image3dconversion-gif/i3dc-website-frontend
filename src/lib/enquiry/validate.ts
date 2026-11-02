@@ -3,6 +3,7 @@
  * Hand-rolled (no runtime dep). Enforces required fields, email shape, consent,
  * honeypot, length caps, and the no-clinical-data / no-file boundary.
  */
+import { normaliseConsent } from "../meta/consent";
 import {
   BUSINESS_TAG,
   CONSENT_SOURCE,
@@ -94,6 +95,10 @@ function cleanAttribution(a: unknown): Attribution {
     gclid: clean(o.gclid, MAX.short) || undefined,
     // Carried for CRM continuity only. No Meta Pixel, no CAPI, no _fbp/_fbc.
     fbclid: clean(o.fbclid, MAX.short) || undefined,
+    utmId: clean(o.utmId, MAX.short) || undefined,
+    campaignId: clean(o.campaignId, MAX.short) || undefined,
+    adsetId: clean(o.adsetId, MAX.short) || undefined,
+    adId: clean(o.adId, MAX.short) || undefined,
     landingUrl: clean(o.landingUrl, MAX.url) || undefined,
     firstTouchIso: iso(o.firstTouchIso),
     lastTouchIso: iso(o.lastTouchIso),
@@ -202,6 +207,7 @@ export function validateEnquiry(
 
   const value: NormalisedEnquiry = {
     formType,
+    measurementConsent: normaliseConsent(body.measurementConsent),
     serviceKey: SERVICE_KEYS.includes(str(body.serviceKey) as ServiceKey)
       ? (str(body.serviceKey) as ServiceKey)
       : undefined,

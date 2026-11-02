@@ -19,7 +19,7 @@ export const site = {
     "Image3DConversion works with dental professionals and authorised workflow partners. Patients should consult their treating dentist.",
   // Public marketing origin. The authenticated Case Portal lives elsewhere and
   // is intentionally NOT built in this project.
-  url: "https://www.image3dconversion.com",
+  url: "https://image3dconversion.com",
   locale: "en",
 } as const;
 

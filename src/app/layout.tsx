@@ -4,7 +4,10 @@ import { Suspense } from "react";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { AcquisitionCapture } from "@/components/layout/AcquisitionCapture";
+import { MetaPixel } from "@/components/layout/MetaPixel";
+import { MeasurementConsentBanner } from "@/components/layout/MeasurementConsent";
 import { SiteChrome } from "@/components/layout/SiteChrome";
+import { resolveBrowserPixelId } from "@/lib/meta/config";
 import { OrganizationJsonLd, ProfessionalServiceJsonLd } from "@/lib/seo/jsonld";
 import { site } from "@/content/site";
 import "./globals.css";
@@ -59,6 +62,10 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  // Meta Pixel gate, resolved on the server (build time for static pages).
+  // Null unless META_TRACKING_ENABLED=true and the Pixel id is exactly the I3DC
+  // dataset — and then only the public Pixel id crosses to the browser.
+  const metaPixelId = resolveBrowserPixelId(process.env);
   return (
     <html lang={site.locale} className={`${bricolage.variable} ${lato.variable}`}>
       <body>
@@ -76,6 +83,15 @@ export default function RootLayout({
         <Suspense fallback={null}>
           <AcquisitionCapture />
         </Suspense>
+        {/* Rendered only when the tracking gate is open; otherwise nothing
+            Meta-related reaches the page. Suspense-wrapped for the same
+            search-params reason as above. */}
+        {metaPixelId && (
+          <Suspense fallback={null}>
+            <MetaPixel pixelId={metaPixelId} />
+            <MeasurementConsentBanner />
+          </Suspense>
+        )}
         <OrganizationJsonLd />
         <ProfessionalServiceJsonLd />
         <SiteChrome header={<Header />} footer={<Footer />}>

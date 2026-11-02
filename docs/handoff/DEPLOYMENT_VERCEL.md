@@ -48,8 +48,8 @@ No `vercel.json` is committed (none required). Add one later only for advanced n
 > Keystatic note: on Vercel's read-only serverless filesystem, the admin's local-git writes **do not persist**. Recommended model: **edit content locally, commit to git** (Vercel redeploys). If the team needs in-browser editing in prod, switch Keystatic to **GitHub storage** (separate setup) rather than local. The admin is optional in production.
 
 ## 5. Domain setup (Vercel)
-- Canonical host is **`www.image3dconversion.com`** (matches `site.url` used for canonicals/sitemap/OG).
-- In Vercel → Project → **Domains**, add both `www.image3dconversion.com` (primary) and `image3dconversion.com` (apex → redirects to www).
+- Canonical host is **`image3dconversion.com`** (matches `site.url` used for canonicals/sitemap/OG).
+- In Vercel → Project → **Domains**, add both `image3dconversion.com` (primary) and `www.image3dconversion.com` (redirects to the apex).
 
 ## 6. GoDaddy DNS records (domain stays at GoDaddy)
 In GoDaddy → DNS management, set the records Vercel shows for your project (current Vercel defaults):
@@ -64,8 +64,8 @@ In GoDaddy → DNS management, set the records Vercel shows for your project (cu
 - Allow up to a few hours for DNS propagation; Vercel auto-provisions SSL.
 
 ## 7. Post-deploy smoke test
-- [ ] `https://www.image3dconversion.com/` → 200, hero + footer render, contact = `info@image3dconversion.com`, WhatsApp shows "WhatsApp only — no calls."
-- [ ] apex `https://image3dconversion.com` → redirects to `www`.
+- [ ] `https://image3dconversion.com/` → 200, hero + footer render, contact = `info@image3dconversion.com`, WhatsApp shows "WhatsApp only — no calls."
+- [ ] `https://www.image3dconversion.com` → redirects to the apex.
 - [ ] A workflow page (e.g. `/guided-implant-workflow/`) and `/faq/` → 200; JSON-LD present.
 - [ ] `/sitemap.xml` and `/robots.txt` → 200; canonicals show the production domain.
 - [ ] `/discuss-a-case/` → submit a test enquiry → success state; while Zoho is dry-run this **sends nothing** (validation only).

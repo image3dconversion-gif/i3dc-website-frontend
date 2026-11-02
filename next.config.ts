@@ -1,4 +1,8 @@
 import type { NextConfig } from "next";
+import { metaBuildProblems } from "./src/lib/meta/build-gate";
+
+const metaProblems = metaBuildProblems(process.env);
+if (metaProblems.length > 0) throw new Error(metaProblems.join("; "));
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,

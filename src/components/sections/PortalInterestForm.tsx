@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { contact } from "@/content/site";
 import { captureAcquisition } from "@/lib/attribution/acquisition";
+import { readMeasurementConsent } from "@/lib/meta/consent";
 import type { EnquiryPayload } from "@/lib/enquiry/types";
 
 /**
@@ -94,6 +95,7 @@ export function PortalInterestForm() {
       pageSource: "/case-portal/",
       utm: meta.utm,
       attribution: meta.attribution,
+      measurementConsent: readMeasurementConsent(),
     };
 
     setStatus("submitting");
@@ -107,6 +109,8 @@ export function PortalInterestForm() {
       });
       const data = await res.json();
       if (res.ok && data.ok) {
+        // Deliberately NO Meta Lead: a portal pre-launch notification request is
+        // not a new-business service acquisition. The CRM still records it.
         setStatus("success");
         return;
       }

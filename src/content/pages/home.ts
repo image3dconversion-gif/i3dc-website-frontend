@@ -35,7 +35,7 @@ export const home = {
     title: "Digital Implant Planning & Surgical Guides | Image3DConversion",
     description:
       "Plan routine and complex guided implant cases with expert digital planning, surgical guides, full-arch workflows and clinician review before production.",
-    canonical: "https://www.image3dconversion.com/",
+    canonical: "https://image3dconversion.com/",
   },
 
   hero: {

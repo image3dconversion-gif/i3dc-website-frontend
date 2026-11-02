@@ -10,6 +10,7 @@
  * design, production, and delivery/status — lives ONLY in the I3DC Case Portal.
  * The server re-asserts this boundary on every submission.
  */
+import type { MeasurementConsent } from "../meta/consent";
 
 export const INQUIRY_TYPES = [
   "general",
@@ -73,7 +74,7 @@ export const LEAD_SOURCE = "Website - Image 3D Conversion" as const;
 export const BUSINESS_TAG = "Image3DConversion" as const;
 
 /** The public site this enquiry originated from. Server-fixed, never client-supplied. */
-export const SOURCE_WEBSITE = "https://www.image3dconversion.com" as const;
+export const SOURCE_WEBSITE = "https://image3dconversion.com" as const;
 
 /**
  * Controlled consent provenance, written to two separate CRM fields:
@@ -204,6 +205,11 @@ export interface Attribution {
    * Leads module, so it travels in the Description. No Pixel, no CAPI here.
    */
   fbclid?: string;
+  /** Campaign identifiers carried from the landing URL; recorded in the Description. */
+  utmId?: string;
+  campaignId?: string;
+  adsetId?: string;
+  adId?: string;
   /** First URL of this acquisition touch (path + campaign query only). */
   landingUrl?: string;
   /** First time this browser was seen on the site (persisted locally). */
@@ -272,6 +278,8 @@ export interface EnquiryPayload {
   utm?: Utm;
   /** Referrer, click id and touch timestamps captured by the client. */
   attribution?: Partial<Attribution>;
+  /** The visitor's advertising-measurement choice. Separate from every consent above. */
+  measurementConsent?: MeasurementConsent;
   /** Honeypot — must be empty for a human submission. */
   companyWebsite?: string;
 }
@@ -281,6 +289,11 @@ export interface NormalisedEnquiry
   extends Omit<EnquiryPayload, "companyWebsite" | "attribution" | "formType"> {
   /** Always resolved server-side; never optional past validation. */
   formType: FormType;
+  /** Exact state only: anything else, or nothing, is UNKNOWN. */
+  measurementConsent: MeasurementConsent;
+  /** Set server-side by the intake pipeline, never read from the request body. */
+  websiteRef?: string;
+  synthetic?: boolean;
   leadSource: typeof LEAD_SOURCE;
   businessTag: typeof BUSINESS_TAG;
   receivedAtIso: string;

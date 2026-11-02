@@ -27,6 +27,18 @@ function firstExisting(basePath) {
 
 registerHooks({
   resolve(specifier, context, nextResolve) {
+    // "server-only" throws unless it resolves under the `react-server` export
+    // condition, which Next applies when it bundles server code. Tests run those
+    // server modules directly, so here it is the same empty module Next uses;
+    // the real client/server boundary is still enforced by `next build`.
+    if (specifier === "server-only") {
+      return { url: "data:text/javascript,export{}", shortCircuit: true };
+    }
+
+    // "next/server" is an extensionless deep import that only a bundler
+    // resolves; Node's ESM resolver needs the file name.
+    if (specifier === "next/server") return nextResolve("next/server.js", context);
+
     // "@/lib/foo" → <repo>/src/lib/foo
     if (specifier.startsWith("@/")) {
       const hit = firstExisting(resolvePath(SRC, specifier.slice(2)));

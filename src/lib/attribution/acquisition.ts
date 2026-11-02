@@ -13,7 +13,7 @@
  * SCOPE LIMIT: this module captures click ids as plain values for CRM
  * continuity. It is deliberately NOT a tracking layer — no Meta Pixel, no
  * `_fbp`/`_fbc`, no `event_id`, no browser Lead event, no network calls of any
- * kind. Those belong to the separate Meta/CAPI gate.
+ * kind. Those belong to the separately gated Meta integration in lib/meta.
  *
  * The exported functions below are pure; only `captureAcquisition()` touches
  * the browser, so the resolution rules are unit-testable without a DOM.
@@ -27,6 +27,10 @@ export const CAMPAIGN_PARAMS = [
   "utm_campaign",
   "utm_content",
   "utm_term",
+  "utm_id",
+  "campaign_id",
+  "adset_id",
+  "ad_id",
   "gclid",
   "fbclid",
 ] as const;
@@ -39,6 +43,10 @@ export interface AcquisitionTouch {
   utm?: Utm;
   gclid?: string;
   fbclid?: string;
+  utmId?: string;
+  campaignId?: string;
+  adsetId?: string;
+  adId?: string;
   /** Entry URL for this touch — path plus campaign parameters only. */
   landingUrl?: string;
   /** External referrer for this touch. Own-host referrers are dropped. */
@@ -103,7 +111,8 @@ export function landingUrlFrom(href: string): string | undefined {
 
 /**
  * Read an acquisition touch from a page view, or null when this view is just
- * ordinary in-site navigation.
+ * ordinary in-site navigation. Only the query string counts: parameters placed
+ * after the `#` are not attribution, and neither is the fragment itself.
  */
 export function readTouch(
   href: string,
@@ -132,6 +141,10 @@ export function readTouch(
     utm: Object.values(utm).some(Boolean) ? utm : undefined,
     gclid: trim(p.get("gclid")),
     fbclid: trim(p.get("fbclid")),
+    utmId: trim(p.get("utm_id")),
+    campaignId: trim(p.get("campaign_id")),
+    adsetId: trim(p.get("adset_id")),
+    adId: trim(p.get("ad_id")),
     landingUrl: landingUrlFrom(href),
     referrer: ref,
     startedAtIso: nowIso,
@@ -162,6 +175,10 @@ export function toAttributionPayload(
     utm: touch?.utm,
     gclid: touch?.gclid,
     fbclid: touch?.fbclid,
+    utmId: touch?.utmId,
+    campaignId: touch?.campaignId,
+    adsetId: touch?.adsetId,
+    adId: touch?.adId,
     landingUrl: first?.landingUrl ?? touch?.landingUrl,
     referrer: touch?.referrer,
     firstTouchIso: first?.atIso,

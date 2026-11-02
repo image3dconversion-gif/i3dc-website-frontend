@@ -6,7 +6,7 @@ import { CtaBand } from "@/components/sections/CtaBand";
 import { CutoutFrame } from "@/components/ui/CutoutFrame";
 import { Accordion, type QA } from "@/components/ui/Accordion";
 import { FaqPageJsonLd, BreadcrumbJsonLd } from "@/lib/seo/jsonld";
-import { cta } from "@/content/cta-routes";
+import { cta, discussCaseHref } from "@/content/cta-routes";
 import type { Img } from "@/content/images";
 
 export interface GalleryItem {
@@ -74,9 +74,12 @@ export function WorkflowPage({
   // Never duplicate the primary: if the page leads with "Discuss", the
   // secondary becomes the Case Portal route, otherwise Discuss a Complex Case.
   const leadsWithDiscuss = c.primary.href === cta.discussCase.href;
+  // Carries this page's service into the form, so the enquiry records it.
+  const discussHref = discussCaseHref(c.canonical);
+  const primaryHref = leadsWithDiscuss ? discussHref : c.primary.href;
   const secondary = leadsWithDiscuss
     ? { label: cta.startCase.label, href: cta.startCase.href, external: true }
-    : { label: cta.discussCase.label, href: cta.discussCase.href };
+    : { label: cta.discussCase.label, href: discussHref };
 
   // In-page section nav — only the sections this page actually renders.
   const subnav: SubnavItem[] = [
@@ -108,7 +111,7 @@ export function WorkflowPage({
         h1={c.h1}
         body={c.heroBody}
         note={c.note}
-        primary={c.primary}
+        primary={{ ...c.primary, href: primaryHref }}
         secondary={secondary}
         image={c.image}
         imageLabel={c.imageLabel}
@@ -247,7 +250,7 @@ export function WorkflowPage({
           c.ctaBody ??
           "The Case Portal is live for invited practices. Request an invitation, or discuss the case with the team if the workflow is still being defined."
         }
-        primary={{ label: c.primary.label, href: c.primary.href, external: c.primary.external }}
+        primary={{ label: c.primary.label, href: primaryHref, external: c.primary.external }}
         secondary={{ label: secondary.label, href: secondary.href, external: secondary.external }}
         showPortalLink
       />

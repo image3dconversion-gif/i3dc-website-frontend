@@ -12,6 +12,7 @@ import {
   type ServiceKey,
 } from "@/lib/enquiry/types";
 import { captureAcquisition } from "@/lib/attribution/acquisition";
+import { readMeasurementConsent } from "@/lib/meta/consent";
 import { contact } from "@/content/site";
 
 /**
@@ -140,6 +141,7 @@ export function ContactForm({
       pageSource: meta.pageSource,
       utm: meta.utm,
       attribution: meta.attribution,
+      measurementConsent: readMeasurementConsent(),
     };
 
     setStatus("submitting");
