@@ -73,6 +73,10 @@ export interface ZohoLeadRecord {
   Clinic_Practice_Name?: string;
   Lead_Source: string;
   Description: string;
+  Designation?: string;
+  Industry?: string;
+  Country?: string;
+  Portal_Qualification_Status?: "Pending";
   /** Native Leads kanban/stage field. Set so website leads don't land in the
    *  "Unknown" column; uses the existing shared value "Not Contacted". */
   Lead_Status?: string;
@@ -224,6 +228,13 @@ export function toZohoLead(e: NormalisedEnquiry): ZohoLeadRecord {
     Clinic_Practice_Name: e.organization,
     Lead_Source: e.leadSource,
     Description: buildDescription(e, portalRouted),
+    ...(e.qualificationIntake && {
+      Designation: e.qualificationIntake.role,
+      Industry: e.qualificationIntake.organisation,
+      Country: e.qualificationIntake.country,
+      // CRM can evaluate this intake only after its duplicate classifier runs.
+      Portal_Qualification_Status: "Pending" as const,
+    }),
     // Native kanban stage — keep website leads out of the "Unknown" column.
     Lead_Status: "Not Contacted",
     Business_Unit: e.businessTag,

@@ -30,6 +30,7 @@ const ALLOWED_FIELDS = new Set([
   "Consent_WA_Operational", "Consent_Email_Marketing", "Consent_WA_Marketing",
   "Consent_Captured_At", "Consent_Source", "Consent_Wording_Version",
   "Service_Interest", "Workflow_Interest", "Layout",
+  "Designation", "Industry", "Country", "Portal_Qualification_Status",
 ]);
 
 /**
@@ -94,6 +95,9 @@ const base = (over: Record<string, unknown> = {}) => ({
   consent: true,
   companyWebsite: "",
   pageSource: "/discuss-a-case/",
+  professional_role: "dentist",
+  organisation_type: "clinic",
+  country: "IN",
   ...over,
 });
 

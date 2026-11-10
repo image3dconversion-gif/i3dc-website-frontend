@@ -37,6 +37,9 @@ describe("service page → /discuss-a-case/", () => {
           consent: true,
           serviceKey: url.searchParams.get("service"),
           pageSource: url.pathname,
+          professional_role: "dentist",
+          organisation_type: "clinic",
+          country: "IN",
         },
         NOW,
       );

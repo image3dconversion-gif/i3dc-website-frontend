@@ -110,6 +110,7 @@ const liveEnv = (over: Record<string, string | undefined> = {}) => ({
   ZOHO_CLIENT_SECRET: "fake",
   ZOHO_REFRESH_TOKEN: "fake",
   ZOHO_MODULE: "Leads",
+  ZOHO_LAYOUT_ID: "6607227000004071789",
   META_TRACKING_ENABLED: "true",
   NEXT_PUBLIC_META_PIXEL_ID: LOCKED,
   META_ALLOW_LOCAL_TRACKING: "true",
@@ -155,6 +156,9 @@ const enquiry = (over: Record<string, unknown> = {}) => ({
   companyWebsite: "",
   serviceKey: "design-only",
   pageSource: "/discuss-a-case/",
+  professional_role: "dentist",
+  organisation_type: "clinic",
+  country: "IN",
   measurementConsent: "ALLOW",
   ...over,
 });
@@ -222,6 +226,48 @@ const outcome = (lines: string[]) => lines.find((l) => l.includes("[meta:lead]")
 const description = () => String(zohoCreates.at(-1)?.data[0].Description ?? "");
 
 // ── tests ───────────────────────────────────────────────────────────────────
+describe("structured intake through the enquiry handler", () => {
+  test("extends the Zoho payload and preserves the existing attribution and consent fields", async () => {
+    const r = await submit(enquiry({
+      country: "in",
+      utm: { source: "meta", campaign: "phase1" },
+      attribution: { fbclid: "phase1-click" },
+      consentWhatsAppOperational: true,
+      consentEmailMarketing: false,
+      consentWhatsAppMarketing: false,
+    }));
+    assert.equal(r.res.status, 200);
+    assert.equal(zohoCreates.length, 1);
+    const [lead] = zohoCreates[0].data;
+    assert.equal(lead.Designation, "Dentist / Dental Surgeon");
+    assert.equal(lead.Industry, "Dental Clinic / Practice");
+    assert.equal(lead.Country, "IN");
+    assert.equal(lead.Portal_Qualification_Status, "Pending");
+    assert.equal(lead.Page_Submitted_From, "/discuss-a-case/");
+    assert.equal(lead.Lead_Source, "Website - Image 3D Conversion");
+    assert.equal(lead.UTM_Source, "meta");
+    assert.equal(lead.UTM_Campaign, "phase1");
+    assert.equal(lead.Meta_FBCLID, "phase1-click");
+    assert.equal(lead.Consent, true);
+    assert.equal(lead.Consent_WA_Operational, true);
+    assert.equal(lead.Consent_Email_Marketing, false);
+    assert.equal(lead.Consent_WA_Marketing, false);
+    assert.equal(Object.hasOwn(lead, "Portal_Invitation_Status"), false);
+  });
+
+  for (const field of ["professional_role", "organisation_type", "country"] as const) {
+    test(`rejects missing or invalid ${field} before Zoho or Meta`, async () => {
+      for (const value of [undefined, "invalid"]) {
+        const r = await submit(enquiry({ [field]: value }));
+        assert.equal(r.res.status, 422);
+        assert.equal(r.deferred.length, 0);
+      }
+      assert.equal(zohoCreates.length, 0);
+      assert.equal(graphRequests.length, 0);
+    });
+  }
+});
+
 describe("consent", () => {
   test("ALLOW: exactly one server Lead", async () => {
     const r = await deliver(enquiry());

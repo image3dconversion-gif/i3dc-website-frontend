@@ -14,6 +14,7 @@ import {
 import { captureAcquisition } from "@/lib/attribution/acquisition";
 import { readMeasurementConsent } from "@/lib/meta/consent";
 import { contact } from "@/content/site";
+import { COUNTRY_CODES, ORGANISATION_TYPES, PROFESSIONAL_ROLES } from "@/lib/enquiry/qualification-intake";
 
 /**
  * Public enquiry form — GENERIC-INQUIRY funnel only.
@@ -40,6 +41,12 @@ const fieldCls =
 const labelCls = "block text-sm font-semibold text-heading";
 const req = <span className="text-brand"> *</span>;
 
+const regionNames = new Intl.DisplayNames(["en"], { type: "region" });
+const countryOptions = COUNTRY_CODES.map((code) => ({
+  code,
+  label: regionNames.of(code) ?? code,
+})).sort((a, b) => a.label.localeCompare(b.label, "en"));
+
 type Status = "idle" | "submitting" | "success" | "error";
 
 export function ContactForm({
@@ -47,6 +54,8 @@ export function ContactForm({
 }: {
   defaultInquiryType?: InquiryType;
 }) {
+  const [countrySearch, setCountrySearch] = useState("");
+  const [country, setCountry] = useState("");
   const [status, setStatus] = useState<Status>("idle");
   const [errorMsg, setErrorMsg] = useState<string>("");
   // Set when the CRM could not be reached: switches the error block into the
@@ -137,6 +146,9 @@ export function ContactForm({
       consentWhatsAppMarketing: fd.get("consentWhatsAppMarketing") === "on",
       companyWebsite: String(fd.get("companyWebsite") || ""), // honeypot
       formType: "enquiry",
+      professional_role: String(fd.get("professional_role") || ""),
+      organisation_type: String(fd.get("organisation_type") || ""),
+      country: String(fd.get("country") || ""),
       serviceKey,
       pageSource: meta.pageSource,
       utm: meta.utm,
@@ -262,6 +274,35 @@ export function ContactForm({
           </label>
         </div>
       </div>
+
+      <fieldset className="mt-6 grid gap-5 sm:grid-cols-2">
+        <legend className={labelCls}>About your intended Portal use</legend>
+        {[
+          { name: "professional_role", label: "Professional role for this enquiry", options: PROFESSIONAL_ROLES },
+          { name: "organisation_type", label: "Organisation where you would use the Portal", options: ORGANISATION_TYPES },
+        ].map(({ name, label, options }) => (
+          <div key={name}>
+            <label className={labelCls} htmlFor={name}>{label}{req}</label>
+            <select id={name} name={name} required defaultValue="" className={fieldCls}>
+              <option value="">Select an option</option>
+              {Object.entries(options).map(([code, label]) => <option key={code} value={code}>{label}</option>)}
+            </select>
+          </div>
+        ))}
+        <div className="sm:col-span-2">
+          <label className={labelCls} htmlFor="country-search">Filter countries by name or code</label>
+          <input id="country-search" type="search" className={fieldCls} value={countrySearch}
+            onChange={(event) => setCountrySearch(event.target.value)} autoComplete="off" />
+          <label className={labelCls + " mt-3"} htmlFor="country">Country where you would use the Portal{req}</label>
+          <select id="country" name="country" required value={country} className={fieldCls}
+            onChange={(event) => setCountry(event.target.value)}>
+            <option value="">Select a country</option>
+            {countryOptions.filter(({ code, label }) =>
+              code === country || (label + " " + code).toLowerCase().includes(countrySearch.trim().toLowerCase())
+            ).map(({ code, label }) => <option key={code} value={code}>{label}</option>)}
+          </select>
+        </div>
+      </fieldset>
 
       {/* Boundary notice sits directly above the message field. */}
       <div className="mt-6 rounded-[var(--radius-card)] border border-line-strong bg-blue-50 px-4 py-3">

@@ -247,6 +247,9 @@ export type FormType = (typeof FORM_TYPES)[number];
 export interface EnquiryPayload {
   /** Defaults to "enquiry" when absent, preserving the existing contract. */
   formType?: FormType;
+  professional_role?: string;
+  organisation_type?: string;
+  country?: string;
   inquiryType: InquiryType;
   name: string;
   /** Clinic / organisation. */
@@ -294,6 +297,7 @@ export interface NormalisedEnquiry
   /** Set server-side by the intake pipeline, never read from the request body. */
   websiteRef?: string;
   synthetic?: boolean;
+  qualificationIntake?: { role: string; organisation: string; country: string };
   leadSource: typeof LEAD_SOURCE;
   businessTag: typeof BUSINESS_TAG;
   receivedAtIso: string;

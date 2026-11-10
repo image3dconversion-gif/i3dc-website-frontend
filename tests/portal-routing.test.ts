@@ -29,6 +29,9 @@ const base = (over: Record<string, unknown> = {}) => ({
   consent: true,
   companyWebsite: "",
   pageSource: "/discuss-a-case/",
+  professional_role: "dentist",
+  organisation_type: "clinic",
+  country: "IN",
   ...over,
 });
 

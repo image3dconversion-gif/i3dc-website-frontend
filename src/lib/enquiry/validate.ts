@@ -25,6 +25,7 @@ import {
 } from "./types";
 import { normaliseEmail, normalisePhone } from "./normalise";
 import { assessSpam } from "./spam";
+import { normalizeCountry, optionLabel, ORGANISATION_TYPES, PROFESSIONAL_ROLES } from "./qualification-intake";
 
 export interface ValidationResult {
   ok: boolean;
@@ -189,6 +190,20 @@ export function validateEnquiry(
     errors.consent = "Please confirm you agree before sending.";
   }
 
+  const pageSource = clean(body.pageSource, MAX.short) || undefined;
+  const structuredIntake = !isPortalInterest && (
+    /^\/discuss-a-case\/?$/.test(pageSource ?? "") ||
+    body.professional_role !== undefined || body.organisation_type !== undefined || body.country !== undefined
+  );
+  const role = structuredIntake ? optionLabel(PROFESSIONAL_ROLES, body.professional_role) : undefined;
+  const organisation = structuredIntake ? optionLabel(ORGANISATION_TYPES, body.organisation_type) : undefined;
+  const country = structuredIntake ? normalizeCountry(body.country) : undefined;
+  if (structuredIntake) {
+    if (!role) errors.professional_role = "Select a professional role.";
+    if (!organisation) errors.organisation_type = "Select an organisation type.";
+    if (!country) errors.country = "Select a valid country.";
+  }
+
   if (Object.keys(errors).length > 0) return { ok: false, errors };
 
   const phone = clean(body.phone, MAX.short) || undefined;
@@ -223,7 +238,8 @@ export function validateEnquiry(
     consentWhatsAppOperational: consentSelections.operationalWhatsApp,
     consentEmailMarketing: consentSelections.emailMarketing,
     consentWhatsAppMarketing: consentSelections.whatsAppMarketing,
-    pageSource: clean(body.pageSource, MAX.short) || undefined,
+    pageSource,
+    qualificationIntake: role && organisation && country ? { role, organisation, country } : undefined,
     utm: cleanUtm(body.utm),
     // Governance fields are FIXED server-side, never trusted from the client.
     leadSource: LEAD_SOURCE,

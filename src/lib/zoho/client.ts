@@ -202,6 +202,11 @@ export async function submitLead(record: ZohoLeadRecord): Promise<SubmitResult> 
     return { mode: "dry-run", ok: true, detail: "Dry-run: Zoho submission not enabled." };
   }
 
+  if (record.Portal_Qualification_Status === "Pending" &&
+      (env.module !== "Leads" || env.layoutId !== "6607227000004071789")) {
+    return { mode: "live", ok: false, stage: "create", category: "qualification_layout_mismatch" };
+  }
+
   let token: string;
   try {
     token = await getAccessToken(env);

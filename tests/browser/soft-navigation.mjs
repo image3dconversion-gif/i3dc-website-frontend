@@ -110,6 +110,9 @@ async function fillAndSubmit(page, message = NEUTRAL) {
   await page.type("#email", "zz.browser@example.invalid");
   await page.type("#summary", message);
   await page.select("#inquiryType", "service-information");
+  await page.select("#professional_role", "dentist");
+  await page.select("#organisation_type", "clinic");
+  await page.select("#country", "IN");
   await page.click('input[name="consent"]');
   captured = null;
   await page.click('button[type="submit"]');

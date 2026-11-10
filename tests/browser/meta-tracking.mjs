@@ -112,6 +112,7 @@ const ZOHO_LIVE_FAKE = {
   ZOHO_SUBMIT_ENABLED: "true", ZOHO_ALLOW_LOCAL_LIVE: "true",
   ZOHO_ACCOUNTS_URL: `http://127.0.0.1:${ACCOUNTS_PORT}`, ZOHO_API_DOMAIN: `http://127.0.0.1:${API_PORT}`,
   ZOHO_CLIENT_ID: "f", ZOHO_CLIENT_SECRET: "f", ZOHO_REFRESH_TOKEN: "f", ZOHO_MODULE: "Leads",
+  ZOHO_LAYOUT_ID: "6607227000004071789",
 };
 const ZOHO_DRY_RUN = { ...ZOHO_LIVE_FAKE, ZOHO_SUBMIT_ENABLED: "false", ZOHO_ALLOW_LOCAL_LIVE: "false" };
 const META_ON = {
@@ -260,6 +261,9 @@ async function fillEnquiry(page, { name = "ZZ Browser Meta", email = EMAIL, phon
   await page.type("#email", email);
   await page.type("#summary", message);
   await page.select("#inquiryType", inquiryType);
+  await page.select("#professional_role", "dentist");
+  await page.select("#organisation_type", "clinic");
+  await page.select("#country", "IN");
   if (existing) await domClick(page, '#form form input[name="existingCustomer"]');
   await domClick(page, '#form form input[name="consent"]');
 }
